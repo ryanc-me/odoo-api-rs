@@ -1,0 +1,6 @@
+[workspace]
+
+members = [
+    'odoo-api-macros',
+    'odoo-api',
+]
