@@ -45,10 +45,10 @@ pub(crate) mod jsonrpc;
 pub use jsonrpc::{Error, Result, OdooApiError};
 
 pub use jsonrpc::types;
-#[cfg(feature = "reqwest-async")]
-pub use jsonrpc::reqwest_async::{common, db, object};
-#[cfg(feature = "reqwest-blocking")]
-pub use jsonrpc::reqwest_blocking as blocking;
+#[cfg(feature = "nonblocking")]
+pub use jsonrpc::nonblocking;
+#[cfg(feature = "blocking")]
+pub use jsonrpc::blocking;
 
 #[cfg(test)]
 mod test {

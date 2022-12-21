@@ -8,15 +8,11 @@ pub use error::*;
 
 pub mod types;
 
-#[cfg(all(feature = "reqwest-async"))]
-pub(crate) mod reqwest_async;
-#[cfg(all(feature = "reqwest-async"))]
-pub(crate) use reqwest_async::{common, db, object};
+#[cfg(all(feature = "nonblocking"))]
+pub mod nonblocking;
 
-#[cfg(all(feature = "reqwest-blocking"))]
-pub mod reqwest_blocking;
-#[cfg(all(feature = "reqwest-blocking"))]
-pub use reqwest_blocking as blocking;
+#[cfg(feature = "blocking")]
+pub mod blocking;
 
 
 /// A JSON-RPC call id
