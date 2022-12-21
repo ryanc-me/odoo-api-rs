@@ -134,10 +134,16 @@ fn odoo_api_request_impl(args: proc_macro::TokenStream, input: proc_macro::Token
             if let Some(ident) = &field.ident {
                 if ident.to_string() == "db" { has_db = true }
                 let type_string = path.clone().into_token_stream().to_string();
+                println!("{:?}", type_string);
                 if type_string == "String" {
                     // rather than requiring full Strings, we'll accept &str and convert
                     fields_args.push(quote!(#ident: &str));
                     fields_assigns.push(quote!(#ident: #ident.to_string()));
+                    fields_call.push(quote!(#ident));
+                }
+                else if type_string == "Vec < Value >" || type_string == "Map < String, Value >" {
+                    fields_args.push(quote!(#ident: Value));
+                    fields_assigns.push(quote!(#ident: ::serde_json::from_value(#ident)?));
                     fields_call.push(quote!(#ident));
                 }
                 else {
@@ -148,11 +154,15 @@ fn odoo_api_request_impl(args: proc_macro::TokenStream, input: proc_macro::Token
             }
         }
     }
+    let mut fields_args2 = fields_args.clone();
+    if !has_db {
+        fields_args2.insert(0, quote!(db: &str))
+    }
 
     // finally, generate the TokenStreams
     let out_call = generate_call(&ident_struct, &ident_fn, &fields_args, &fields_assigns, &doc)?;
-    let out_call_async = generate_call_async(&ident_struct, &ident_response, &ident_fn, &fields_args, &fields_call, &doc, has_db)?;
-    let out_call_blocking = generate_call_blocking(&ident_struct, &ident_response, &ident_fn, &fields_args, &fields_call, &doc, has_db)?;
+    let out_call_async = generate_call_async(&ident_struct, &ident_response, &ident_fn, &fields_args2, &fields_call, &doc)?;
+    let out_call_blocking = generate_call_blocking(&ident_struct, &ident_response, &ident_fn, &fields_args2, &fields_call, &doc)?;
     let out_api_method_impl = generate_api_method_impl(&ident_struct, &ident_response, &args)?;
     let out_serialize_impl = generate_serialize_impl(&ident_struct, &fields)?;
 
@@ -169,10 +179,11 @@ fn odoo_api_request_impl(args: proc_macro::TokenStream, input: proc_macro::Token
 fn generate_call(ident_struct: &Ident, ident_fn: &Ident, fields_args: &Vec<TokenStream>, fields_assigns: &Vec<TokenStream>, doc: &str) -> Result<TokenStream> {
     Ok(quote! {
         #[doc=#doc]
-        pub fn #ident_fn(#(#fields_args),*) -> super::OdooApiRequest<#ident_struct> {
+        pub fn #ident_fn(#(#fields_args),*) -> super::Result<super::OdooApiRequest<#ident_struct>> {
             use ::rand::{Rng, thread_rng};
             let mut rng = thread_rng();
-            super::OdooApiRequest {
+            
+            Ok(super::OdooApiRequest {
                 version: super::JsonRpcVersion::V2,
                 method: super::JsonRpcMethod::Call,
                 id: rng.gen_range(1..10000),
@@ -183,28 +194,23 @@ fn generate_call(ident_struct: &Ident, ident_fn: &Ident, fields_args: &Vec<Token
                         )*
                     }
                 }
-            }
+            })
         }
     })
 }
 
-fn generate_call_async(ident_struct: &Ident, ident_response: &Ident, ident_fn: &Ident, fields_args: &Vec<TokenStream>, fields_call: &Vec<TokenStream>, doc: &str, has_db: bool) -> Result<TokenStream> {
+fn generate_call_async(ident_struct: &Ident, ident_response: &Ident, ident_fn: &Ident, fields_args: &Vec<TokenStream>, fields_call: &Vec<TokenStream>, doc: &str) -> Result<TokenStream> {
     let name_fn_async = format!("{}_async", &ident_fn.to_string());
     let ident_fn_async = Ident::new(&name_fn_async, Span::call_site());
-
-    let db_header = match has_db {
-        true => { quote!(.header("X-Odoo-Dbfilter", db.clone())) },
-        false => { quote!() },
-    };
 
     Ok(quote!(
         #[cfg(feature = "nonblocking")]
         #[doc=#doc]
         pub async fn #ident_fn_async(url: &str, #(#fields_args),*) -> super::Result<#ident_response> {
-            let request = self::#ident_fn(#(#fields_call),*);
+            let request = self::#ident_fn(#(#fields_call),*)?;
             let client = ::reqwest::Client::new();
             let response: super::OdooApiResponse<#ident_struct> = client.post(url)
-                #db_header
+                .header("X-Odoo-Dbfilter", db.clone())
                 .json(&request)
                 .send().await?
                 .json().await?;
@@ -232,25 +238,18 @@ fn generate_call_async(ident_struct: &Ident, ident_response: &Ident, ident_fn: &
     ))
 }
 
-fn generate_call_blocking(ident_struct: &Ident, ident_response: &Ident, ident_fn: &Ident, fields_args: &Vec<TokenStream>, fields_call: &Vec<TokenStream>, doc: &str, has_db: bool) -> Result<TokenStream> {
+fn generate_call_blocking(ident_struct: &Ident, ident_response: &Ident, ident_fn: &Ident, fields_args: &Vec<TokenStream>, fields_call: &Vec<TokenStream>, doc: &str) -> Result<TokenStream> {
     let name_fn_blocking = format!("{}_blocking", &ident_fn.to_string());
     let ident_fn_blocking = Ident::new(&name_fn_blocking, Span::call_site());
-
-    let db_header;
-    if has_db {
-        db_header = quote!(.header("X-Odoo-Dbfilter", db.clone()));
-    }
-    else {
-        db_header = quote!();
-    }
 
     Ok(quote!(
         #[cfg(feature = "blocking")]
         #[doc=#doc]
         pub fn #ident_fn_blocking(url: &str, #(#fields_args),*) -> super::Result<#ident_response> {
-            let request = self::#ident_fn(#(#fields_call),*);
+            let request = self::#ident_fn(#(#fields_call),*)?;
             let client = ::reqwest::blocking::Client::new();
-            let response: super::OdooApiResponse<#ident_struct> = client.post(url)#db_header
+            let response: super::OdooApiResponse<#ident_struct> = client.post(url)
+                .header("X-Odoo-Dbfilter", db.clone())
                 .json(&request)
                 .send()?
                 .json()?;
