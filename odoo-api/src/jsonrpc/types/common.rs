@@ -126,7 +126,7 @@ pub struct AuthenticateResponse {
 /// 14.0.0.final.0.e
 ///
 /// Example:
-/// ```rust
+/// ```
 /// use odoo_api::types::common;
 ///
 /// let request = common::version();
@@ -195,7 +195,7 @@ pub struct ServerVersionInfo {
 /// or [`version`] instead.
 ///
 /// Example:
-/// ```rust
+/// ```
 /// use odoo_api::types::common;
 ///
 /// let request = common::about(true);

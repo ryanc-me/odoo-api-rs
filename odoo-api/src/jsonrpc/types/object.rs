@@ -20,14 +20,9 @@ use odoo_api_macros::odoo_api_request;
 /// kwargs, see [`ExecuteKw`] and [`execute_kw`].
 ///
 /// Example:
-/// ```rust
-/// use serde_json::{json, Value};
+/// ```no_run
 /// use odoo_api::types::object;
-///
-/// // build the args; here we'll read 'name' and 'login' for users 1, 2, and 3.
-/// let mut args = Vec::<Value>::new();
-/// args.push(json!([1, 2, 3]));
-/// args.push(json!(["name", "login"]));
+/// use serde_json::json;
 ///
 /// let request = object::execute(
 ///     "my-database",
@@ -35,7 +30,10 @@ use odoo_api_macros::odoo_api_request;
 ///     "password1",
 ///     "res.users",
 ///     "read",
-///     args
+///     json!([
+///         [1, 2, 3],
+///         ["name", "login"]
+///     ])
 /// );
 /// ```
 ///
@@ -67,9 +65,10 @@ pub struct Execute {
 /// This struct is intentionally very generic, as the `execute` call can return
 /// any arbitrary JSON data.
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
-pub struct ExecuteResponse (
-    pub Value
-);
+#[serde(transparent)]
+pub struct ExecuteResponse {
+    pub data: Value
+}
 
 
 
@@ -87,14 +86,9 @@ pub struct ExecuteResponse (
 /// This differs from `execute` in that keyword args (`kwargs`) can be passed.
 ///
 /// Example:
-/// ```rust
-/// use serde_json::{json, Map, Value};
+/// ```no_run
 /// use odoo_api::types::object;
-///
-/// // build the args & kwargs; here we'll search for the first 5 users
-/// let _args = Vec::<Value>::new();
-/// let mut kwargs = Map::<String, Value>::new();
-/// kwargs.insert("limit".into(), json!(5));
+/// use serde_json::json;
 ///
 /// let request = object::execute_kw(
 ///     "my-database",
@@ -102,8 +96,10 @@ pub struct ExecuteResponse (
 ///     "password1",
 ///     "res.users",
 ///     "read",
-///     _args,
-///     kwargs
+///     json!([]),
+///     json!({
+///         "limit": 5,
+///     })
 /// );
 /// ```
 ///
@@ -138,7 +134,8 @@ pub struct ExecuteKw {
 /// This struct is intentionally very generic, as the `execute` call can return
 /// any arbitrary JSON data.
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
-pub struct ExecuteKwResponse (
-    pub Value
-);
+#[serde(transparent)]
+pub struct ExecuteKwResponse {
+    pub data: Value
+}
 
