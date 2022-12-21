@@ -134,7 +134,6 @@ fn odoo_api_request_impl(args: proc_macro::TokenStream, input: proc_macro::Token
             if let Some(ident) = &field.ident {
                 if ident.to_string() == "db" { has_db = true }
                 let type_string = path.clone().into_token_stream().to_string();
-                println!("{:?}", type_string);
                 if type_string == "String" {
                     // rather than requiring full Strings, we'll accept &str and convert
                     fields_args.push(quote!(#ident: &str));
