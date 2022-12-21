@@ -1,4 +1,4 @@
-//! Types describing the Odoo API, along with functions to conveniently build those types
+//! Bare API functions, where you make the requests yourself. Also includes API function types
 
 pub mod db;
 pub mod object;
