@@ -1,7 +1,8 @@
 use serde_json;
 use thiserror::Error;
+use super::JsonRpcError;
 
-/// Convenience wrapper on std's `Result`
+/// Convenience wrapper on the std `Result`
 pub type Result<T> = ::std::result::Result<T, Error>;
 
 /// An error returned by one of the Odoo API methods
@@ -15,21 +16,25 @@ pub enum Error {
     #[error(transparent)]
     SerdeJsonError (#[from] serde_json::Error),
 
+    #[cfg(any(feature="nonblocking", feature="blocking"))]
+    #[error(transparent)]
+    ReqwestError (#[from] reqwest::Error),
+
     /// The generic "Odoo Server Error"
     ///
     /// The majority of real-world errors will fall into this category. These
     /// error
     #[error("Odoo Server Error")]
-    OdooServerError(),
+    OdooServerError(JsonRpcError),
 
     #[error("404: Not Found")]
-    OdooNotFoundError(),
+    OdooNotFoundError(JsonRpcError),
 
     #[error("Odoo Session Expired")]
-    OdooSessionExpiredError(),
+    OdooSessionExpiredError(JsonRpcError),
 
     #[error("Odoo API Error")]
-    OdooError(),
+    OdooError(JsonRpcError),
 }
 
 #[derive(Debug)]
