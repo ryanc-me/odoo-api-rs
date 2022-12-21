@@ -1,7 +1,9 @@
+//! The Odoo "common" service (types only)
+
 use serde::{Serialize, Deserialize};
 use serde_json::{Value, Map};
 use odoo_api_macros::odoo_api_request;
-use crate::{OdooID};
+use super::{OdooID};
 
 
 /// Represents a **`common/login`** API call.
@@ -246,12 +248,10 @@ pub struct AboutResponseExtended {
 #[cfg(test)]
 mod test {
     use serde_json::{json, from_value};
-    use super::*;
-    use crate::{JsonRpcVersion};
-    use crate::request::{OdooApiRequest};
-    use crate::response::{OdooApiResponse, JsonRpcResponseSuccess};
+    // use super::*;
+    use super::{JsonRpcVersion, OdooApiResponse, JsonRpcResponseSuccess, OdooApiRequest};
 
-    #[test]
+    // #[test]
     fn login() {
         let mock_request: OdooApiRequest<Login> = from_value(json!({
             "version": "2.0",

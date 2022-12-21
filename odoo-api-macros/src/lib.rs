@@ -160,14 +160,14 @@ pub fn odoo_api_request(args: TokenStream, input: TokenStream) -> TokenStream {
     let out_fn_call = quote! {
         #[cfg(feature = "rand")]
         #[doc=#doc]
-        pub fn #fn_name<#(#generics),*>(#(#args),*) -> crate::OdooApiRequest<#struct_name> {
-            use rand::{Rng, thread_rng};
-            rng = thread_rng();
-            crate::OdooApiRequest {
-                version: crate::JsonRpcVersion::V2,
-                method: crate::JsonRpcMethod::Call,
+        pub fn #fn_name<#(#generics),*>(#(#args),*) -> super::OdooApiRequest<#struct_name> {
+            use ::rand::{Rng, thread_rng};
+            let mut rng = thread_rng();
+            super::OdooApiRequest {
+                version: super::JsonRpcVersion::V2,
+                method: super::JsonRpcMethod::Call,
                 id: rng.gen_range(1..10000),
-                params: crate::JsonRpcRequestParams {
+                params: super::JsonRpcRequestParams {
                     args: #struct_name {
                         #(
                             #assigns,
@@ -179,12 +179,12 @@ pub fn odoo_api_request(args: TokenStream, input: TokenStream) -> TokenStream {
 
         #[cfg(not(feature = "rand"))]
         #[doc=#doc]
-        pub fn #fn_name<#(#generics),*>(#(#args),*) -> crate::OdooApiRequest<#struct_name> {
-            crate::OdooApiRequest {
-                version: crate::JsonRpcVersion::V2,
-                method: crate::JsonRpcMethod::Call,
+        pub fn #fn_name<#(#generics),*>(#(#args),*) -> super::OdooApiRequest<#struct_name> {
+            super::OdooApiRequest {
+                version: super::JsonRpcVersion::V2,
+                method: super::JsonRpcMethod::Call,
                 id: 10000,
-                params: crate::JsonRpcRequestParams {
+                params: super::JsonRpcRequestParams {
                     args: #struct_name {
                         #(
                             #assigns,
@@ -223,14 +223,14 @@ pub fn odoo_api_request(args: TokenStream, input: TokenStream) -> TokenStream {
         Span::call_site()
     );
     let out_method_impl = quote! {
-        impl crate::OdooApiMethod for #struct_name {
+        impl super::OdooApiMethod for #struct_name {
             type Response = #response_struct;
 
             fn describe_odoo_api_method(&self) -> (&'static str, &'static str) {
                 (#service, #method)
             }
 
-            fn parse_json_response(&self, json_data: &str) -> ::serde_json::Result<crate::OdooApiResponse<Self>> {
+            fn parse_json_response(&self, json_data: &str) -> ::serde_json::Result<super::OdooApiResponse<Self>> {
                 ::serde_json::from_str(json_data)
             }
         }

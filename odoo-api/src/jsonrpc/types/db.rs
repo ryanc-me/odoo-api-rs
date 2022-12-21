@@ -1,3 +1,5 @@
+//! The Odoo "db" service (types only)
+
 use serde::{Serialize, Deserialize};
 use odoo_api_macros::odoo_api_request;
 

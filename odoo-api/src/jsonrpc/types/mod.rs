@@ -3,3 +3,5 @@
 pub mod db;
 pub mod object;
 pub mod common;
+
+pub(crate) use super::{OdooID, OdooApiMethod, OdooApiRequest, OdooApiResponse, JsonRpcVersion, JsonRpcMethod, JsonRpcRequestParams};

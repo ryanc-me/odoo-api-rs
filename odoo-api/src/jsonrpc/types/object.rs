@@ -1,3 +1,5 @@
+//! The Odoo "object" service (types only)
+
 use serde::{Serialize, Deserialize};
 use serde_json::{Value, Map};
 use odoo_api_macros::odoo_api_request;
