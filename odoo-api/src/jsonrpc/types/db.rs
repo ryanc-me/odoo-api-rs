@@ -106,7 +106,7 @@ pub struct ChangeAdminPasswordResponse {
 
 
 #[derive(Debug, Deserialize, PartialEq)]
-#[odoo_api_request("db", "migrate_database")]
+#[odoo_api_request("db", "migrate_databases")]
 pub struct MigrateDatabases {
     pub passwd: String,
     pub databases: Vec<String>,

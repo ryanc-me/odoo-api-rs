@@ -51,7 +51,6 @@ pub struct Login {
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
 #[serde(transparent)]
 pub struct LoginResponse {
-    // #[serde(deserialize_with = "")]
     pub uid: OdooID
 }
 
