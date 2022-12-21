@@ -8,8 +8,8 @@ pub use error::*;
 
 pub mod types;
 
-#[cfg(all(feature = "nonblocking"))]
-pub mod nonblocking;
+#[cfg(all(feature = "async"))]
+pub mod asynch;
 
 #[cfg(feature = "blocking")]
 pub mod blocking;

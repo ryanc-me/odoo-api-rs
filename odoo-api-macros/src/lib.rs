@@ -204,7 +204,7 @@ fn generate_call_async(ident_struct: &Ident, ident_response: &Ident, ident_fn: &
     let ident_fn_async = Ident::new(&name_fn_async, Span::call_site());
 
     Ok(quote!(
-        #[cfg(feature = "nonblocking")]
+        #[cfg(feature = "async")]
         #[doc=#doc]
         pub async fn #ident_fn_async(url: &str, #(#fields_args),*) -> super::Result<#ident_response> {
             let request = self::#ident_fn(#(#fields_call),*)?;
