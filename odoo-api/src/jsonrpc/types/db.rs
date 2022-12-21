@@ -137,9 +137,10 @@ pub struct List {
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
-pub struct ListResponse (
-    pub Vec<String>
-);
+#[serde(transparent)]
+pub struct ListResponse {
+    pub databases: Vec<String>
+}
 
 
 #[derive(Debug, Deserialize, PartialEq)]
@@ -147,9 +148,10 @@ pub struct ListResponse (
 pub struct ListLang {}
 
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
-pub struct ListLangResponse (
-    Vec<ListLangResponseItem>
-);
+#[serde(transparent)]
+pub struct ListLangResponse {
+    pub languages: Vec<ListLangResponseItem>
+}
 
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub struct ListLangResponseItem {
@@ -165,9 +167,10 @@ pub struct ListCountries {
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
-pub struct ListCountriesResponse (
-    Vec<ListLangResponseItem>
-);
+#[serde(transparent)]
+pub struct ListCountriesResponse {
+    pub countries: Vec<ListLangResponseItem>
+}
 
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub struct ListCountriesResponseItem {
