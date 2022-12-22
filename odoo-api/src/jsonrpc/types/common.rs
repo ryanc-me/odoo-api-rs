@@ -250,7 +250,7 @@ pub struct AboutResponseExtended {
 
 #[cfg(test)]
 mod test {
-    use serde_json::{Map, Value, json, to_value};
+    use serde_json::{json, to_value};
     use super::*;
     use crate::jsonrpc::{Result, OdooApiResponse, JsonRpcVersion, JsonRpcResponseSuccess};
 
