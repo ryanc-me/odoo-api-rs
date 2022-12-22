@@ -1,4 +1,6 @@
 //! Helper macros for the `odoo_api` crate
+//!
+//! See the [`odoo_api`](https://crates.io/crates/odoo-api) crate.
 
 use convert_case::{Case, Casing};
 use proc_macro2::{Span, TokenStream};
