@@ -1,6 +1,7 @@
 //! The Odoo "common" service (types only)
 
 use serde::{Serialize, Deserialize};
+use serde_tuple::{Serialize_tuple};
 use serde_json::{Value, Map};
 use odoo_api_macros::odoo_api_request;
 use super::{OdooID};
@@ -103,6 +104,7 @@ pub struct Authenticate {
 
 /// Represents the response to an Odoo [`Authenticate`] call.
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[serde(transparent)]
 pub struct AuthenticateResponse {
     pub uid: OdooID
 }
@@ -159,7 +161,7 @@ pub struct VersionResponse {
 ///
 /// See: [odoo/services/common.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/common.py#L12-L17)
 /// See also: [odoo/release.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/release.py)
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Serialize_tuple, Deserialize, PartialEq)]
 pub struct ServerVersionInfo {
     /// The "major" version (e.g., `16`)
     pub major: u32,
@@ -227,19 +229,252 @@ pub struct AboutResponseBasic {
     /// The "info" string
     /// 
     /// At the time of writing, this is hard-coded to `See http://openerp.com`
-    info: String
+    pub info: String
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Serialize_tuple, Deserialize, PartialEq)]
 pub struct AboutResponseExtended {
     /// The "info" string
     /// 
     /// At the time of writing, this is hard-coded to `See http://openerp.com`
-    info: String,
+    pub info: String,
 
     /// The "pretty" version, normally something like `16.0+e` or `15.0`
     ///
     /// Note that this is only returned when the original reques was made with
     /// `extended: true` (see [`AboutResponse`])
     pub server_version: String,
+}
+
+#[cfg(test)]
+mod test {
+    use serde_json::{Map, Value, json, to_value};
+    use super::*;
+    use crate::jsonrpc::{Result, OdooApiResponse, JsonRpcVersion, JsonRpcResponseSuccess};
+
+    #[test]
+    fn login() -> Result<()> {
+        let expected_request = to_value(json!({
+            "version": "2.0",
+            "id": 1000,
+            "method": "call",
+            "params": {
+                "service": "common",
+                "method": "login",
+                "args": [
+                    "my-database",
+                    "admin",
+                    "password123"
+                ]
+            }
+        }))?;
+        let expected_response = to_value(json!({
+            "jsonrpc": "2.0",
+            "id": 1000,
+            "result": 2
+        }))?;
+
+        let request = super::login(
+            "my-database",
+            "admin",
+            "password123"
+        )?.to_json_value()?;
+
+        let response = to_value(OdooApiResponse::<Login>::Success(
+            JsonRpcResponseSuccess {
+                jsonrpc: JsonRpcVersion::V2,
+                id: 1000,
+                result: LoginResponse {
+                    uid: 2
+                }
+            }
+        ))?;
+
+        assert_eq!(request, expected_request);
+        assert_eq!(response, expected_response);
+
+        Ok(())
+    }
+
+    #[test]
+    fn authenticate() -> Result<()> {
+        let expected_request = to_value(json!({
+            "version": "2.0",
+            "id": 1000,
+            "method": "call",
+            "params": {
+                "service": "common",
+                "method": "authenticate",
+                "args": [
+                    "my-database",
+                    "admin",
+                    "password123",
+                    {}
+                ]
+            }
+        }))?;
+        let expected_response = to_value(json!({
+            "jsonrpc": "2.0",
+            "id": 1000,
+            "result": 1
+        }))?;
+
+        let request = super::authenticate(
+            "my-database",
+            "admin",
+            "password123",
+            json!({})
+        )?.to_json_value()?;
+
+        let response = to_value(OdooApiResponse::<Authenticate>::Success(
+            JsonRpcResponseSuccess {
+                jsonrpc: JsonRpcVersion::V2,
+                id: 1000,
+                result: AuthenticateResponse {
+                    uid: 1
+                }
+            }
+        ))?;
+
+        assert_eq!(request, expected_request);
+        assert_eq!(response, expected_response);
+
+        Ok(())
+    }
+
+    #[test]
+    fn version() -> Result<()> {
+        let expected_request = to_value(json!({
+            "version": "2.0",
+            "id": 1000,
+            "method": "call",
+            "params": {
+                "service": "common",
+                "method": "version",
+                "args": []
+            }
+        }))?;
+        let expected_response = to_value(json!({
+            "jsonrpc": "2.0",
+            "id": 1000,
+            "result": {
+                "server_version": "14.0+e",
+                "server_version_info": [
+                    14,
+                    0,
+                    0,
+                    "final",
+                    0,
+                    "e"
+                ],
+                "server_serie": "14.0",
+                "protocol_version": 1
+            }
+        }))?;
+
+        let request = super::version()?.to_json_value()?;
+
+        let response = to_value(OdooApiResponse::<Version>::Success(
+            JsonRpcResponseSuccess {
+                jsonrpc: JsonRpcVersion::V2,
+                id: 1000,
+                result: VersionResponse {
+                    server_version: "14.0+e".into(),
+                    server_version_info: ServerVersionInfo {
+                        major: 14,
+                        minor: 0,
+                        micro: 0,
+                        release_level: "final".into(),
+                        serial: 0,
+                        enterprise: Some("e".into()),
+                    },
+                    server_serie: "14.0".into(),
+                    protocol_version: 1
+                }
+            }
+        ))?;
+
+        assert_eq!(request, expected_request);
+        assert_eq!(response, expected_response);
+
+        Ok(())
+    }
+
+    #[test]
+    fn about_basic() -> Result<()> {
+        let expected_request = to_value(json!({
+            "version": "2.0",
+            "id": 1000,
+            "method": "call",
+            "params": {
+                "service": "common",
+                "method": "about",
+                "args": [false]
+            }
+        }))?;
+        let expected_response = to_value(json!({
+            "jsonrpc": "2.0",
+            "id": 1000,
+            "result": "See http://openerp.com"
+        }))?;
+
+        let request = super::about(false)?.to_json_value()?;
+
+        let response = to_value(OdooApiResponse::<About>::Success(
+            JsonRpcResponseSuccess {
+                jsonrpc: JsonRpcVersion::V2,
+                id: 1000,
+                result: AboutResponse::Basic(
+                    AboutResponseBasic { info: "See http://openerp.com".into() }
+                )
+            }
+        ))?;
+
+        assert_eq!(request, expected_request);
+        assert_eq!(response, expected_response);
+
+        Ok(())
+    }
+
+    #[test]
+    fn about_extended() -> Result<()> {
+        let expected_request = to_value(json!({
+            "version": "2.0",
+            "id": 1000,
+            "method": "call",
+            "params": {
+                "service": "common",
+                "method": "about",
+                "args": [true]
+            }
+        }))?;
+        let expected_response = to_value(json!({
+            "jsonrpc": "2.0",
+            "id": 1000,
+            "result": [
+                "See http://openerp.com",
+                "14.0+e"
+            ]
+        }))?;
+
+        let request = super::about(true)?.to_json_value()?;
+
+        let response = to_value(OdooApiResponse::<About>::Success(
+            JsonRpcResponseSuccess {
+                jsonrpc: JsonRpcVersion::V2,
+                id: 1000,
+                result: AboutResponse::Extended(
+                    AboutResponseExtended {
+                        info: "See http://openerp.com".into(),
+                        server_version: "14.0+e".into()
+                    }
+                )
+            }
+        ))?;
+
+        assert_eq!(request, expected_request);
+        assert_eq!(response, expected_response);
+
+        Ok(())
+    }
 }

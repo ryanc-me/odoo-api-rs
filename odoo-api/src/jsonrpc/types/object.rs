@@ -139,3 +139,145 @@ pub struct ExecuteKwResponse {
     pub data: Value
 }
 
+#[cfg(test)]
+mod test {
+    use serde_json::{Map, Value, json, to_value};
+    use super::*;
+    use crate::jsonrpc::{Result, OdooApiResponse, JsonRpcVersion, JsonRpcResponseSuccess};
+
+    #[test]
+    fn execute() -> Result<()> {
+        let expected_request = to_value(json!({
+            "version": "2.0",
+            "id": 1000,
+            "method": "call",
+            "params": {
+                "service": "object",
+                "method": "execute",
+                "args": [
+                    "my-database",
+                    1,
+                    "password123",
+                    "res.users",
+                    "search",
+                    [
+                        ["login", "ilike", "%"],
+                        "|",
+                        ["active", "=", true],
+                        ["active", "=", false]
+                    ]
+                ]
+            }
+        }))?;
+        let expected_response = to_value(json!({
+            "jsonrpc": "2.0",
+            "id": 1000,
+            "result": [
+                1,
+                2,
+                3
+            ]
+        }))?;
+
+        let request = super::execute(
+            "my-database",
+            1,
+            "password123",
+            "res.users",
+            "search",
+            json!([
+                ["login", "ilike", "%"],
+                "|",
+                ["active", "=", true],
+                ["active", "=", false]
+            ])
+        )?.to_json_value()?;
+
+        let response = to_value(OdooApiResponse::<Execute>::Success(
+            JsonRpcResponseSuccess {
+                jsonrpc: JsonRpcVersion::V2,
+                id: 1000,
+                result: ExecuteResponse {
+                    data: json!([1, 2, 3])
+                }
+            }
+        ))?;
+
+        assert_eq!(request, expected_request);
+        assert_eq!(response, expected_response);
+
+        Ok(())
+    }
+
+    #[test]
+    fn execute_kw() -> Result<()> {
+        let expected_request = to_value(json!({
+            "version": "2.0",
+            "id": 1000,
+            "method": "call",
+            "params": {
+                "service": "object",
+                "method": "execute_kw",
+                "args": [
+                    "my-database",
+                    1,
+                    "password123",
+                    "res.users",
+                    "search",
+                    [
+                        [
+                            ["login", "ilike", "%"],
+                            "|",
+                            ["active", "=", true],
+                            ["active", "=", false]
+                        ]
+                    ],
+                    {
+                        "limit": 1
+                    }
+                ]
+            }
+        }))?;
+        let expected_response = to_value(json!({
+            "jsonrpc": "2.0",
+            "id": 1000,
+            "result": [
+                1
+            ]
+        }))?;
+
+        let request = super::execute_kw(
+            "my-database",
+            1,
+            "password123",
+            "res.users",
+            "search",
+            json!([
+                [
+                    ["login", "ilike", "%"],
+                    "|",
+                    ["active", "=", true],
+                    ["active", "=", false]
+                ]
+            ]),
+            json!({
+                "limit": 1
+            })
+        )?.to_json_value()?;
+
+        let response = to_value(OdooApiResponse::<ExecuteKw>::Success(
+            JsonRpcResponseSuccess {
+                jsonrpc: JsonRpcVersion::V2,
+                id: 1000,
+                result: ExecuteKwResponse {
+                    data: json!([1])
+                }
+            }
+        ))?;
+
+        assert_eq!(request, expected_request);
+        assert_eq!(response, expected_response);
+
+        Ok(())
+    }
+}
