@@ -179,13 +179,20 @@ fn generate_call(ident_struct: &Ident, ident_fn: &Ident, fields_args: &Vec<Token
     Ok(quote! {
         #[doc=#doc]
         pub fn #ident_fn(#(#fields_args),*) -> super::Result<super::OdooApiRequest<#ident_struct>> {
-            use ::rand::{Rng, thread_rng};
-            let mut rng = thread_rng();
-            
+            #[cfg(not(test))]
+            let id = {
+                use ::rand::{Rng, thread_rng};
+                let mut rng = thread_rng();
+                rng.gen_range(1..10000)
+            };
+
+            #[cfg(test)]
+            let id = 1000;
+
             Ok(super::OdooApiRequest {
                 version: super::JsonRpcVersion::V2,
                 method: super::JsonRpcMethod::Call,
-                id: rng.gen_range(1..10000),
+                id: id,
                 params: super::JsonRpcRequestParams {
                     args: #ident_struct {
                         #(
