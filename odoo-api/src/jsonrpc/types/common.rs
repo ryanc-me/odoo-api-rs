@@ -7,7 +7,7 @@ use odoo_api_macros::odoo_api_request;
 use super::{OdooID};
 
 
-/// Represents a **`common/login`** API call.
+/// Check the user credentials and return the user ID
 ///
 /// **Service**: `common`  
 /// **Method**: `login`  
@@ -17,10 +17,10 @@ use super::{OdooID};
 /// This method performs a "login" to the Odoo server, and returns the corresponding
 /// user ID (`uid`).
 ///
-/// Note that the Odoo API is stateless, so this function doesn't return a long-lived
-/// token - it only returns the `uid`. Typically this method is used to determine
-/// if the user exists in the Odoo database, and to find their corresponding `uid`.
-/// Once fetched, the `uid` can be saved for future calls.
+/// Note that the Odoo JSON-RPC API is stateless; there are no sessions or tokens,
+/// each requests passes the password (or API key). Therefore, calling this method
+/// "login" is a misnomer - it doesn't actually "login", just checks the credentials
+/// and returns the ID.
 ///
 /// Example:
 /// ```rust
@@ -48,14 +48,14 @@ pub struct Login {
     pub password: String,
 }
 
-/// Represents the response to an Odoo [`Login`] call.
+/// Represents the response to an Odoo [`Login`] call
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
 #[serde(transparent)]
 pub struct LoginResponse {
     pub uid: OdooID
 }
 
-/// Represents a **`common/authenticate`** API call.
+/// Check the user credentials and return the user ID (web)
 ///
 /// **Service**: `common`  
 /// **Method**: `authenticate`  
@@ -102,7 +102,7 @@ pub struct Authenticate {
     pub user_agent_env: Map<String, Value>
 }
 
-/// Represents the response to an Odoo [`Authenticate`] call.
+/// Represents the response to an Odoo [`Authenticate`] call
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
 #[serde(transparent)]
 pub struct AuthenticateResponse {
@@ -110,7 +110,7 @@ pub struct AuthenticateResponse {
 }
 
 
-/// Represents a **`common/version`** API call.
+/// Fetch detailed information about the Odoo version
 ///
 /// **Service**: `common`  
 /// **Method**: `version`  
@@ -141,7 +141,7 @@ pub struct AuthenticateResponse {
 #[odoo_api_request("common", "version")]
 pub struct Version {}
 
-/// Represents the response to an Odoo [`Version`] call.
+/// Represents the response to an Odoo [`Version`] call
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub struct VersionResponse {
     /// The "pretty" version, normally something like `16.0+e` or `15.0`
@@ -183,7 +183,7 @@ pub struct ServerVersionInfo {
 }
 
 
-/// Represents a **`common/about`** API call.
+/// Fetch basic information about the Odoo version
 ///
 /// **Service**: `common`  
 /// **Method**: `about`  
@@ -212,7 +212,7 @@ pub struct About {
 }
 
 //TODO: flat deserializ so we can have either `result: "http://..."` or `result: ["http://..", "14.0+e"]`
-/// Represents the response to an Odoo [`About`] call.
+/// Represents the response to an Odoo [`About`] call
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
 #[serde(untagged)]
 pub enum AboutResponse {
@@ -223,6 +223,7 @@ pub enum AboutResponse {
     Extended(AboutResponseExtended)
 }
 
+/// Represents the response to an Odoo [`About`] call
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
 #[serde(transparent)]
 pub struct AboutResponseBasic {
@@ -232,6 +233,7 @@ pub struct AboutResponseBasic {
     pub info: String
 }
 
+/// Represents the response to an Odoo [`About`] call
 #[derive(Debug, Serialize_tuple, Deserialize, PartialEq)]
 pub struct AboutResponseExtended {
     /// The "info" string

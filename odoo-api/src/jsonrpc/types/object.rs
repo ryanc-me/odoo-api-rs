@@ -5,7 +5,7 @@ use serde_json::{Value, Map};
 use odoo_api_macros::odoo_api_request;
 
 
-/// Represents an **`object/execute`** API call.
+/// Call a business-logic method on an Odoo model (positional args)
 ///
 /// **Service**: `object`  
 /// **Method**: `execute`  
@@ -60,7 +60,7 @@ pub struct Execute {
     args: Vec<Value>,
 }
 
-/// Represents the response to an Odoo [`Execute`] call.
+/// Represents the response to an Odoo [`Execute`] 
 ///
 /// This struct is intentionally very generic, as the `execute` call can return
 /// any arbitrary JSON data.
@@ -72,7 +72,7 @@ pub struct ExecuteResponse {
 
 
 
-/// Represents an **`object/execute_kw`** API call.
+/// Call a business-logic method on an Odoo model (positional & keyword args)
 ///
 /// **Service**: `object`  
 /// **Method**: `execute_kw`  
@@ -129,7 +129,7 @@ pub struct ExecuteKw {
     kwargs: Map<String, Value>,
 }
 
-/// Represents the response to an Odoo [`Execute`] call.
+/// Represents the response to an Odoo [`Execute`] call
 ///
 /// This struct is intentionally very generic, as the `execute` call can return
 /// any arbitrary JSON data.
