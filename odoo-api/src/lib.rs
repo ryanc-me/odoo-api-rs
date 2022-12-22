@@ -1,31 +1,37 @@
 //! Type-safe and full-coverage implementation of the Odoo API. Supports async, blocking, and bring-your-own-requests
 //!
 //! # Features
-//! - **Full Coverage** — All JSON-RPC endpoints are covered, including the
+//! - **Full Coverage** - All JSON-RPC endpoints are covered, including the
 //!   various database-management methods (`create_database`, `dump`, `list`, etc).
+//!   Support for some common ORM methods is also included (`read`, `search_read`, `create`, etc).
 //!
-//! - **Flexible** — Use the built-in async/blocking HTTP request support
+//! - **Flexible** - Use the built-in async/blocking HTTP request support
 //!   (via `reqwest`), or simply use this crate for its types and use your own
-//!   requests library.
+//!   requests library. The API request and response types all implement `Serialize`,
+//!   functions to convert into `serde_json::Value`, and functions to dump the
+//!   request out as a plain JSON `String`, so almost any requests library will work.
 //!
-//! - **Type-Safe** — `odoo-api` implements types for as much of the Odoo API spec
-//!   as possible - this isn't just a `json!()` wrapper!
+//! - **Type-Safe** - The `odoo-api` crate implements types for as much of the
+//!   Odoo API as possible, right up to the positional & keyword arguments for
+//!   some ORM methods.
 //!
 //! <br>
 //!
 //! # Get Started
-//! First, decide whether you want to use the built-in async/blocking support
-//! via [`reqwest`], or if you'll bring your own requests library.
+//! First, decide how you want to use this library:
+//! - Using the built-in [async](#async-with-reqwest) support via `reqwest`
+//! - Using the built-in [blocking](#blocking-with-reqwest) support via `reqwest`
+//! - Use this library for its types only, and [bring your own requests library](#bring-your-own-requests)
 //!
 //! ## Async with `reqwest`
+//!
+//! [**Documentation**](https://docs.rs/odoo-api/latest/odoo_api/jsonrpc/asynch/index.html)
+//!
 //! ```toml
 //! ## Cargo.toml
 //! [dependencies]
 //! odoo_api = { version = "0.1", features = ["async"] }
 //! ```
-//!
-//! Async API methods are available in the [`odoo_api::asynch`](crate::asynch) module.
-//! Note that the function arguments between async and blocking are identical.
 //!
 //! ```no_run
 //! # use tokio;
@@ -40,8 +46,8 @@
 //!     "https://demo.odoo.com/jsonrpc",
 //!     "my-database",
 //!     1, "password1",
-//!     "res.users",  "search_read",
-//!     json!([]), // search_read doesn't take positional args
+//!     "res.users", "search_read",
+//!     json!([]),
 //!     json!({
 //!         "domain": [[true, "=", true]],
 //!         "fields": ["login"]
@@ -52,14 +58,14 @@
 //! ```
 //!
 //! ## Blocking with `reqwest`
+//!
+//! [**Documentation**](https://docs.rs/odoo-api/latest/odoo_api/jsonrpc/blocking/index.html)
+//!
 //! ```toml
 //! ## Cargo.toml
 //! [dependencies]
 //! odoo_api = { version = "0.1", features = ["blocking"] }
 //! ```
-//!
-//! Async API methods are available in the [`odoo_api::blocking`](crate::blocking) module.
-//! Note that the function arguments between async and blocking are identical.
 //!
 //! ```no_run
 //! # fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -73,7 +79,7 @@
 //!     "my-database",
 //!     1, "password1",
 //!     "res.users", "search_read",
-//!     json!([]), // search_read doesn't take positional args
+//!     json!([]),
 //!     json!({
 //!         "domain": [[true, "=", true]],
 //!         "fields": ["login"]
@@ -85,17 +91,17 @@
 //! ```
 //!
 //! ## Bring your Own Requests
+//!
+//! See the link below for more info on building the request types, converting
+//! to JSON `String` or `serde_json::Value`, and parsing the response.
+//!
+//! [**Documentation**](https://docs.rs/odoo-api/latest/odoo_api/jsonrpc/types/index.html)
+//!
 //! ```toml
 //! ## Cargo.toml
 //! [dependencies]
 //! odoo_api = { version = "0.1", features = [] }
 //! ```
-//! Construct an object representing the request data, and use your own requests
-//! library to perform the actual HTTP requests.
-//!
-//! The request object is flexible and can be converted into a JSON `String`,
-//! a [`serde_json::Value`], and also implements [`serde::Serialize`] for
-//! libraries that accept that.
 //!
 //! ```
 //! # fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -107,8 +113,8 @@
 //! let req = object::execute_kw(
 //!     "my-database",
 //!     1, "password1",
-//!     "res.users",  "search_read",
-//!     json!([]), // search_read doesn't take positional args
+//!     "res.users", "search_read",
+//!     json!([]),
 //!     json!({
 //!         "domain": [[true, "=", true]],
 //!         "fields": ["login"]
