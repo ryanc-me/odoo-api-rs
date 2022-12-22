@@ -3,18 +3,14 @@
 use odoo_api_macros::odoo_api_request;
 use serde::{Deserialize, Serialize};
 
-/// Create and initialize a new database
-///
-/// **Service**: `db`  
-/// **Method**: `create_database`  
-/// **Request**: [`CreateDatabase`]  
-/// **Returns**: [`CreateDatabaseResponse`]  
-///
 /// Docs TBC
 ///
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L136-L142)
 #[derive(Debug, Deserialize, PartialEq)]
-#[odoo_api_request("db", "create_database")]
+#[odoo_api_request(
+    "db", "create_database",
+    "Create and initialize a new database"
+)]
 pub struct CreateDatabase {
     pub passwd: String,
     pub db_name: String,
@@ -31,18 +27,14 @@ pub struct CreateDatabaseResponse {
     pub ok: bool,
 }
 
-/// Duplicate a database
-///
-/// **Service**: `db`  
-/// **Method**: `duplicate_database`  
-/// **Request**: [`DuplicateDatabase`]  
-/// **Returns**: [`DuplicateDatabaseResponse`]  
-///
 /// Docs TBC
 ///
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L144-L184)
 #[derive(Debug, Deserialize, PartialEq)]
-#[odoo_api_request("db", "duplicate_database")]
+#[odoo_api_request(
+    "db", "duplicate_database",
+    "Duplicate a database"
+)]
 pub struct DuplicateDatabase {
     pub passwd: String,
     pub db_original_name: String,
@@ -54,18 +46,14 @@ pub struct DuplicateDatabaseResponse {
     pub ok: bool,
 }
 
-/// Drop (delete) a database
-///
-/// **Service**: `db`  
-/// **Method**: `drop`  
-/// **Request**: [`Drop`]  
-/// **Returns**: [`DropResponse`]  
-///
 /// Docs TBC
 ///
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L212-L217)
 #[derive(Debug, Deserialize, PartialEq)]
-#[odoo_api_request("db", "drop")]
+#[odoo_api_request(
+    "db", "drop",
+    "Drop (delete) a database"
+)]
 pub struct Drop {
     pub passwd: String,
     pub db_name: String,
@@ -76,21 +64,17 @@ pub struct DropResponse {
     pub ok: bool,
 }
 
-/// Dump (backup) a database, optionally including the filestore folder
-///
-/// **Service**: `db`  
-/// **Method**: `dump`  
-/// **Request**: [`Dump`]  
-/// **Returns**: [`DumpResponse`]  
-///
 /// Note that the data is returned a base64-encoded buffer.
 ///
 /// Docs TBC
 ///
-/// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L212-L217)
+/// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L212-L217)  
 /// See also: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L219-L269)
 #[derive(Debug, Deserialize, PartialEq)]
-#[odoo_api_request("db", "dump")]
+#[odoo_api_request(
+    "db", "dump",
+    "Dump (backup) a database, optionally including the filestore folder"
+)]
 pub struct Dump {
     pub passwd: String,
     pub db_name: String,
@@ -131,19 +115,15 @@ pub struct DumpResponse {
     pub b64_bytes: String,
 }
 
-/// Upload and restore an Odoo dump to a new database
-///
-/// **Service**: `db`  
-/// **Method**: `restore`  
-/// **Request**: [`Restore`]  
-/// **Returns**: [`RestoreResponse`]  
-///
 /// Docs TBC
 ///
-/// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L271-L284)
+/// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L271-L284)  
 /// See also: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L286-L335)
 #[derive(Debug, Deserialize, PartialEq)]
-#[odoo_api_request("db", "restore")]
+#[odoo_api_request(
+    "db", "restore",
+    "Upload and restore an Odoo dump to a new database"
+)]
 pub struct Restore {
     pub passwd: String,
     pub b64_data: String,
@@ -155,18 +135,14 @@ pub struct RestoreResponse {
     pub ok: bool,
 }
 
-/// Rename a database
-///
-/// **Service**: `db`  
-/// **Method**: `rename`  
-/// **Request**: [`Rename`]  
-/// **Returns**: [`RenameResponse`]  
-///
 /// Docs TBC
 ///
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L337-L358)
 #[derive(Debug, Deserialize, PartialEq)]
-#[odoo_api_request("db", "rename")]
+#[odoo_api_request(
+    "db", "rename",
+    "Rename a database"
+)]
 pub struct Rename {
     pub passwd: String,
     pub old_name: String,
@@ -178,18 +154,14 @@ pub struct RenameResponse {
     pub ok: bool,
 }
 
-/// Change the Odoo "master password"
-///
-/// **Service**: `db`  
-/// **Method**: `change_admin_password`  
-/// **Request**: [`ChangeAdminPassword`]  
-/// **Returns**: [`ChangeAdminPasswordResponse`]  
-///
 /// Docs TBC
 ///
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L360-L364)
 #[derive(Debug, Deserialize, PartialEq)]
-#[odoo_api_request("db", "change_admin_password")]
+#[odoo_api_request(
+    "db", "change_admin_password",
+    "Change the Odoo \"master password\""
+)]
 pub struct ChangeAdminPassword {
     pub passwd: String,
     pub new_password: String,
@@ -200,13 +172,6 @@ pub struct ChangeAdminPasswordResponse {
     pub ok: bool,
 }
 
-/// Perform a "dtabase migration" (upgrade the `base` module)
-///
-/// **Service**: `db`  
-/// **Method**: `change_admin_password`  
-/// **Request**: [`ChangeAdminPassword`]  
-/// **Returns**: [`ChangeAdminPasswordResponse`]  
-///
 /// Note that this method doesn't actually perform any upgrades - instead, it
 /// force-update the `base` module, which has the effect of triggering an update
 /// on all Odoo modules that depend on `base` (which is all of them).
@@ -219,7 +184,10 @@ pub struct ChangeAdminPasswordResponse {
 ///
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L366-L372)
 #[derive(Debug, Deserialize, PartialEq)]
-#[odoo_api_request("db", "migrate_databases")]
+#[odoo_api_request(
+    "db", "migrate_databases",
+    "Perform a \"database migration\" (upgrade the `base` module)"
+)]
 pub struct MigrateDatabases {
     pub passwd: String,
     pub databases: Vec<String>,
@@ -230,18 +198,14 @@ pub struct MigrateDatabasesResponse {
     pub ok: bool,
 }
 
-/// Check if a database exists
-///
-/// **Service**: `db`  
-/// **Method**: `db_exist`  
-/// **Request**: [`DbExist`]  
-/// **Returns**: [`DbExistResponse`]  
-///
 /// Docs TBC
 ///
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L378-L386)
 #[derive(Debug, Deserialize, PartialEq)]
-#[odoo_api_request("db", "db_exist")]
+#[odoo_api_request(
+    "db", "db_exist",
+    "Check if a database exists"
+)]
 pub struct DbExist {
     pub db_name: Vec<String>,
 }
@@ -249,19 +213,15 @@ pub struct DbExist {
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub struct DbExistResponse(pub bool);
 
-/// List the databases currently available to Odoo
-///
-/// **Service**: `db`  
-/// **Method**: `list`  
-/// **Request**: [`List`]  
-/// **Returns**: [`ListResponse`]  
-///
 /// Docs TBC
 ///
-/// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L439-L442)
+/// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L439-L442)  
 /// See also: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L388-L409)
 #[derive(Debug, Deserialize, PartialEq)]
-#[odoo_api_request("db", "list")]
+#[odoo_api_request(
+    "db", "list",
+    "List the databases currently available to Odoo"
+)]
 pub struct List {
     pub document: bool,
 }
@@ -272,13 +232,6 @@ pub struct ListResponse {
     pub databases: Vec<String>,
 }
 
-/// List the languages available to Odoo (ISO name + code)
-///
-/// **Service**: `db`  
-/// **Method**: `list_lang`  
-/// **Request**: [`ListLang`]  
-/// **Returns**: [`ListLangResponse`]  
-///
 /// Note that this function is used by the database manager, in order to let the
 /// user select which language should be used when creating a new database.
 ///
@@ -286,7 +239,10 @@ pub struct ListResponse {
 ///
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L444-L445)
 #[derive(Debug, Deserialize, PartialEq)]
-#[odoo_api_request("db", "list_lang")]
+#[odoo_api_request(
+    "db", "list_lang",
+    "List the languages available to Odoo (ISO name + code)"
+)]
 pub struct ListLang {}
 
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
@@ -301,13 +257,6 @@ pub struct ListLangResponseItem {
     pub name: String,
 }
 
-/// List the countries available to Odoo (ISO name + code)
-///
-/// **Service**: `db`  
-/// **Method**: `list_countries`  
-/// **Request**: [`ListCountries`]  
-/// **Returns**: [`ListCountriesResponse`]  
-///
 /// Note that this function is used by the database manager, in order to let the
 /// user select which country should be used when creating a new database.
 ///
@@ -315,7 +264,10 @@ pub struct ListLangResponseItem {
 ///
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L447-L454)
 #[derive(Debug, Deserialize, PartialEq)]
-#[odoo_api_request("db", "list_countries")]
+#[odoo_api_request(
+    "db", "list_countries",
+    "List the countries available to Odoo (ISO name + code)"
+)]
 pub struct ListCountries {
     pub passwd: String,
 }
@@ -332,18 +284,14 @@ pub struct ListCountriesResponseItem {
     pub name: String,
 }
 
-/// Return the server version
-///
-/// **Service**: `db`  
-/// **Method**: `server_version`  
-/// **Request**: [`ListCountries`]  
-/// **Returns**: [`ListCountriesResponse`]  
-///
 /// Docs TBC
 ///
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L456-L460)
 #[derive(Debug, Deserialize, PartialEq)]
-#[odoo_api_request("db", "server_version")]
+#[odoo_api_request(
+    "db", "server_version",
+    "Return the server version"
+)]
 pub struct ServerVersion {}
 
 #[derive(Debug, Serialize, Deserialize, PartialEq)]

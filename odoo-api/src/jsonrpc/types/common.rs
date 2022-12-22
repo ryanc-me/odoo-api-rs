@@ -6,13 +6,6 @@ use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
 use serde_tuple::Serialize_tuple;
 
-/// Check the user credentials and return the user ID
-///
-/// **Service**: `common`  
-/// **Method**: `login`  
-/// **Request**: [`Login`]  
-/// **Response**: [`LoginResponse`]  
-///
 /// This method performs a "login" to the Odoo server, and returns the corresponding
 /// user ID (`uid`).
 ///
@@ -32,10 +25,13 @@ use serde_tuple::Serialize_tuple;
 /// );
 /// ```
 ///
-/// See: [odoo/service/common.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/common.py#L19-L20)
+/// See: [odoo/service/common.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/common.py#L19-L20)  
 /// See also: [base/models/res_users.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/addons/base/models/res_users.py#L762-L787)
 #[derive(Debug, Deserialize, PartialEq)]
-#[odoo_api_request("common", "login")]
+#[odoo_api_request(
+    "common", "login",
+    "Check the user credentials and return the user ID"
+)]
 pub struct Login {
     /// The database name
     pub db: String,
@@ -54,13 +50,6 @@ pub struct LoginResponse {
     pub uid: OdooID,
 }
 
-/// Check the user credentials and return the user ID (web)
-///
-/// **Service**: `common`  
-/// **Method**: `authenticate`  
-/// **Request**: [`Authenticate`]  
-/// **Response**: [`AuthenticateResponse`]  
-///
 /// This method performs a "login" to the Odoo server, and returns the corresponding
 /// user ID (`uid`). It is identical to [`login`], except that it accepts an extra
 /// param `user_agent_env`, which is normally sent by the browser.
@@ -82,10 +71,13 @@ pub struct LoginResponse {
 /// );
 /// ```
 ///
-/// See: [odoo/service/common.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/common.py#L22-L29)
+/// See: [odoo/service/common.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/common.py#L22-L29)  
 /// See also: [base/models/res_users.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/addons/base/models/res_users.py#L762-L787)
 #[derive(Debug, Deserialize, PartialEq)]
-#[odoo_api_request("common", "authenticate")]
+#[odoo_api_request(
+    "common", "authenticate",
+    "Check the user credentials and return the user ID (web)"
+)]
 pub struct Authenticate {
     /// The database name
     pub db: String,
@@ -107,13 +99,6 @@ pub struct AuthenticateResponse {
     pub uid: OdooID,
 }
 
-/// Fetch detailed information about the Odoo version
-///
-/// **Service**: `common`  
-/// **Method**: `version`  
-/// **Request**: [`Version`]  
-/// **Response**: [`VersionResponse`]  
-///
 /// This method returns some information about the Odoo version (represented in
 /// the [`ServerVersionInfo`] struct), along with some other metadata.
 ///
@@ -131,11 +116,14 @@ pub struct AuthenticateResponse {
 /// let request = common::version();
 /// ```
 ///
-/// See: [odoo/service/common.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/common.py#L31-L32)
-/// See also: [odoo/service/common.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/common.py#L12-L17)
+/// See: [odoo/service/common.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/common.py#L31-L32)  
+/// See also: [odoo/service/common.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/common.py#L12-L17)  
 /// See also: [odoo/release.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/release.py)
 #[derive(Debug, Deserialize, PartialEq)]
-#[odoo_api_request("common", "version")]
+#[odoo_api_request(
+    "common", "version",
+    "Fetch detailed information about the Odoo version"
+)]
 pub struct Version {}
 
 /// Represents the response to an Odoo [`Version`] call
@@ -156,7 +144,7 @@ pub struct VersionResponse {
 
 /// A struct representing the Odoo server version info
 ///
-/// See: [odoo/services/common.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/common.py#L12-L17)
+/// See: [odoo/services/common.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/common.py#L12-L17)  
 /// See also: [odoo/release.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/release.py)
 #[derive(Debug, Serialize_tuple, Deserialize, PartialEq)]
 pub struct ServerVersionInfo {
@@ -179,13 +167,6 @@ pub struct ServerVersionInfo {
     pub enterprise: Option<String>,
 }
 
-/// Fetch basic information about the Odoo version
-///
-/// **Service**: `common`  
-/// **Method**: `about`  
-/// **Request**: [`About`]  
-/// **Response**: [`AboutResponse`]  
-///
 /// Returns a link to the old OpenERP website, and optionally the "basic" Odoo
 /// version string (e.g. `16.0+e`).
 ///
@@ -202,7 +183,10 @@ pub struct ServerVersionInfo {
 /// See: [odoo/service/common.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/common.py#L34-L45)  
 /// See also: [odoo/release.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/release.py)
 #[derive(Debug, Deserialize, PartialEq)]
-#[odoo_api_request("common", "about")]
+#[odoo_api_request(
+    "common", "about",
+    "Fetch basic information about the Odoo version"
+)]
 pub struct About {
     pub extended: bool,
 }
