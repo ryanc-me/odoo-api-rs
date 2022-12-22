@@ -19,12 +19,12 @@
 //! Async API methods are available in the [`odoo_api::asynch`](crate::asynch) module.
 //! Note that the function arguments between async and blocking are identical.
 //! 
-//! ```
+//! ```no_run
 //! # use tokio;
 //! # #[tokio::main]
 //! # async fn main() -> Result<(), Box<dyn std::error::Error>> {
 //! // pull in API functions from the 'asynch' module
-//! use odoo_api::asynch::{object, common, db};
+//! use odoo_api::asynch::{object};
 //! use serde_json::json;
 //!
 //! // fetch a list of all usernames
@@ -38,7 +38,7 @@
 //!         "domain": [[true, "=", true]],
 //!         "fields": ["login"]
 //!     }),
-//! ).await?.0;
+//! ).await?.data;
 //! # Ok(())
 //! # }
 //! ```
@@ -53,10 +53,10 @@
 //! Async API methods are available in the [`odoo_api::blocking`](crate::blocking) module.
 //! Note that the function arguments between async and blocking are identical.
 //! 
-//! ```
+//! ```no_run
 //! # fn main() -> Result<(), Box<dyn std::error::Error>> {
 //! // pull in API functions from the 'blocking' module
-//! use odoo_api::blocking::{common, db, object};
+//! use odoo_api::blocking::{object};
 //! use serde_json::json;
 //!
 //! // fetch a list of all usernames
@@ -70,8 +70,8 @@
 //!         "domain": [[true, "=", true]],
 //!         "fields": ["login"]
 //!     }),
-//! )?.0;
-//! println!("Users: {:?}", resp.0)
+//! )?.data;
+//! println!("Users: {:?}", users);
 //! # Ok(())
 //! # }
 //! ```
@@ -82,7 +82,6 @@
 //! [dependencies]
 //! odoo_api = { version = "0.1", features = [] }
 //! ```
-//! 
 //! Construct an object representing the request data, and use your own requests
 //! library to perform the actual HTTP requests.
 //! 
@@ -91,8 +90,9 @@
 //! libraries that accept that.
 //! 
 //! ```
+//! # fn main() -> Result<(), Box<dyn std::error::Error>> {
 //! // pull in API functions from the 'types' module
-//! use odoo_api::blocking::{common, db, object};
+//! use odoo_api::types::{object};
 //! use serde_json::json;
 //!
 //! // build the request object
@@ -116,7 +116,7 @@
 //! 
 //! // fetch the response, e.g.:
 //! // let resp_data = request.post(url).json_body(&req_data).send()?.to_json()?;
-//! # let resp_data: request::Response = json!({
+//! # let resp_data = json!({
 //! #     "jsonrpc": "2.0",
 //! #     "id": 1000,
 //! #     "result": [
@@ -127,10 +127,11 @@
 //! # });
 //! 
 //! // finally, parse the response JSON using the Response objects' try_from impl
-//! let resp: req::Response = resp_data.try_into()?;
-//! let resp: odoo_api::types::ExecuteKwResponse = resp_data.try_into()?;
+//! let resp: object::ExecuteKwResponse = resp_data.try_into()?;
 //! 
 //! println!("Users: {:#?}", resp.data);
+//! # Ok(())
+//! # }
 //! ```
 //! 
 //! # Optional Features

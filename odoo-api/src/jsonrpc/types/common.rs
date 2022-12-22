@@ -73,14 +73,13 @@ pub struct LoginResponse {
 /// use serde_json::{json, Map, Value};
 /// use odoo_api::types::common;
 ///
-/// let mut env = Map::<String, Value>::new();
-/// env.insert("base_location".into(), json!("www.example.com"));
-///
 /// let request = common::authenticate(
 ///     "my-database",
 ///     "user@example.com",
 ///     "password1",
-///     env
+///     json!({
+///         "base_location": "demo.odoo.com"
+///     })
 /// );
 /// ```
 ///
