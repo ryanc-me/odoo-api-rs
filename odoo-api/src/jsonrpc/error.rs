@@ -27,17 +27,24 @@ pub enum Error {
     #[error("Odoo Server Error")]
     OdooServerError(JsonRpcError),
 
+    /// An Odoo "not found" error
+    /// 
+    /// This might be thrown if the wrong service/method were specified (which
+    /// should not be possible with this library)
     #[error("404: Not Found")]
     OdooNotFoundError(JsonRpcError),
 
+    /// An Odoo session-expired error
+    /// 
+    /// This librarry doesn't use sessions, so this error should not be possible
     #[error("Odoo Session Expired")]
     OdooSessionExpiredError(JsonRpcError),
 
+    /// A generic API error
+    /// 
+    /// Typically all JSON-RPC errors will fall into one of the error types above.
+    /// However, if the server is misconfigured, or there is a major issue in the
+    /// request routing logic, the generic `OdooError` response might be returned.
     #[error("Odoo API Error")]
     OdooError(JsonRpcError),
-}
-
-#[derive(Debug)]
-pub struct OdooApiError {
-
 }
