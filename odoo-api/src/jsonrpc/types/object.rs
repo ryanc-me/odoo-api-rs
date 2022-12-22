@@ -32,7 +32,8 @@ use serde_json::{Map, Value};
 /// See: [odoo/service/model.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/model.py#L62-L68)
 #[derive(Debug, Deserialize, PartialEq)]
 #[odoo_api_request(
-    "object", "execute",
+    "object",
+    "execute",
     "Call a business-logic method on an Odoo model (positional args)"
 )]
 pub struct Execute {
@@ -92,7 +93,8 @@ pub struct ExecuteResponse {
 /// Reference: [odoo/service/model.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/model.py#L58-L59)
 #[derive(Debug, Deserialize, PartialEq)]
 #[odoo_api_request(
-    "object", "execute_kw",
+    "object",
+    "execute_kw",
     "Call a business-logic method on an Odoo model (positional & keyword args)"
 )]
 pub struct ExecuteKw {

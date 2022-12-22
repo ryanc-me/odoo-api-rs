@@ -7,10 +7,7 @@ use serde::{Deserialize, Serialize};
 ///
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L136-L142)
 #[derive(Debug, Deserialize, PartialEq)]
-#[odoo_api_request(
-    "db", "create_database",
-    "Create and initialize a new database"
-)]
+#[odoo_api_request("db", "create_database", "Create and initialize a new database")]
 pub struct CreateDatabase {
     pub passwd: String,
     pub db_name: String,
@@ -31,10 +28,7 @@ pub struct CreateDatabaseResponse {
 ///
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L144-L184)
 #[derive(Debug, Deserialize, PartialEq)]
-#[odoo_api_request(
-    "db", "duplicate_database",
-    "Duplicate a database"
-)]
+#[odoo_api_request("db", "duplicate_database", "Duplicate a database")]
 pub struct DuplicateDatabase {
     pub passwd: String,
     pub db_original_name: String,
@@ -50,10 +44,7 @@ pub struct DuplicateDatabaseResponse {
 ///
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L212-L217)
 #[derive(Debug, Deserialize, PartialEq)]
-#[odoo_api_request(
-    "db", "drop",
-    "Drop (delete) a database"
-)]
+#[odoo_api_request("db", "drop", "Drop (delete) a database")]
 pub struct Drop {
     pub passwd: String,
     pub db_name: String,
@@ -72,7 +63,8 @@ pub struct DropResponse {
 /// See also: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L219-L269)
 #[derive(Debug, Deserialize, PartialEq)]
 #[odoo_api_request(
-    "db", "dump",
+    "db",
+    "dump",
     "Dump (backup) a database, optionally including the filestore folder"
 )]
 pub struct Dump {
@@ -120,10 +112,7 @@ pub struct DumpResponse {
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L271-L284)  
 /// See also: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L286-L335)
 #[derive(Debug, Deserialize, PartialEq)]
-#[odoo_api_request(
-    "db", "restore",
-    "Upload and restore an Odoo dump to a new database"
-)]
+#[odoo_api_request("db", "restore", "Upload and restore an Odoo dump to a new database")]
 pub struct Restore {
     pub passwd: String,
     pub b64_data: String,
@@ -139,10 +128,7 @@ pub struct RestoreResponse {
 ///
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L337-L358)
 #[derive(Debug, Deserialize, PartialEq)]
-#[odoo_api_request(
-    "db", "rename",
-    "Rename a database"
-)]
+#[odoo_api_request("db", "rename", "Rename a database")]
 pub struct Rename {
     pub passwd: String,
     pub old_name: String,
@@ -158,10 +144,7 @@ pub struct RenameResponse {
 ///
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L360-L364)
 #[derive(Debug, Deserialize, PartialEq)]
-#[odoo_api_request(
-    "db", "change_admin_password",
-    "Change the Odoo \"master password\""
-)]
+#[odoo_api_request("db", "change_admin_password", "Change the Odoo \"master password\"")]
 pub struct ChangeAdminPassword {
     pub passwd: String,
     pub new_password: String,
@@ -185,7 +168,8 @@ pub struct ChangeAdminPasswordResponse {
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L366-L372)
 #[derive(Debug, Deserialize, PartialEq)]
 #[odoo_api_request(
-    "db", "migrate_databases",
+    "db",
+    "migrate_databases",
     "Perform a \"database migration\" (upgrade the `base` module)"
 )]
 pub struct MigrateDatabases {
@@ -202,10 +186,7 @@ pub struct MigrateDatabasesResponse {
 ///
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L378-L386)
 #[derive(Debug, Deserialize, PartialEq)]
-#[odoo_api_request(
-    "db", "db_exist",
-    "Check if a database exists"
-)]
+#[odoo_api_request("db", "db_exist", "Check if a database exists")]
 pub struct DbExist {
     pub db_name: Vec<String>,
 }
@@ -218,10 +199,7 @@ pub struct DbExistResponse(pub bool);
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L439-L442)  
 /// See also: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L388-L409)
 #[derive(Debug, Deserialize, PartialEq)]
-#[odoo_api_request(
-    "db", "list",
-    "List the databases currently available to Odoo"
-)]
+#[odoo_api_request("db", "list", "List the databases currently available to Odoo")]
 pub struct List {
     pub document: bool,
 }
@@ -240,7 +218,8 @@ pub struct ListResponse {
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L444-L445)
 #[derive(Debug, Deserialize, PartialEq)]
 #[odoo_api_request(
-    "db", "list_lang",
+    "db",
+    "list_lang",
     "List the languages available to Odoo (ISO name + code)"
 )]
 pub struct ListLang {}
@@ -265,7 +244,8 @@ pub struct ListLangResponseItem {
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L447-L454)
 #[derive(Debug, Deserialize, PartialEq)]
 #[odoo_api_request(
-    "db", "list_countries",
+    "db",
+    "list_countries",
     "List the countries available to Odoo (ISO name + code)"
 )]
 pub struct ListCountries {
@@ -288,10 +268,7 @@ pub struct ListCountriesResponseItem {
 ///
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L456-L460)
 #[derive(Debug, Deserialize, PartialEq)]
-#[odoo_api_request(
-    "db", "server_version",
-    "Return the server version"
-)]
+#[odoo_api_request("db", "server_version", "Return the server version")]
 pub struct ServerVersion {}
 
 #[derive(Debug, Serialize, Deserialize, PartialEq)]

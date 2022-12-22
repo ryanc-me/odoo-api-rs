@@ -28,10 +28,7 @@ use serde_tuple::Serialize_tuple;
 /// See: [odoo/service/common.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/common.py#L19-L20)  
 /// See also: [base/models/res_users.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/addons/base/models/res_users.py#L762-L787)
 #[derive(Debug, Deserialize, PartialEq)]
-#[odoo_api_request(
-    "common", "login",
-    "Check the user credentials and return the user ID"
-)]
+#[odoo_api_request("common", "login", "Check the user credentials and return the user ID")]
 pub struct Login {
     /// The database name
     pub db: String,
@@ -75,7 +72,8 @@ pub struct LoginResponse {
 /// See also: [base/models/res_users.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/addons/base/models/res_users.py#L762-L787)
 #[derive(Debug, Deserialize, PartialEq)]
 #[odoo_api_request(
-    "common", "authenticate",
+    "common",
+    "authenticate",
     "Check the user credentials and return the user ID (web)"
 )]
 pub struct Authenticate {
@@ -121,7 +119,8 @@ pub struct AuthenticateResponse {
 /// See also: [odoo/release.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/release.py)
 #[derive(Debug, Deserialize, PartialEq)]
 #[odoo_api_request(
-    "common", "version",
+    "common",
+    "version",
     "Fetch detailed information about the Odoo version"
 )]
 pub struct Version {}
@@ -183,10 +182,7 @@ pub struct ServerVersionInfo {
 /// See: [odoo/service/common.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/common.py#L34-L45)  
 /// See also: [odoo/release.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/release.py)
 #[derive(Debug, Deserialize, PartialEq)]
-#[odoo_api_request(
-    "common", "about",
-    "Fetch basic information about the Odoo version"
-)]
+#[odoo_api_request("common", "about", "Fetch basic information about the Odoo version")]
 pub struct About {
     pub extended: bool,
 }

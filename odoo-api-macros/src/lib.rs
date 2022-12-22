@@ -44,7 +44,7 @@ struct OdooApiRequestArgs {
     method: String,
 
     /// Description of the API method
-    description: String
+    description: String,
 }
 
 impl Parse for OdooApiRequestArgs {
@@ -136,7 +136,8 @@ fn odoo_api_request_impl(
         .collect::<Vec<String>>()
         .join("\n");
 
-    let doc_base = format!("\
+    let doc_base = format!(
+        "\
         {}\n\n\
         **Service**: `{}`  \n\
         **Method**: `{}`  \n\
@@ -145,13 +146,12 @@ fn odoo_api_request_impl(
         &args.description,
         &args.service,
         &args.method,
-        &name_struct,&name_struct,
-        &name_response,&name_response
+        &name_struct,
+        &name_struct,
+        &name_response,
+        &name_response
     );
-    let doc = format!("{}{}",
-        &doc_base,
-        &doc
-    );
+    let doc = format!("{}{}", &doc_base, &doc);
 
     // parse the field names & types
     let mut has_db = false;
@@ -271,14 +271,13 @@ fn generate_call_async(
 ) -> Result<TokenStream> {
     let name_fn_async = format!("{}_async", &ident_fn.to_string());
     let ident_fn_async = Ident::new(&name_fn_async, Span::call_site());
-    let doc = format!("\
+    let doc = format!(
+        "\
         {}\
         See the [`types::{}::{}`](crate::jsonrpc::types::{}::{}) function for \
         more information on this API method call, or the [`async`](crate::jsonrpc::asynch) \
         module for more information on making async requests.",
-        doc_base,
-        &args.service, &args.method,
-        &args.service, &args.method,
+        doc_base, &args.service, &args.method, &args.service, &args.method,
     );
 
     Ok(quote!(
@@ -334,14 +333,13 @@ fn generate_call_blocking(
 ) -> Result<TokenStream> {
     let name_fn_blocking = format!("{}_blocking", &ident_fn.to_string());
     let ident_fn_blocking = Ident::new(&name_fn_blocking, Span::call_site());
-    let doc = format!("\
+    let doc = format!(
+        "\
         {}\
         See the [`types::{}::{}`](crate::jsonrpc::types::{}::{}) function for \
         more information on this API method call, or the [`blocking`](crate::jsonrpc::blocking) \
         module for more information on making blocking requests.",
-        doc_base,
-        &args.service, &args.method,
-        &args.service, &args.method,
+        doc_base, &args.service, &args.method, &args.service, &args.method,
     );
 
     Ok(quote!(
