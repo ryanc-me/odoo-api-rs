@@ -1,6 +1,6 @@
 [package]
 name = "odoo-api"
-version = "0.1.2"
+version = "0.1.3"
 authors = ["Ryan Cole <hello@ryanc.me>"]
 description = "Type-safe and full-coverage implementation of the Odoo API. Supports async, blocking, and bring-your-own-requests"
 repository = "https://github.com/ryanc-me/odoo-api-rs"
