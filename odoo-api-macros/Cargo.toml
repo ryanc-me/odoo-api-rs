@@ -6,8 +6,10 @@ description = "Macros for the `odoo-api` crate"
 repository = "https://github.com/ryanc-me/odoo-api-rs"
 homepage = "https://github.com/ryanc-me/odoo-api-rs"
 documentation = "https://docs.rs/odoo-api-macros"
-include = ["build.rs", "src/**/*.rs", "crates-io.md", "README.md", "LICENSE-APACHE", "LICENSE-MIT"]
+include = ["src/**/*.rs", "README.md", "LICENSE-APACHE", "LICENSE-MIT"]
+categories = []
 keywords = []
+license = "MIT OR Apache-2.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
