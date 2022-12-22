@@ -278,9 +278,9 @@ pub trait OdooApiMethod where Self: Sized + Serialize + Debug + PartialEq {
     ///
     fn describe_odoo_api_method(&self) -> (&'static str, &'static str);
 
-    /// Parse some JSON string data into an [`OdooApiResponse`](crate::OdooApiRequest) object
+    /// Parse some JSON string data into an [`OdooApiResponse`](crate::jsonrpc::OdooApiRequest) object
     ///
-    /// Internally, `OdooApiResponse` uses the [`Response`](crate::OdooApiMethod::Response) associated type to
+    /// Internally, `OdooApiResponse` uses the [`Response`](crate::jsonrpc::OdooApiMethod::Response) associated type to
     /// decide how to deserialize the JSON data.
     fn parse_json_response(&self, json_data: &str) -> serde_json::Result<OdooApiResponse<Self>>;
 }

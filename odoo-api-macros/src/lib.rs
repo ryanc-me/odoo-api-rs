@@ -159,19 +159,19 @@ fn odoo_api_request_impl(args: proc_macro::TokenStream, input: proc_macro::Token
     }
 
     // finally, generate the TokenStreams
+    let out_api_method_impl = generate_api_method_impl(&ident_struct, &ident_response, &args)?;
+    let out_serialize_impl = generate_serialize_impl(&ident_struct, &fields)?;
     let out_call = generate_call(&ident_struct, &ident_fn, &fields_args, &fields_assigns, &doc)?;
     let out_call_async = generate_call_async(&ident_struct, &ident_response, &ident_fn, &fields_args2, &fields_call, &doc)?;
     let out_call_blocking = generate_call_blocking(&ident_struct, &ident_response, &ident_fn, &fields_args2, &fields_call, &doc)?;
-    let out_api_method_impl = generate_api_method_impl(&ident_struct, &ident_response, &args)?;
-    let out_serialize_impl = generate_serialize_impl(&ident_struct, &fields)?;
 
     Ok(quote!(
         #input
+        #out_api_method_impl
+        #out_serialize_impl
         #out_call
         #out_call_async
         #out_call_blocking
-        #out_api_method_impl
-        #out_serialize_impl
     ))
 }
 
@@ -202,34 +202,41 @@ fn generate_call_async(ident_struct: &Ident, ident_response: &Ident, ident_fn: &
     let name_fn_async = format!("{}_async", &ident_fn.to_string());
     let ident_fn_async = Ident::new(&name_fn_async, Span::call_site());
 
-    Ok(quote!(
-        #[cfg(feature = "async")]
-        #[doc=#doc]
-        pub async fn #ident_fn_async(url: &str, #(#fields_args),*) -> super::Result<#ident_response> {
-            let request = self::#ident_fn(#(#fields_call),*)?;
-            let client = ::reqwest::Client::new();
-            let response: super::OdooApiResponse<#ident_struct> = client.post(url)
-                .header("X-Odoo-Dbfilter", db.clone())
-                .json(&request)
-                .send().await?
-                .json().await?;
 
-            match response {
-                super::OdooApiResponse::Success(resp) => {
-                    Ok(resp.result)
-                },
-                super::OdooApiResponse::Error(resp) => {
-                    if &resp.error.message == "Odoo Server Error" {
-                        Err(super::Error::OdooServerError(resp.error))
-                    }
-                    else if &resp.error.message == "404: Not Found" {
-                        Err(super::Error::OdooNotFoundError(resp.error))
-                    }
-                    else if &resp.error.message == "404: Not Found" {
-                        Err(super::Error::OdooSessionExpiredError(resp.error))
-                    }
-                    else {
-                        Err(super::Error::OdooError(resp.error))
+    Ok(quote!(
+        pub(crate) mod #ident_fn_async {
+            use serde_json::{Value};
+            use crate::jsonrpc::{OdooApiMethod};
+            use super::{#ident_fn, #ident_struct, #ident_response};
+
+            #[cfg(feature = "async")]
+            #[doc=#doc]
+            pub async fn #ident_fn_async(url: &str, #(#fields_args),*) -> crate::jsonrpc::Result<super::#ident_response> {
+                let request = super::#ident_fn(#(#fields_call),*)?;
+                let client = ::reqwest::Client::new();
+                let response: crate::jsonrpc::OdooApiResponse<#ident_struct> = client.post(url)
+                    .header("X-Odoo-Dbfilter", db.clone())
+                    .json(&request)
+                    .send().await?
+                    .json().await?;
+
+                match response {
+                    crate::jsonrpc::OdooApiResponse::Success(resp) => {
+                        Ok(resp.result)
+                    },
+                    crate::jsonrpc::OdooApiResponse::Error(resp) => {
+                        if &resp.error.message == "Odoo Server Error" {
+                            Err(crate::jsonrpc::Error::OdooServerError(resp.error))
+                        }
+                        else if &resp.error.message == "404: Not Found" {
+                            Err(crate::jsonrpc::Error::OdooNotFoundError(resp.error))
+                        }
+                        else if &resp.error.message == "Odoo Session Expired" {
+                            Err(crate::jsonrpc::Error::OdooSessionExpiredError(resp.error))
+                        }
+                        else {
+                            Err(crate::jsonrpc::Error::OdooError(resp.error))
+                        }
                     }
                 }
             }
@@ -242,33 +249,39 @@ fn generate_call_blocking(ident_struct: &Ident, ident_response: &Ident, ident_fn
     let ident_fn_blocking = Ident::new(&name_fn_blocking, Span::call_site());
 
     Ok(quote!(
-        #[cfg(feature = "blocking")]
-        #[doc=#doc]
-        pub fn #ident_fn_blocking(url: &str, #(#fields_args),*) -> super::Result<#ident_response> {
-            let request = self::#ident_fn(#(#fields_call),*)?;
-            let client = ::reqwest::blocking::Client::new();
-            let response: super::OdooApiResponse<#ident_struct> = client.post(url)
-                .header("X-Odoo-Dbfilter", db.clone())
-                .json(&request)
-                .send()?
-                .json()?;
+        pub(crate) mod #ident_fn_blocking {
+            use serde_json::{Value};
+            use crate::jsonrpc::{OdooApiMethod};
+            use super::{#ident_fn, #ident_struct, #ident_response};
 
-            match response {
-                super::OdooApiResponse::Success(resp) => {
-                    Ok(resp.result)
-                },
-                super::OdooApiResponse::Error(resp) => {
-                    if &resp.error.message == "Odoo Server Error" {
-                        Err(super::Error::OdooServerError(resp.error))
-                    }
-                    else if &resp.error.message == "404: Not Found" {
-                        Err(super::Error::OdooNotFoundError(resp.error))
-                    }
-                    else if &resp.error.message == "404: Not Found" {
-                        Err(super::Error::OdooSessionExpiredError(resp.error))
-                    }
-                    else {
-                        Err(super::Error::OdooError(resp.error))
+            #[cfg(feature = "blocking")]
+            #[doc=#doc]
+            pub fn #ident_fn_blocking(url: &str, #(#fields_args),*) -> crate::jsonrpc::Result<super::#ident_response> {
+                let request = super::#ident_fn(#(#fields_call),*)?;
+                let client = ::reqwest::blocking::Client::new();
+                let response: crate::jsonrpc::OdooApiResponse<#ident_struct> = client.post(url)
+                    .header("X-Odoo-Dbfilter", db.clone())
+                    .json(&request)
+                    .send()?
+                    .json()?;
+
+                match response {
+                    crate::jsonrpc::OdooApiResponse::Success(resp) => {
+                        Ok(resp.result)
+                    },
+                    crate::jsonrpc::OdooApiResponse::Error(resp) => {
+                        if &resp.error.message == "Odoo Server Error" {
+                            Err(crate::jsonrpc::Error::OdooServerError(resp.error))
+                        }
+                        else if &resp.error.message == "404: Not Found" {
+                            Err(crate::jsonrpc::Error::OdooNotFoundError(resp.error))
+                        }
+                        else if &resp.error.message == "404: Not Found" {
+                            Err(crate::jsonrpc::Error::OdooSessionExpiredError(resp.error))
+                        }
+                        else {
+                            Err(crate::jsonrpc::Error::OdooError(resp.error))
+                        }
                     }
                 }
             }

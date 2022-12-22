@@ -113,10 +113,12 @@
 
 pub(crate) mod jsonrpc;
 
-pub use jsonrpc::{Error, Result, OdooApiError};
+pub mod jsonrpc;
 
 pub use jsonrpc::types;
 #[cfg(feature = "async")]
+#[cfg_attr(doc_cfg, doc(cfg(feature = "async")))]
 pub use jsonrpc::asynch;
 #[cfg(feature = "blocking")]
+#[cfg_attr(doc_cfg, doc(cfg(feature = "blocking")))]
 pub use jsonrpc::blocking;
