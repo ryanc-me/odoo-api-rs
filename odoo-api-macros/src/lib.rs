@@ -118,9 +118,10 @@ fn odoo_api_request_impl(
                 return None;
             }
             match attr.parse_meta() {
-                Ok(Meta::NameValue(MetaNameValue { lit: Lit::Str(lit_str), .. })) => {
-                    Some(lit_str.value())
-                },
+                Ok(Meta::NameValue(MetaNameValue {
+                    lit: Lit::Str(lit_str),
+                    ..
+                })) => Some(lit_str.value()),
                 _ => None,
             }
         })
@@ -171,13 +172,7 @@ fn odoo_api_request_impl(
     let out_api_method_impl = generate_api_method_impl(ident_struct, &ident_response, &args)?;
     let out_serialize_impl = generate_serialize_impl(ident_struct, &fields)?;
     let out_try_from_impl = generate_try_from_impl(&ident_response)?;
-    let out_call = generate_call(
-        ident_struct,
-        &ident_fn,
-        &fields_args,
-        &fields_assigns,
-        &doc,
-    )?;
+    let out_call = generate_call(ident_struct, &ident_fn, &fields_args, &fields_assigns, &doc)?;
     let out_call_async = generate_call_async(
         ident_struct,
         &ident_response,

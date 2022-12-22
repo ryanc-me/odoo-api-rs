@@ -26,7 +26,6 @@ pub struct CreateDatabase {
     pub phone: Option<String>,
 }
 
-
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub struct CreateDatabaseResponse {
     pub ok: bool,
