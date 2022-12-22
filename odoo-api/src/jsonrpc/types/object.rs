@@ -71,7 +71,6 @@ pub struct ExecuteResponse {
 }
 
 
-
 /// Call a business-logic method on an Odoo model (positional & keyword args)
 ///
 /// **Service**: `object`  
