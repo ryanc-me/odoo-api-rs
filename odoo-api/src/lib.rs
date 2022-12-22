@@ -15,10 +15,10 @@
 //! [dependencies]
 //! odoo_api = { version = "0.1", features = ["async"] }
 //! ```
-//! 
+//!
 //! Async API methods are available in the [`odoo_api::asynch`](crate::asynch) module.
 //! Note that the function arguments between async and blocking are identical.
-//! 
+//!
 //! ```no_run
 //! # use tokio;
 //! # #[tokio::main]
@@ -49,10 +49,10 @@
 //! [dependencies]
 //! odoo_api = { version = "0.1", features = ["blocking"] }
 //! ```
-//! 
+//!
 //! Async API methods are available in the [`odoo_api::blocking`](crate::blocking) module.
 //! Note that the function arguments between async and blocking are identical.
-//! 
+//!
 //! ```no_run
 //! # fn main() -> Result<(), Box<dyn std::error::Error>> {
 //! // pull in API functions from the 'blocking' module
@@ -75,7 +75,7 @@
 //! # Ok(())
 //! # }
 //! ```
-//! 
+//!
 //! ## Bring your Own Requests
 //! ```toml
 //! ## Cargo.toml
@@ -84,11 +84,11 @@
 //! ```
 //! Construct an object representing the request data, and use your own requests
 //! library to perform the actual HTTP requests.
-//! 
+//!
 //! The request object is flexible and can be converted into a JSON `String`,
 //! a [`serde_json::Value`], and also implements [`serde::Serialize`] for
 //! libraries that accept that.
-//! 
+//!
 //! ```
 //! # fn main() -> Result<(), Box<dyn std::error::Error>> {
 //! // pull in API functions from the 'types' module
@@ -106,14 +106,14 @@
 //!         "fields": ["login"]
 //!     }),
 //! )?;
-//! 
+//!
 //! // convert into a JSON `String` ..
 //! let req_data = req.to_json_string()?;
 //! // .. or a `serde_json::Value`
 //! let req_data = req.to_json_value()?;
 //! // .. or, if your request library accepts types that implement [`serde::Serialize`],
 //! // you can pass the struct directly
-//! 
+//!
 //! // fetch the response, e.g.:
 //! // let resp_data = request.post(url).json_body(&req_data).send()?.to_json()?;
 //! # let resp_data = json!({
@@ -125,15 +125,15 @@
 //! #         {"id": 6, "login": "demo"}
 //! #     ]
 //! # });
-//! 
+//!
 //! // finally, parse the response JSON using the Response objects' try_from impl
 //! let resp: object::ExecuteKwResponse = resp_data.try_into()?;
-//! 
+//!
 //! println!("Users: {:#?}", resp.data);
 //! # Ok(())
 //! # }
 //! ```
-//! 
+//!
 //! # Optional Features
 //! * **async** - Enable async HTTP request support via [`reqwest`]
 //! * **blocking** - Enable blocking HTTP request support via [`reqwest`]
@@ -141,10 +141,10 @@
 
 pub mod jsonrpc;
 
-pub use jsonrpc::types;
 #[cfg(feature = "async")]
 #[cfg_attr(doc_cfg, doc(cfg(feature = "async")))]
 pub use jsonrpc::asynch;
 #[cfg(feature = "blocking")]
 #[cfg_attr(doc_cfg, doc(cfg(feature = "blocking")))]
 pub use jsonrpc::blocking;
+pub use jsonrpc::types;

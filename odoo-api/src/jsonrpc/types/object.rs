@@ -1,9 +1,8 @@
 //! The Odoo "object" service (types only)
 
-use serde::{Serialize, Deserialize};
-use serde_json::{Value, Map};
 use odoo_api_macros::odoo_api_request;
-
+use serde::{Deserialize, Serialize};
+use serde_json::{Map, Value};
 
 /// Call a business-logic method on an Odoo model (positional args)
 ///
@@ -60,16 +59,15 @@ pub struct Execute {
     args: Vec<Value>,
 }
 
-/// Represents the response to an Odoo [`Execute`] 
+/// Represents the response to an Odoo [`Execute`]
 ///
 /// This struct is intentionally very generic, as the `execute` call can return
 /// any arbitrary JSON data.
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
 #[serde(transparent)]
 pub struct ExecuteResponse {
-    pub data: Value
+    pub data: Value,
 }
-
 
 /// Call a business-logic method on an Odoo model (positional & keyword args)
 ///
@@ -135,14 +133,14 @@ pub struct ExecuteKw {
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
 #[serde(transparent)]
 pub struct ExecuteKwResponse {
-    pub data: Value
+    pub data: Value,
 }
 
 #[cfg(test)]
 mod test {
-    use serde_json::{json, to_value};
     use super::*;
-    use crate::jsonrpc::{Result, OdooApiResponse, JsonRpcVersion, JsonRpcResponseSuccess};
+    use crate::jsonrpc::{JsonRpcResponseSuccess, JsonRpcVersion, OdooApiResponse, Result};
+    use serde_json::{json, to_value};
 
     #[test]
     fn execute() -> Result<()> {
@@ -189,17 +187,18 @@ mod test {
                 "|",
                 ["active", "=", true],
                 ["active", "=", false]
-            ])
-        )?.to_json_value()?;
+            ]),
+        )?
+        .to_json_value()?;
 
         let response = to_value(OdooApiResponse::<Execute>::Success(
             JsonRpcResponseSuccess {
                 jsonrpc: JsonRpcVersion::V2,
                 id: 1000,
                 result: ExecuteResponse {
-                    data: json!([1, 2, 3])
-                }
-            }
+                    data: json!([1, 2, 3]),
+                },
+            },
         ))?;
 
         assert_eq!(request, expected_request);
@@ -251,27 +250,24 @@ mod test {
             "password123",
             "res.users",
             "search",
-            json!([
-                [
-                    ["login", "ilike", "%"],
-                    "|",
-                    ["active", "=", true],
-                    ["active", "=", false]
-                ]
-            ]),
+            json!([[
+                ["login", "ilike", "%"],
+                "|",
+                ["active", "=", true],
+                ["active", "=", false]
+            ]]),
             json!({
                 "limit": 1
-            })
-        )?.to_json_value()?;
+            }),
+        )?
+        .to_json_value()?;
 
         let response = to_value(OdooApiResponse::<ExecuteKw>::Success(
             JsonRpcResponseSuccess {
                 jsonrpc: JsonRpcVersion::V2,
                 id: 1000,
-                result: ExecuteKwResponse {
-                    data: json!([1])
-                }
-            }
+                result: ExecuteKwResponse { data: json!([1]) },
+            },
         ))?;
 
         assert_eq!(request, expected_request);

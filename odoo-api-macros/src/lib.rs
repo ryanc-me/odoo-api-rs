@@ -1,11 +1,10 @@
 //! Helper macros for the `odoo_api` crate
 
-use proc_macro;
-use quote::{quote, quote_spanned, ToTokens };
-use syn::{Token, Ident, Lit, LitStr, Meta, MetaNameValue, ItemStruct, Type, Field};
-use syn::parse::{Parse, ParseStream};
-use proc_macro2::{Span, TokenStream};
 use convert_case::{Case, Casing};
+use proc_macro2::{Span, TokenStream};
+use quote::{quote, quote_spanned, ToTokens};
+use syn::parse::{Parse, ParseStream};
+use syn::{Field, Ident, ItemStruct, Lit, LitStr, Meta, MetaNameValue, Token, Type};
 
 #[derive(Debug)]
 enum Error {
@@ -57,44 +56,53 @@ impl Parse for OdooApiRequestArgs {
 }
 
 #[proc_macro_attribute]
-pub fn odoo_api_request(args: proc_macro::TokenStream, input: proc_macro::TokenStream) -> proc_macro::TokenStream {
+pub fn odoo_api_request(
+    args: proc_macro::TokenStream,
+    input: proc_macro::TokenStream,
+) -> proc_macro::TokenStream {
     match odoo_api_request_impl(args, input) {
-        Ok(ts) => { ts },
-        Err(err) => {
-            match err {
-                Error::TokenStream(ts) => { ts },
-                Error::MacroError(s) => { quote!(compile_error!(#s)) }
+        Ok(ts) => ts,
+        Err(err) => match err {
+            Error::TokenStream(ts) => ts,
+            Error::MacroError(s) => {
+                quote!(compile_error!(#s))
             }
-        }
-    }.into()
+        },
+    }
+    .into()
 }
 
-fn odoo_api_request_impl(args: proc_macro::TokenStream, input: proc_macro::TokenStream) -> Result<TokenStream> {
+fn odoo_api_request_impl(
+    args: proc_macro::TokenStream,
+    input: proc_macro::TokenStream,
+) -> Result<TokenStream> {
     // parse args and input (ensuring the macro was applied to a struct)
     let args: OdooApiRequestArgs = syn::parse(args).map_err(|e| e.to_compile_error())?;
     let input: ItemStruct = syn::parse(input).map_err(|e| e.to_compile_error())?;
 
     // make sure the struct has named fields, then parse
     let fields: Vec<Field> = match &input.fields {
-        syn::Fields::Named(fields) => { fields.named.clone().into_iter().collect() },
+        syn::Fields::Named(fields) => fields.named.clone().into_iter().collect(),
         _ => {
             let span = Span::call_site();
             return Err(quote_spanned! {span=>
                 compile_error!("expected a struct with named fields")
-            }.into());
+            }
+            .into());
         }
     };
 
     // make sure the struct doesn't have any generic params
     if !input.generics.params.is_empty() {
         let span = input.ident.span();
-        return Err(quote_spanned!{span=>
+        return Err(quote_spanned! {span=>
             compile_error!("a struct tagged with `odoo_api_request` cannot have generic params");
-        }.into());
+        }
+        .into());
     }
 
     // fetch the struct name (and some variations)
-    let name_struct = input.ident.clone().to_string();
+    let name_struct = input.ident.to_string();
     let name_response = format!("{}Response", &name_struct);
     let name_fn = name_struct.to_case(Case::Snake);
     let ident_struct = &input.ident;
@@ -102,26 +110,27 @@ fn odoo_api_request_impl(args: proc_macro::TokenStream, input: proc_macro::Token
     let ident_fn = Ident::new(&name_fn, Span::call_site());
 
     // extract doc comments from the original struct
-    let mut doc = input.attrs.iter()
-        .map(|attr| {
-            if !attr.path.is_ident("doc") { return None }
+    let mut doc = input
+        .attrs
+        .iter()
+        .flat_map(|attr| {
+            if !attr.path.is_ident("doc") {
+                return None;
+            }
             match attr.parse_meta() {
-                Ok(meta) => {
-                    match meta {
-                        Meta::NameValue(MetaNameValue { lit: Lit::Str(lit_str), ..}) => {
-                            Some(lit_str.value())
-                        },
-                        _ => { None }
-                    }
+                Ok(Meta::NameValue(MetaNameValue { lit: Lit::Str(lit_str), .. })) => {
+                    Some(lit_str.value())
                 },
-                _ => { None }
+                _ => None,
             }
         })
-        .flatten()
         .collect::<Vec<String>>()
         .join("\n");
     if doc.is_empty() {
-        doc.push_str(&format!(" For details, please see the [`{}`] struct.", &name_struct));
+        doc.push_str(&format!(
+            " For details, please see the [`{}`] struct.",
+            &name_struct
+        ));
     }
 
     // parse the field names & types
@@ -132,20 +141,20 @@ fn odoo_api_request_impl(args: proc_macro::TokenStream, input: proc_macro::Token
     for field in &fields {
         if let Type::Path(path) = &field.ty {
             if let Some(ident) = &field.ident {
-                if ident.to_string() == "db" { has_db = true }
+                if ident == "db" {
+                    has_db = true
+                }
                 let type_string = path.clone().into_token_stream().to_string();
                 if type_string == "String" {
                     // rather than requiring full Strings, we'll accept &str and convert
                     fields_args.push(quote!(#ident: &str));
                     fields_assigns.push(quote!(#ident: #ident.to_string()));
                     fields_call.push(quote!(#ident));
-                }
-                else if type_string == "Vec < Value >" || type_string == "Map < String, Value >" {
+                } else if type_string == "Vec < Value >" || type_string == "Map < String, Value >" {
                     fields_args.push(quote!(#ident: Value));
                     fields_assigns.push(quote!(#ident: ::serde_json::from_value(#ident)?));
                     fields_call.push(quote!(#ident));
-                }
-                else {
+                } else {
                     fields_args.push(quote!(#ident: #path));
                     fields_assigns.push(quote!(#ident: #ident));
                     fields_call.push(quote!(#ident));
@@ -159,12 +168,32 @@ fn odoo_api_request_impl(args: proc_macro::TokenStream, input: proc_macro::Token
     }
 
     // finally, generate the TokenStreams
-    let out_api_method_impl = generate_api_method_impl(&ident_struct, &ident_response, &args)?;
-    let out_serialize_impl = generate_serialize_impl(&ident_struct, &fields)?;
+    let out_api_method_impl = generate_api_method_impl(ident_struct, &ident_response, &args)?;
+    let out_serialize_impl = generate_serialize_impl(ident_struct, &fields)?;
     let out_try_from_impl = generate_try_from_impl(&ident_response)?;
-    let out_call = generate_call(&ident_struct, &ident_fn, &fields_args, &fields_assigns, &doc)?;
-    let out_call_async = generate_call_async(&ident_struct, &ident_response, &ident_fn, &fields_args2, &fields_call, &doc)?;
-    let out_call_blocking = generate_call_blocking(&ident_struct, &ident_response, &ident_fn, &fields_args2, &fields_call, &doc)?;
+    let out_call = generate_call(
+        ident_struct,
+        &ident_fn,
+        &fields_args,
+        &fields_assigns,
+        &doc,
+    )?;
+    let out_call_async = generate_call_async(
+        ident_struct,
+        &ident_response,
+        &ident_fn,
+        &fields_args2,
+        &fields_call,
+        &doc,
+    )?;
+    let out_call_blocking = generate_call_blocking(
+        ident_struct,
+        &ident_response,
+        &ident_fn,
+        &fields_args2,
+        &fields_call,
+        &doc,
+    )?;
 
     Ok(quote!(
         #input
@@ -177,9 +206,16 @@ fn odoo_api_request_impl(args: proc_macro::TokenStream, input: proc_macro::Token
     ))
 }
 
-fn generate_call(ident_struct: &Ident, ident_fn: &Ident, fields_args: &Vec<TokenStream>, fields_assigns: &Vec<TokenStream>, doc: &str) -> Result<TokenStream> {
+fn generate_call(
+    ident_struct: &Ident,
+    ident_fn: &Ident,
+    fields_args: &Vec<TokenStream>,
+    fields_assigns: &Vec<TokenStream>,
+    doc: &str,
+) -> Result<TokenStream> {
     Ok(quote! {
         #[doc=#doc]
+        #[allow(clippy::too_many_arguments)]
         pub fn #ident_fn(#(#fields_args),*) -> super::Result<super::OdooApiRequest<#ident_struct>> {
             #[cfg(not(test))]
             let id = {
@@ -207,10 +243,16 @@ fn generate_call(ident_struct: &Ident, ident_fn: &Ident, fields_args: &Vec<Token
     })
 }
 
-fn generate_call_async(ident_struct: &Ident, ident_response: &Ident, ident_fn: &Ident, fields_args: &Vec<TokenStream>, fields_call: &Vec<TokenStream>, doc: &str) -> Result<TokenStream> {
+fn generate_call_async(
+    ident_struct: &Ident,
+    ident_response: &Ident,
+    ident_fn: &Ident,
+    fields_args: &Vec<TokenStream>,
+    fields_call: &Vec<TokenStream>,
+    doc: &str,
+) -> Result<TokenStream> {
     let name_fn_async = format!("{}_async", &ident_fn.to_string());
     let ident_fn_async = Ident::new(&name_fn_async, Span::call_site());
-
 
     Ok(quote!(
         pub(crate) mod #ident_fn_async {
@@ -220,6 +262,7 @@ fn generate_call_async(ident_struct: &Ident, ident_response: &Ident, ident_fn: &
 
             #[cfg(feature = "async")]
             #[doc=#doc]
+            #[allow(clippy::too_many_arguments)]
             pub async fn #ident_fn_async(url: &str, #(#fields_args),*) -> crate::jsonrpc::Result<super::#ident_response> {
                 let request = super::#ident_fn(#(#fields_call),*)?;
                 let client = ::reqwest::Client::new();
@@ -253,7 +296,14 @@ fn generate_call_async(ident_struct: &Ident, ident_response: &Ident, ident_fn: &
     ))
 }
 
-fn generate_call_blocking(ident_struct: &Ident, ident_response: &Ident, ident_fn: &Ident, fields_args: &Vec<TokenStream>, fields_call: &Vec<TokenStream>, doc: &str) -> Result<TokenStream> {
+fn generate_call_blocking(
+    ident_struct: &Ident,
+    ident_response: &Ident,
+    ident_fn: &Ident,
+    fields_args: &Vec<TokenStream>,
+    fields_call: &Vec<TokenStream>,
+    doc: &str,
+) -> Result<TokenStream> {
     let name_fn_blocking = format!("{}_blocking", &ident_fn.to_string());
     let ident_fn_blocking = Ident::new(&name_fn_blocking, Span::call_site());
 
@@ -265,6 +315,7 @@ fn generate_call_blocking(ident_struct: &Ident, ident_response: &Ident, ident_fn
 
             #[cfg(feature = "blocking")]
             #[doc=#doc]
+            #[allow(clippy::too_many_arguments)]
             pub fn #ident_fn_blocking(url: &str, #(#fields_args),*) -> crate::jsonrpc::Result<super::#ident_response> {
                 let request = super::#ident_fn(#(#fields_call),*)?;
                 let client = ::reqwest::blocking::Client::new();
@@ -298,7 +349,11 @@ fn generate_call_blocking(ident_struct: &Ident, ident_response: &Ident, ident_fn
     ))
 }
 
-fn generate_api_method_impl(ident_struct: &Ident, ident_response: &Ident, args: &OdooApiRequestArgs) -> Result<TokenStream> {
+fn generate_api_method_impl(
+    ident_struct: &Ident,
+    ident_response: &Ident,
+    args: &OdooApiRequestArgs,
+) -> Result<TokenStream> {
     let service = &args.service;
     let method = &args.method;
     Ok(quote! {
@@ -316,7 +371,7 @@ fn generate_api_method_impl(ident_struct: &Ident, ident_response: &Ident, args: 
     })
 }
 
-fn generate_serialize_impl(ident_struct: &Ident, fields: &Vec<Field>) -> Result<TokenStream> {
+fn generate_serialize_impl(ident_struct: &Ident, fields: &[Field]) -> Result<TokenStream> {
     let field_count = fields.iter().map(|field| &field.ident).len();
     let field_names = fields.iter().map(|field| &field.ident);
 
@@ -339,7 +394,6 @@ fn generate_serialize_impl(ident_struct: &Ident, fields: &Vec<Field>) -> Result<
 }
 
 fn generate_try_from_impl(ident_response: &Ident) -> Result<TokenStream> {
-    
     Ok(quote!(
         impl TryFrom<String> for #ident_response {
             type Error = crate::jsonrpc::Error;

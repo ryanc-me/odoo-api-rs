@@ -1,8 +1,7 @@
 //! The Odoo "db" service (types only)
 
-use serde::{Serialize, Deserialize};
 use odoo_api_macros::odoo_api_request;
-
+use serde::{Deserialize, Serialize};
 
 /// Create and initialize a new database
 ///
@@ -27,11 +26,11 @@ pub struct CreateDatabase {
     pub phone: Option<String>,
 }
 
+
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub struct CreateDatabaseResponse {
     pub ok: bool,
 }
-
 
 /// Duplicate a database
 ///
@@ -56,7 +55,6 @@ pub struct DuplicateDatabaseResponse {
     pub ok: bool,
 }
 
-
 /// Drop (delete) a database
 ///
 /// **Service**: `db`  
@@ -79,7 +77,6 @@ pub struct DropResponse {
     pub ok: bool,
 }
 
-
 /// Dump (backup) a database, optionally including the filestore folder
 ///
 /// **Service**: `db`  
@@ -88,7 +85,7 @@ pub struct DropResponse {
 /// **Returns**: [`DumpResponse`]  
 ///
 /// Note that the data is returned a base64-encoded buffer.
-/// 
+///
 /// Docs TBC
 ///
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L212-L217)
@@ -105,26 +102,26 @@ pub struct Dump {
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub enum DumpFormat {
     /// Output a zipfile containing the SQL dump in "plain" format, manifest, and filestore
-    /// 
+    ///
     /// Note that with this mode, the database is dumped to a Python
     /// NamedTemporaryFile first, then to the out stream - this means that
     /// the backup takes longer, and probably involves some filesystem writes.
-    /// 
+    ///
     /// Also note that the SQL format is "plain"; that is, it's a text file
     /// containing SQL statements. This style of database dump is slightly less
     /// flexible when importing (e.g., you cannot choose to exclude some
     /// tables during import).
-    /// 
+    ///
     /// See the [Postgres `pg_dump` docs](https://www.postgresql.org/docs/current/app-pgdump.html) for more info on "plain" dumps (`-F` option).
     #[serde(rename = "zip")]
     Zip,
 
     /// Output a `.dump` file containing the SQL dump in "custom" format
-    /// 
+    ///
     /// This style of database dump is more flexible on the import side (e.g.,
     /// you can choose to exclude some tables from the import), but does not
     /// include the filestore.
-    /// 
+    ///
     /// See the [Postgres `pg_dump` docs](https://www.postgresql.org/docs/current/app-pgdump.html) for more info on "custom" dumps (`-F` option).
     #[serde(rename = "dump")]
     Dump,
@@ -134,7 +131,6 @@ pub enum DumpFormat {
 pub struct DumpResponse {
     pub b64_bytes: String,
 }
-
 
 /// Upload and restore an Odoo dump to a new database
 ///
@@ -160,7 +156,6 @@ pub struct RestoreResponse {
     pub ok: bool,
 }
 
-
 /// Rename a database
 ///
 /// **Service**: `db`  
@@ -184,7 +179,6 @@ pub struct RenameResponse {
     pub ok: bool,
 }
 
-
 /// Change the Odoo "master password"
 ///
 /// **Service**: `db`  
@@ -207,7 +201,6 @@ pub struct ChangeAdminPasswordResponse {
     pub ok: bool,
 }
 
-
 /// Perform a "dtabase migration" (upgrade the `base` module)
 ///
 /// **Service**: `db`  
@@ -218,11 +211,11 @@ pub struct ChangeAdminPasswordResponse {
 /// Note that this method doesn't actually perform any upgrades - instead, it
 /// force-update the `base` module, which has the effect of triggering an update
 /// on all Odoo modules that depend on `base` (which is all of them).
-/// 
+///
 /// This method is probably used internally by Odoo's upgrade service, and likely
 /// isn't useful on its own. If you need to upgrade a module, the [`execute`][crate::jsonrpc::types::object::execute]
 /// is probably more suitable.
-/// 
+///
 /// Docs TBC
 ///
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L366-L372)
@@ -237,7 +230,6 @@ pub struct MigrateDatabases {
 pub struct MigrateDatabasesResponse {
     pub ok: bool,
 }
-
 
 /// Check if a database exists
 ///
@@ -256,10 +248,7 @@ pub struct DbExist {
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
-pub struct DbExistResponse (
-    pub bool,
-);
-
+pub struct DbExistResponse(pub bool);
 
 /// List the databases currently available to Odoo
 ///
@@ -281,9 +270,8 @@ pub struct List {
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
 #[serde(transparent)]
 pub struct ListResponse {
-    pub databases: Vec<String>
+    pub databases: Vec<String>,
 }
-
 
 /// List the languages available to Odoo (ISO name + code)
 ///
@@ -294,7 +282,7 @@ pub struct ListResponse {
 ///
 /// Note that this function is used by the database manager, in order to let the
 /// user select which language should be used when creating a new database.
-/// 
+///
 /// Docs TBC
 ///
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L444-L445)
@@ -305,7 +293,7 @@ pub struct ListLang {}
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
 #[serde(transparent)]
 pub struct ListLangResponse {
-    pub languages: Vec<ListLangResponseItem>
+    pub languages: Vec<ListLangResponseItem>,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
@@ -313,7 +301,6 @@ pub struct ListLangResponseItem {
     pub code: String,
     pub name: String,
 }
-
 
 /// List the countries available to Odoo (ISO name + code)
 ///
@@ -324,7 +311,7 @@ pub struct ListLangResponseItem {
 ///
 /// Note that this function is used by the database manager, in order to let the
 /// user select which country should be used when creating a new database.
-/// 
+///
 /// Docs TBC
 ///
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L447-L454)
@@ -337,7 +324,7 @@ pub struct ListCountries {
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
 #[serde(transparent)]
 pub struct ListCountriesResponse {
-    pub countries: Vec<ListLangResponseItem>
+    pub countries: Vec<ListLangResponseItem>,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
@@ -346,14 +333,13 @@ pub struct ListCountriesResponseItem {
     pub name: String,
 }
 
-
 /// Return the server version
 ///
 /// **Service**: `db`  
 /// **Method**: `server_version`  
 /// **Request**: [`ListCountries`]  
 /// **Returns**: [`ListCountriesResponse`]  
-/// 
+///
 /// Docs TBC
 ///
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L456-L460)
@@ -364,14 +350,14 @@ pub struct ServerVersion {}
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
 #[serde(transparent)]
 pub struct ServerVersionResponse {
-    pub version: String
+    pub version: String,
 }
 
 #[cfg(test)]
 mod test {
-    use serde_json::{json, to_value};
     use super::*;
-    use crate::jsonrpc::{Result, OdooApiResponse, JsonRpcVersion, JsonRpcResponseSuccess};
+    use crate::jsonrpc::{JsonRpcResponseSuccess, JsonRpcVersion, OdooApiResponse, Result};
+    use serde_json::{json, to_value};
 
     #[test]
     fn server_version() -> Result<()> {
@@ -398,9 +384,9 @@ mod test {
                 jsonrpc: JsonRpcVersion::V2,
                 id: 1000,
                 result: ServerVersionResponse {
-                    version: "14.0+e".into()
-                }
-            }
+                    version: "14.0+e".into(),
+                },
+            },
         ))?;
 
         assert_eq!(request, expected_request);

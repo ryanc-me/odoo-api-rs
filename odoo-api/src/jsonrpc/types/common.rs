@@ -1,11 +1,10 @@
 //! The Odoo "common" service (types only)
 
-use serde::{Serialize, Deserialize};
-use serde_tuple::{Serialize_tuple};
-use serde_json::{Value, Map};
+use super::OdooID;
 use odoo_api_macros::odoo_api_request;
-use super::{OdooID};
-
+use serde::{Deserialize, Serialize};
+use serde_json::{Map, Value};
+use serde_tuple::Serialize_tuple;
 
 /// Check the user credentials and return the user ID
 ///
@@ -23,7 +22,7 @@ use super::{OdooID};
 /// and returns the ID.
 ///
 /// Example:
-/// ```rust
+/// ```no_run
 /// use odoo_api::types::common;
 ///
 /// let request = common::login(
@@ -52,7 +51,7 @@ pub struct Login {
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
 #[serde(transparent)]
 pub struct LoginResponse {
-    pub uid: OdooID
+    pub uid: OdooID,
 }
 
 /// Check the user credentials and return the user ID (web)
@@ -69,7 +68,7 @@ pub struct LoginResponse {
 /// This method is inteded for browser-based API implementations. You should use [`Login`] or [`login`] instead.
 ///
 /// Example:
-/// ```rust
+/// ```no_run
 /// use serde_json::{json, Map, Value};
 /// use odoo_api::types::common;
 ///
@@ -98,16 +97,15 @@ pub struct Authenticate {
     pub password: String,
 
     /// A mapping of user agent env entries
-    pub user_agent_env: Map<String, Value>
+    pub user_agent_env: Map<String, Value>,
 }
 
 /// Represents the response to an Odoo [`Authenticate`] call
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
 #[serde(transparent)]
 pub struct AuthenticateResponse {
-    pub uid: OdooID
+    pub uid: OdooID,
 }
-
 
 /// Fetch detailed information about the Odoo version
 ///
@@ -127,7 +125,7 @@ pub struct AuthenticateResponse {
 /// 14.0.0.final.0.e
 ///
 /// Example:
-/// ```
+/// ```no_run
 /// use odoo_api::types::common;
 ///
 /// let request = common::version();
@@ -181,7 +179,6 @@ pub struct ServerVersionInfo {
     pub enterprise: Option<String>,
 }
 
-
 /// Fetch basic information about the Odoo version
 ///
 /// **Service**: `common`  
@@ -196,7 +193,7 @@ pub struct ServerVersionInfo {
 /// or [`version`] instead.
 ///
 /// Example:
-/// ```
+/// ```no_run
 /// use odoo_api::types::common;
 ///
 /// let request = common::about(true);
@@ -219,7 +216,7 @@ pub enum AboutResponse {
     Basic(AboutResponseBasic),
 
     /// Extended response; includes `info` string and version info
-    Extended(AboutResponseExtended)
+    Extended(AboutResponseExtended),
 }
 
 /// Represents the response to an Odoo [`About`] call
@@ -227,16 +224,16 @@ pub enum AboutResponse {
 #[serde(transparent)]
 pub struct AboutResponseBasic {
     /// The "info" string
-    /// 
+    ///
     /// At the time of writing, this is hard-coded to `See http://openerp.com`
-    pub info: String
+    pub info: String,
 }
 
 /// Represents the response to an Odoo [`About`] call
 #[derive(Debug, Serialize_tuple, Deserialize, PartialEq)]
 pub struct AboutResponseExtended {
     /// The "info" string
-    /// 
+    ///
     /// At the time of writing, this is hard-coded to `See http://openerp.com`
     pub info: String,
 
@@ -249,9 +246,9 @@ pub struct AboutResponseExtended {
 
 #[cfg(test)]
 mod test {
-    use serde_json::{json, to_value};
     use super::*;
-    use crate::jsonrpc::{Result, OdooApiResponse, JsonRpcVersion, JsonRpcResponseSuccess};
+    use crate::jsonrpc::{JsonRpcResponseSuccess, JsonRpcVersion, OdooApiResponse, Result};
+    use serde_json::{json, to_value};
 
     #[test]
     fn login() -> Result<()> {
@@ -275,21 +272,13 @@ mod test {
             "result": 2
         }))?;
 
-        let request = super::login(
-            "my-database",
-            "admin",
-            "password123"
-        )?.to_json_value()?;
+        let request = super::login("my-database", "admin", "password123")?.to_json_value()?;
 
-        let response = to_value(OdooApiResponse::<Login>::Success(
-            JsonRpcResponseSuccess {
-                jsonrpc: JsonRpcVersion::V2,
-                id: 1000,
-                result: LoginResponse {
-                    uid: 2
-                }
-            }
-        ))?;
+        let response = to_value(OdooApiResponse::<Login>::Success(JsonRpcResponseSuccess {
+            jsonrpc: JsonRpcVersion::V2,
+            id: 1000,
+            result: LoginResponse { uid: 2 },
+        }))?;
 
         assert_eq!(request, expected_request);
         assert_eq!(response, expected_response);
@@ -320,21 +309,15 @@ mod test {
             "result": 1
         }))?;
 
-        let request = super::authenticate(
-            "my-database",
-            "admin",
-            "password123",
-            json!({})
-        )?.to_json_value()?;
+        let request = super::authenticate("my-database", "admin", "password123", json!({}))?
+            .to_json_value()?;
 
         let response = to_value(OdooApiResponse::<Authenticate>::Success(
             JsonRpcResponseSuccess {
                 jsonrpc: JsonRpcVersion::V2,
                 id: 1000,
-                result: AuthenticateResponse {
-                    uid: 1
-                }
-            }
+                result: AuthenticateResponse { uid: 1 },
+            },
         ))?;
 
         assert_eq!(request, expected_request);
@@ -390,9 +373,9 @@ mod test {
                         enterprise: Some("e".into()),
                     },
                     server_serie: "14.0".into(),
-                    protocol_version: 1
-                }
-            }
+                    protocol_version: 1,
+                },
+            },
         ))?;
 
         assert_eq!(request, expected_request);
@@ -421,15 +404,13 @@ mod test {
 
         let request = super::about(false)?.to_json_value()?;
 
-        let response = to_value(OdooApiResponse::<About>::Success(
-            JsonRpcResponseSuccess {
-                jsonrpc: JsonRpcVersion::V2,
-                id: 1000,
-                result: AboutResponse::Basic(
-                    AboutResponseBasic { info: "See http://openerp.com".into() }
-                )
-            }
-        ))?;
+        let response = to_value(OdooApiResponse::<About>::Success(JsonRpcResponseSuccess {
+            jsonrpc: JsonRpcVersion::V2,
+            id: 1000,
+            result: AboutResponse::Basic(AboutResponseBasic {
+                info: "See http://openerp.com".into(),
+            }),
+        }))?;
 
         assert_eq!(request, expected_request);
         assert_eq!(response, expected_response);
@@ -460,18 +441,14 @@ mod test {
 
         let request = super::about(true)?.to_json_value()?;
 
-        let response = to_value(OdooApiResponse::<About>::Success(
-            JsonRpcResponseSuccess {
-                jsonrpc: JsonRpcVersion::V2,
-                id: 1000,
-                result: AboutResponse::Extended(
-                    AboutResponseExtended {
-                        info: "See http://openerp.com".into(),
-                        server_version: "14.0+e".into()
-                    }
-                )
-            }
-        ))?;
+        let response = to_value(OdooApiResponse::<About>::Success(JsonRpcResponseSuccess {
+            jsonrpc: JsonRpcVersion::V2,
+            id: 1000,
+            result: AboutResponse::Extended(AboutResponseExtended {
+                info: "See http://openerp.com".into(),
+                server_version: "14.0+e".into(),
+            }),
+        }))?;
 
         assert_eq!(request, expected_request);
         assert_eq!(response, expected_response);
