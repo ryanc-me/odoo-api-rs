@@ -6,12 +6,18 @@
 //! 3. Proper type implementations for endpoints (not just a `json!()` wrapper)
 //!
 //! # Get Started
-//! First, decide whether you'll use the built-in `reqwest` async/blocking implementations,
-//! or if you'll handle the requests and simply use this library for its types.
+//! First, decide whether you want to use the built-in async/blocking support
+//! via [`reqwest`], or if you'll bring your own requests library.
 //!
 //! ## Async with `reqwest`
-//! Async API methods are available in the [`odoo_api::asynch`] module. Note that
-//! the function arguments between async and blocking are identical.
+//! ```toml
+//! ## Cargo.toml
+//! [dependencies]
+//! odoo_api = { version = "0.1", features = ["async"] }
+//! ```
+//! 
+//! Async API methods are available in the [`odoo_api::asynch`](crate::asynch) module.
+//! Note that the function arguments between async and blocking are identical.
 //! 
 //! ```
 //! # use tokio;
@@ -38,8 +44,14 @@
 //! ```
 //!
 //! ## Blocking with `reqwest`
-//! Blocking API methods are available in the [`odoo_api::asynch`] module. Note that
-//! the function arguments between async and blocking are identical.
+//! ```toml
+//! ## Cargo.toml
+//! [dependencies]
+//! odoo_api = { version = "0.1", features = ["blocking"] }
+//! ```
+//! 
+//! Async API methods are available in the [`odoo_api::blocking`](crate::blocking) module.
+//! Note that the function arguments between async and blocking are identical.
 //! 
 //! ```
 //! # fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -65,9 +77,19 @@
 //! ```
 //! 
 //! ## Bring your Own Requests
-//! For this use-case, the Odoo API library is only used for its types.  
-//! **TODO:** Update this!
-//! Example:
+//! ```toml
+//! ## Cargo.toml
+//! [dependencies]
+//! odoo_api = { version = "0.1", features = [] }
+//! ```
+//! 
+//! Construct an object representing the request data, and use your own requests
+//! library to perform the actual HTTP requests.
+//! 
+//! The request object is flexible and can be converted into a JSON `String`,
+//! a [`serde_json::Value`], and also implements [`serde::Serialize`] for
+//! libraries that accept that.
+//! 
 //! ```
 //! // pull in API functions from the 'types' module
 //! use odoo_api::blocking::{common, db, object};
@@ -110,8 +132,11 @@
 //! 
 //! println!("Users: {:#?}", resp.data);
 //! ```
-
-pub(crate) mod jsonrpc;
+//! 
+//! # Optional Features
+//! * **async** - Enable async HTTP request support via [`reqwest`]
+//! * **blocking** - Enable blocking HTTP request support via [`reqwest`]
+#![cfg_attr(doc_cfg, feature(doc_cfg))]
 
 pub mod jsonrpc;
 
