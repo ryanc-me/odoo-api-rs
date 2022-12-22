@@ -34,9 +34,7 @@
 //! ```
 //!
 //! ```no_run
-//! # use tokio;
-//! # #[tokio::main]
-//! # async fn main() -> Result<(), Box<dyn std::error::Error>> {
+//! # async fn test() -> Result<(), Box<dyn std::error::Error>> {
 //! // pull in API functions from the 'asynch' module
 //! use odoo_api::asynch::{object};
 //! use serde_json::json;
