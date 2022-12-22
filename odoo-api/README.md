@@ -140,3 +140,4 @@ println!("Users: {:#?}", resp.data);
 ## Optional Features
 * **async** - Enable async HTTP request support via [`reqwest`]
 * **blocking** - Enable blocking HTTP request support via [`reqwest`]
+
