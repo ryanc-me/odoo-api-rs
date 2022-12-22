@@ -1,9 +1,17 @@
 //! Type-safe and full-coverage implementation of the Odoo API. Supports async, blocking, and bring-your-own-requests
 //!
 //! # Features
-//! 1. Full coverage of the Odoo API, including the `db` service
-//! 2. Support for async, blocking, and bring-your-own-requests
-//! 3. Proper type implementations for endpoints (not just a `json!()` wrapper)
+//! - **Full Coverage** — All JSON-RPC endpoints are covered, including the
+//!   various database-management methods (`create_database`, `dump`, `list`, etc).
+//!
+//! - **Flexible** — Use the built-in async/blocking HTTP request support
+//!   (via `reqwest`), or simply use this crate for its types and use your own
+//!   requests library.
+//!
+//! - **Type-Safe** — `odoo-api` implements types for as much of the Odoo API spec
+//!   as possible - this isn't just a `json!()` wrapper!
+//!
+//! <br>
 //!
 //! # Get Started
 //! First, decide whether you want to use the built-in async/blocking support
@@ -133,6 +141,8 @@
 //! # Ok(())
 //! # }
 //! ```
+//!
+//!<br>
 //!
 //! # Optional Features
 //! * **async** - Enable async HTTP request support via [`reqwest`]
