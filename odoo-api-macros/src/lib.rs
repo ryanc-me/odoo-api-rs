@@ -161,6 +161,7 @@ fn odoo_api_request_impl(args: proc_macro::TokenStream, input: proc_macro::Token
     // finally, generate the TokenStreams
     let out_api_method_impl = generate_api_method_impl(&ident_struct, &ident_response, &args)?;
     let out_serialize_impl = generate_serialize_impl(&ident_struct, &fields)?;
+    let out_try_from_impl = generate_try_from_impl(&ident_response)?;
     let out_call = generate_call(&ident_struct, &ident_fn, &fields_args, &fields_assigns, &doc)?;
     let out_call_async = generate_call_async(&ident_struct, &ident_response, &ident_fn, &fields_args2, &fields_call, &doc)?;
     let out_call_blocking = generate_call_blocking(&ident_struct, &ident_response, &ident_fn, &fields_args2, &fields_call, &doc)?;
@@ -169,6 +170,7 @@ fn odoo_api_request_impl(args: proc_macro::TokenStream, input: proc_macro::Token
         #input
         #out_api_method_impl
         #out_serialize_impl
+        #out_try_from_impl
         #out_call
         #out_call_async
         #out_call_blocking
@@ -336,3 +338,23 @@ fn generate_serialize_impl(ident_struct: &Ident, fields: &Vec<Field>) -> Result<
     })
 }
 
+fn generate_try_from_impl(ident_response: &Ident) -> Result<TokenStream> {
+    
+    Ok(quote!(
+        impl TryFrom<String> for #ident_response {
+            type Error = crate::jsonrpc::Error;
+
+            fn try_from(value: String) -> ::std::result::Result<#ident_response, crate::jsonrpc::Error> {
+                Ok(serde_json::from_str(&value)?)
+            }
+        }
+
+        impl TryFrom<serde_json::Value> for #ident_response {
+            type Error = crate::jsonrpc::Error;
+
+            fn try_from(value: serde_json::Value) -> ::std::result::Result<#ident_response, crate::jsonrpc::Error> {
+                Ok(serde_json::from_value(value)?)
+            }
+        }
+    ))
+}

@@ -252,7 +252,7 @@ impl<T: OdooApiMethod + Serialize + Debug + PartialEq> OdooApiRequest<T> {
 ///  3. Provide a response-parsing function
 pub trait OdooApiMethod where Self: Sized + Serialize + Debug + PartialEq {
     /// The response type (e.g., the [`ExecuteResponse`](crate::types::object::ExecuteResponse) for [`Execute`](crate::types::object::Execute))
-    type Response: Sized + Serialize + DeserializeOwned + Debug + PartialEq;
+    type Response: Sized + Serialize + DeserializeOwned + Debug + PartialEq + TryFrom<String> + TryFrom<Value>;
 
     /// Describes the Odoo API method (including the service)
     /// 
@@ -284,3 +284,26 @@ pub trait OdooApiMethod where Self: Sized + Serialize + Debug + PartialEq {
     /// decide how to deserialize the JSON data.
     fn parse_json_response(&self, json_data: &str) -> serde_json::Result<OdooApiResponse<Self>>;
 }
+
+// use std::convert::{TryFrom, TryInto};
+
+// impl<T> TryFrom<&str> for T
+// where
+//     T: OdooApiMethod
+// {
+//     type Error = Error;
+
+//     fn try_from(value: &str) -> ::std::result::Result<T::Response, Self::Error> {
+
+//         Ok(())
+//     }
+// }
+// impl<T: OdooApiMethod> TryInto<T> for &str
+// {
+//     type Error = Error;
+
+//     fn try_into(value: &str) -> ::std::result::Result<T, Self::Error> {
+
+//         Ok(())
+//     }
+// }
