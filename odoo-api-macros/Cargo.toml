@@ -1,6 +1,6 @@
 [package]
 name = "odoo-api-macros"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Ryan Cole <hello@ryanc.me>"]
 description = "Macros for the `odoo-api` crate"
 repository = "https://github.com/ryanc-me/odoo-api-rs"

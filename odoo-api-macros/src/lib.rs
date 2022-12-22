@@ -42,6 +42,9 @@ struct OdooApiRequestArgs {
 
     /// Method: THe method name, e.g., "execute_kw" or "create_database"
     method: String,
+
+    /// Description of the API method
+    description: String
 }
 
 impl Parse for OdooApiRequestArgs {
@@ -49,10 +52,13 @@ impl Parse for OdooApiRequestArgs {
         let service: LitStr = input.parse()?;
         input.parse::<Token![,]>()?;
         let method: LitStr = input.parse()?;
+        input.parse::<Token![,]>()?;
+        let description: LitStr = input.parse()?;
 
         Ok(OdooApiRequestArgs {
             service: service.value(),
             method: method.value(),
+            description: description.value(),
         })
     }
 }
@@ -112,7 +118,7 @@ fn odoo_api_request_impl(
     let ident_fn = Ident::new(&name_fn, Span::call_site());
 
     // extract doc comments from the original struct
-    let mut doc = input
+    let doc = input
         .attrs
         .iter()
         .flat_map(|attr| {
@@ -129,12 +135,23 @@ fn odoo_api_request_impl(
         })
         .collect::<Vec<String>>()
         .join("\n");
-    if doc.is_empty() {
-        doc.push_str(&format!(
-            " For details, please see the [`{}`] struct.",
-            &name_struct
-        ));
-    }
+
+    let doc_base = format!("\
+        {}\n\n\
+        **Service**: `{}`  \n\
+        **Method**: `{}`  \n\
+        **Request**: [`{}`](crate::jsonrpc::types::{})  \n\
+        **Response**: [`{}`](crate::jsonrpc::types::{})\n\n",
+        &args.description,
+        &args.service,
+        &args.method,
+        &name_struct,&name_struct,
+        &name_response,&name_response
+    );
+    let doc = format!("{}{}",
+        &doc_base,
+        &doc
+    );
 
     // parse the field names & types
     let mut has_db = false;
@@ -181,7 +198,8 @@ fn odoo_api_request_impl(
         &ident_fn,
         &fields_args2,
         &fields_call,
-        &doc,
+        &doc_base,
+        &args,
     )?;
     let out_call_blocking = generate_call_blocking(
         ident_struct,
@@ -189,10 +207,12 @@ fn odoo_api_request_impl(
         &ident_fn,
         &fields_args2,
         &fields_call,
-        &doc,
+        &doc_base,
+        &args,
     )?;
 
     Ok(quote!(
+        #[doc=#doc_base]
         #input
         #out_api_method_impl
         #out_serialize_impl
@@ -246,10 +266,20 @@ fn generate_call_async(
     ident_fn: &Ident,
     fields_args: &Vec<TokenStream>,
     fields_call: &Vec<TokenStream>,
-    doc: &str,
+    doc_base: &str,
+    args: &OdooApiRequestArgs,
 ) -> Result<TokenStream> {
     let name_fn_async = format!("{}_async", &ident_fn.to_string());
     let ident_fn_async = Ident::new(&name_fn_async, Span::call_site());
+    let doc = format!("\
+        {}\
+        See the [`types::{}::{}`](crate::jsonrpc::types::{}::{}) function for \
+        more information on this API method call, or the [`async`](crate::jsonrpc::asynch) \
+        module for more information on making async requests.",
+        doc_base,
+        &args.service, &args.method,
+        &args.service, &args.method,
+    );
 
     Ok(quote!(
         pub(crate) mod #ident_fn_async {
@@ -299,10 +329,20 @@ fn generate_call_blocking(
     ident_fn: &Ident,
     fields_args: &Vec<TokenStream>,
     fields_call: &Vec<TokenStream>,
-    doc: &str,
+    doc_base: &str,
+    args: &OdooApiRequestArgs,
 ) -> Result<TokenStream> {
     let name_fn_blocking = format!("{}_blocking", &ident_fn.to_string());
     let ident_fn_blocking = Ident::new(&name_fn_blocking, Span::call_site());
+    let doc = format!("\
+        {}\
+        See the [`types::{}::{}`](crate::jsonrpc::types::{}::{}) function for \
+        more information on this API method call, or the [`blocking`](crate::jsonrpc::blocking) \
+        module for more information on making blocking requests.",
+        doc_base,
+        &args.service, &args.method,
+        &args.service, &args.method,
+    );
 
     Ok(quote!(
         pub(crate) mod #ident_fn_blocking {
