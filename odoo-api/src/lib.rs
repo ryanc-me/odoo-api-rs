@@ -1,4 +1,6 @@
 //! Type-safe and full-coverage implementation of the Odoo API. Supports async, blocking, and bring-your-own-requests
+//! 
+//! **NOTE**: This crate is still under active development, and the public API isn't stable yet.
 //!
 //! # Features
 //! - **Full Coverage** - All JSON-RPC endpoints are covered, including the
