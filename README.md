@@ -14,9 +14,12 @@ multi-database, async and blocking via [`reqwest`], and bring-your-own requests.
 
 For a full list of supported API methods, see [`service`].
 
-### Example
+### Bring your own requests
+
 By default, `odoo_api` uses [`reqwest`] as its HTTP implementation. It is also
 possible to provide your own HTTP implementation (see [`OdooClient`] for more info).
+
+### Example
 
 To use the default [`reqwest`] implementation, add this to your `Cargo.toml`:
 
@@ -31,7 +34,7 @@ use odoo_api::{OdooClient, jvec, jmap};
 
 // build the client and authenticate
 let url = "https://demo.odoo.com";
-let client = OdooClient::new_reqwest_async(url)
+let client = OdooClient::new_reqwest_async(url)?
     .authenticate(
         "some-database",
         "admin",
@@ -46,7 +49,7 @@ let users = client.execute(
 ).send().await?;
 
 // fetch the login and partner_id fields from user id=1
-let info = client.execute(
+let info = client.execute_kw(
     "res.users",
     "read",
     jvec![[1]],
