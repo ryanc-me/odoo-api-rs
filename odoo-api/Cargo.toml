@@ -2,7 +2,7 @@
 name = "odoo-api"
 version = "0.2.0"
 authors = ["Ryan Cole <hello@ryanc.me>"]
-description = "Type-safe and full-coverage implementation of the Odoo API. Supports async, blocking, and bring-your-own-requests"
+description = "Type-safe and full-coverage implementation of the Odoo JSON-RPC API, including ORM and Web methods. Supports sessioning, multi-database, async and blocking via reqwest, and bring-your-own requests."
 repository = "https://github.com/ryanc-me/odoo-api-rs"
 homepage = "https://github.com/ryanc-me/odoo-api-rs"
 documentation = "https://docs.rs/odoo-api"
