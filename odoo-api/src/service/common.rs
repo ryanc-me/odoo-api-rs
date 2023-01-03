@@ -221,3 +221,248 @@ pub struct AboutResponseExtended {
     /// `extended: true` (see [`AboutResponse`])
     pub server_version: String,
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use crate::jsonrpc::{JsonRpcParams, JsonRpcResponse};
+    use crate::Result;
+    use serde_json::{from_value, json, to_value};
+
+    /// See [`crate::service::object::test::execute`] for more info
+    #[test]
+    fn login() -> Result<()> {
+        let expected = json!({
+            "jsonrpc": "2.0",
+            "method": "call",
+            "id": 1000,
+            "params": {
+                "service": "common",
+                "method": "login",
+                "args": [
+                    "some-database",
+                    "admin",
+                    "password",
+                ]
+            }
+        });
+        let actual = to_value(
+            Login {
+                db: "some-database".into(),
+                login: "admin".into(),
+                password: "password".into(),
+            }
+            .build(),
+        )?;
+
+        assert_eq!(actual, expected);
+
+        Ok(())
+    }
+
+    /// See [`crate::service::object::test::execute_response`] for more info
+    #[test]
+    fn login_response() -> Result<()> {
+        let payload = json!({
+            "jsonrpc": "2.0",
+            "id": 1000,
+            "result": 2
+        });
+
+        let response: JsonRpcResponse<LoginResponse> = from_value(payload)?;
+        match response {
+            JsonRpcResponse::Error(e) => Err(e.error.into()),
+            JsonRpcResponse::Success(_) => Ok(()),
+        }
+    }
+
+    /// See [`crate::service::object::test::execute`] for more info
+    #[test]
+    fn authenticate() -> Result<()> {
+        let expected = json!({
+            "jsonrpc": "2.0",
+            "method": "call",
+            "id": 1000,
+            "params": {
+                "service": "common",
+                "method": "authenticate",
+                "args": [
+                    "some-database",
+                    "admin",
+                    "password",
+                    {
+                        "base_location": "https://demo.odoo.com"
+                    }
+                ]
+            }
+        });
+        let actual = to_value(
+            Authenticate {
+                db: "some-database".into(),
+                login: "admin".into(),
+                password: "password".into(),
+                user_agent_env: jmap! {
+                    "base_location": "https://demo.odoo.com"
+                },
+            }
+            .build(),
+        )?;
+
+        assert_eq!(actual, expected);
+
+        Ok(())
+    }
+
+    /// See [`crate::service::object::test::execute_response`] for more info
+    #[test]
+    fn authenticate_response() -> Result<()> {
+        let payload = json!({
+            "jsonrpc": "2.0",
+            "id": 1000,
+            "result": 2
+        });
+
+        let response: JsonRpcResponse<AuthenticateResponse> = from_value(payload)?;
+        match response {
+            JsonRpcResponse::Error(e) => Err(e.error.into()),
+            JsonRpcResponse::Success(_) => Ok(()),
+        }
+    }
+
+    /// See [`crate::service::object::test::execute`] for more info
+    #[test]
+    fn version() -> Result<()> {
+        let expected = json!({
+            "jsonrpc": "2.0",
+            "method": "call",
+            "id": 1000,
+            "params": {
+                "service": "common",
+                "method": "version",
+                "args": []
+            }
+        });
+        let actual = to_value(Version {}.build())?;
+
+        assert_eq!(actual, expected);
+
+        Ok(())
+    }
+
+    /// See [`crate::service::object::test::execute_response`] for more info
+    #[test]
+    fn version_response() -> Result<()> {
+        let payload = json!({
+            "jsonrpc": "2.0",
+            "id": 1000,
+            "result": {
+                "server_version": "14.0+e",
+                "server_version_info": [
+                    14,
+                    0,
+                    0,
+                    "final",
+                    0,
+                    "e"
+                ],
+                "server_serie": "14.0",
+                "protocol_version": 1
+            }
+        });
+
+        let response: JsonRpcResponse<VersionResponse> = from_value(payload)?;
+        match response {
+            JsonRpcResponse::Error(e) => Err(e.error.into()),
+            JsonRpcResponse::Success(_) => Ok(()),
+        }
+    }
+
+    /// See [`crate::service::object::test::execute`] for more info
+    #[test]
+    fn about_basic() -> Result<()> {
+        let expected = json!({
+            "jsonrpc": "2.0",
+            "method": "call",
+            "id": 1000,
+            "params": {
+                "service": "common",
+                "method": "about",
+                "args": [
+                    false
+                ]
+            }
+        });
+        let actual = to_value(About { extended: false }.build())?;
+
+        assert_eq!(actual, expected);
+
+        Ok(())
+    }
+
+    /// See [`crate::service::object::test::execute_response`] for more info
+    #[test]
+    fn about_basic_response() -> Result<()> {
+        let payload = json!({
+            "jsonrpc": "2.0",
+            "id": 1000,
+            "result": "See http://openerp.com"
+        });
+
+        let response: JsonRpcResponse<AboutResponse> = from_value(payload)?;
+        match response {
+            JsonRpcResponse::Error(e) => Err(e.error.into()),
+            JsonRpcResponse::Success(data) => match data.result {
+                AboutResponse::Basic(_) => Ok(()),
+                AboutResponse::Extended(_) => {
+                    panic!("Expected the `Basic` response, but got `Extended`")
+                }
+            },
+        }
+    }
+
+    /// See [`crate::service::object::test::execute`] for more info
+    #[test]
+    fn about_extended() -> Result<()> {
+        let expected = json!({
+            "jsonrpc": "2.0",
+            "method": "call",
+            "id": 1000,
+            "params": {
+                "service": "common",
+                "method": "about",
+                "args": [
+                    true
+                ]
+            }
+        });
+        let actual = to_value(About { extended: true }.build())?;
+
+        assert_eq!(actual, expected);
+
+        Ok(())
+    }
+
+    /// See [`crate::service::object::test::execute_response`] for more info
+    #[test]
+    fn about_extended_response() -> Result<()> {
+        let payload = json!({
+            "jsonrpc": "2.0",
+            "id": 1000,
+            "result": [
+                "See http://openerp.com",
+                "14.0+e"
+            ]
+        });
+
+        let response: JsonRpcResponse<AboutResponse> = from_value(payload)?;
+        match response {
+            JsonRpcResponse::Error(e) => Err(e.error.into()),
+            JsonRpcResponse::Success(data) => match data.result {
+                AboutResponse::Extended(_) => Ok(()),
+                AboutResponse::Basic(_) => {
+                    panic!("Expected the `Extended` response, but got `Basic`")
+                }
+            },
+        }
+    }
+}

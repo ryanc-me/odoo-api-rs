@@ -142,3 +142,173 @@ pub struct ExecuteKw {
 pub struct ExecuteKwResponse {
     pub data: Value,
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use crate::jsonrpc::{JsonRpcParams, JsonRpcResponse};
+    use crate::{jmap, jvec, Result};
+    use serde_json::{from_value, json, to_value};
+
+    /// Test that serializing the [`Execute`] struct produces the expected
+    /// JSON output.
+    ///
+    /// This is important because we're *always* using named-field structs on
+    /// the Rust side (for convenience), but several API methods actually
+    /// expect lists of values.
+    ///
+    /// Additionally, for Execute, the `args` field is serialized as a sibling
+    /// to the other fields (see the `impl Serialize` above for more info),
+    ///
+    ///
+    /// We'll follow this test pattern for all other API methods:
+    ///  - Build a valid JSON payload in Postman, using a real production Odoo 14.0+e instance
+    ///  - That JSON payload becomes the `expected` variable
+    ///  - Build the request struct in the test function (`execute` variable below)
+    ///  - Compare the two with `assert_eq!()`
+    ///
+    /// This should ensure that the crate is producing valid JSON payloads
+    #[test]
+    fn execute() -> Result<()> {
+        let expected = json!({
+            "jsonrpc": "2.0",
+            "method": "call",
+            "id": 1000,
+            "params": {
+                "service": "object",
+                "method": "execute",
+                "args": [
+                    "some-database",
+                    2,
+                    "password",
+                    "res.users",
+                    "read",
+                    [1, 2],
+                    ["id", "login"]
+                ]
+            }
+        });
+        let actual = to_value(
+            Execute {
+                database: "some-database".into(),
+                uid: 2,
+                password: "password".into(),
+
+                model: "res.users".into(),
+                method: "read".into(),
+                args: jvec![[1, 2], ["id", "login"]],
+            }
+            .build(),
+        )?;
+
+        assert_eq!(actual, expected);
+
+        Ok(())
+    }
+
+    /// Test that a valid Odoo response payload is serializable into [`ExecuteResponse`]
+    ///
+    /// As with [`execute`] above, this is achieved by firing a JSON-RPC request
+    /// at a live Odoo instance. Here we take the response JSON and try to serialize
+    /// it into the [`ExecuteResponse`] struct via `from_value()`.
+    ///
+    /// If this succeeds, then the response struct is set up properly!
+    #[test]
+    fn execute_response() -> Result<()> {
+        let payload = json!({
+            "jsonrpc": "2.0",
+            "id": 1000,
+            "result": [
+                {
+                    "id": 1,
+                    "login": "__system__"
+                },
+                {
+                    "id": 2,
+                    "login": "admin"
+                }
+            ]
+        });
+
+        let response: JsonRpcResponse<ExecuteResponse> = from_value(payload)?;
+
+        // note that this match isn't strictly necessary right now, because
+        // the Error() variant is only produced when the input JSON contains
+        // an `"error": {}` key (and we aren't testing those cases).
+        match response {
+            JsonRpcResponse::Error(e) => Err(e.error.into()),
+            JsonRpcResponse::Success(_) => Ok(()),
+        }
+    }
+
+    /// See [`crate::service::object::test::execute`] for more info
+    #[test]
+    fn execute_kw() -> Result<()> {
+        let expected = json!({
+            "jsonrpc": "2.0",
+            "method": "call",
+            "id": 1000,
+            "params": {
+                "service": "object",
+                "method": "execute_kw",
+                "args": [
+                    "some-database",
+                    2,
+                    "password",
+                    "res.users",
+                    "read",
+                    [
+                        [1, 2]
+                    ],
+                    {
+                        "fields": ["id", "login"]
+                    }
+                ]
+            }
+        });
+        let actual = to_value(
+            ExecuteKw {
+                database: "some-database".into(),
+                uid: 2,
+                password: "password".into(),
+
+                model: "res.users".into(),
+                method: "read".into(),
+                args: jvec![[1, 2]],
+                kwargs: jmap! {
+                    "fields": ["id", "login"]
+                },
+            }
+            .build(),
+        )?;
+
+        assert_eq!(actual, expected);
+
+        Ok(())
+    }
+
+    /// See [`crate::service::object::test::execute_response`] for more info
+    #[test]
+    fn execute_kw_response() -> Result<()> {
+        let payload = json!({
+            "jsonrpc": "2.0",
+            "id": 1000,
+            "result": [
+                {
+                    "id": 1,
+                    "login": "__system__"
+                },
+                {
+                    "id": 2,
+                    "login": "admin"
+                }
+            ]
+        });
+
+        let response: JsonRpcResponse<ExecuteKwResponse> = from_value(payload)?;
+        match response {
+            JsonRpcResponse::Error(e) => Err(e.error.into()),
+            JsonRpcResponse::Success(_) => Ok(()),
+        }
+    }
+}

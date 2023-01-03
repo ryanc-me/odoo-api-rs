@@ -430,3 +430,684 @@ impl Serialize for ServerVersion {
 pub struct ServerVersionResponse {
     pub version: String,
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use crate::jsonrpc::{JsonRpcParams, JsonRpcResponse};
+    use crate::Result;
+    use serde_json::{from_value, json, to_value};
+
+    /// See [`crate::service::object::test::execute`] for more info
+    #[test]
+    fn create_database() -> Result<()> {
+        let expected = json!({
+            "jsonrpc": "2.0",
+            "method": "call",
+            "id": 1000,
+            "params": {
+                "service": "db",
+                "method": "create_database",
+                "args": [
+                    "master-password",
+                    "new-database",
+                    false,
+                    "en_US",
+                    "password",
+                    "admin",
+                    null,
+                    "123 123 123"
+                ]
+            }
+        });
+        let actual = to_value(
+            CreateDatabase {
+                passwd: "master-password".into(),
+                db_name: "new-database".into(),
+                demo: false,
+                lang: "en_US".into(),
+                user_password: "password".into(),
+                login: "admin".into(),
+                country_code: None,
+                phone: Some("123 123 123".into()),
+            }
+            .build(),
+        )?;
+
+        assert_eq!(actual, expected);
+
+        Ok(())
+    }
+
+    /// See [`crate::service::object::test::execute_response`] for more info
+    #[test]
+    fn create_database_response() -> Result<()> {
+        let payload = json!({
+            "jsonrpc": "2.0",
+            "id": 1000,
+            "result": true
+        });
+
+        let response: JsonRpcResponse<CreateDatabaseResponse> = from_value(payload)?;
+        match response {
+            JsonRpcResponse::Error(e) => Err(e.error.into()),
+            JsonRpcResponse::Success(_) => Ok(()),
+        }
+    }
+
+    /// See [`crate::service::object::test::execute`] for more info
+    #[test]
+    fn duplicate_database() -> Result<()> {
+        let expected = json!({
+            "jsonrpc": "2.0",
+            "method": "call",
+            "id": 1000,
+            "params": {
+                "service": "db",
+                "method": "duplicate_database",
+                "args": [
+                    "master-password",
+                    "old-database",
+                    "new-database",
+                ]
+            }
+        });
+        let actual = to_value(
+            DuplicateDatabase {
+                passwd: "master-password".into(),
+                db_original_name: "old-database".into(),
+                db_name: "new-database".into(),
+            }
+            .build(),
+        )?;
+
+        assert_eq!(actual, expected);
+
+        Ok(())
+    }
+
+    /// See [`crate::service::object::test::execute_response`] for more info
+    #[test]
+    fn duplicate_database_response() -> Result<()> {
+        let payload = json!({
+            "jsonrpc": "2.0",
+            "id": 1000,
+            "result": true
+        });
+
+        let response: JsonRpcResponse<DuplicateDatabaseResponse> = from_value(payload)?;
+        match response {
+            JsonRpcResponse::Error(e) => Err(e.error.into()),
+            JsonRpcResponse::Success(_) => Ok(()),
+        }
+    }
+
+    /// See [`crate::service::object::test::execute`] for more info
+    #[test]
+    fn drop() -> Result<()> {
+        let expected = json!({
+            "jsonrpc": "2.0",
+            "method": "call",
+            "id": 1000,
+            "params": {
+                "service": "db",
+                "method": "drop",
+                "args": [
+                    "master-password",
+                    "old-database",
+                ]
+            }
+        });
+        let actual = to_value(
+            Drop {
+                passwd: "master-password".into(),
+                db_name: "old-database".into(),
+            }
+            .build(),
+        )?;
+
+        assert_eq!(actual, expected);
+
+        Ok(())
+    }
+
+    /// See [`crate::service::object::test::execute_response`] for more info
+    #[test]
+    fn drop_response() -> Result<()> {
+        let payload = json!({
+            "jsonrpc": "2.0",
+            "id": 1000,
+            "result": true
+        });
+
+        let response: JsonRpcResponse<DropResponse> = from_value(payload)?;
+        match response {
+            JsonRpcResponse::Error(e) => Err(e.error.into()),
+            JsonRpcResponse::Success(_) => Ok(()),
+        }
+    }
+
+    /// See [`crate::service::object::test::execute`] for more info
+    #[test]
+    fn dump_zip() -> Result<()> {
+        let expected = json!({
+            "jsonrpc": "2.0",
+            "method": "call",
+            "id": 1000,
+            "params": {
+                "service": "db",
+                "method": "dump",
+                "args": [
+                    "master-password",
+                    "old-database",
+                    "zip",
+                ]
+            }
+        });
+        let actual = to_value(
+            Dump {
+                passwd: "master-password".into(),
+                db_name: "old-database".into(),
+                format: DumpFormat::Zip,
+            }
+            .build(),
+        )?;
+
+        assert_eq!(actual, expected);
+
+        Ok(())
+    }
+
+    /// See [`crate::service::object::test::execute`] for more info
+    #[test]
+    fn dump_dump() -> Result<()> {
+        let expected = json!({
+            "jsonrpc": "2.0",
+            "method": "call",
+            "id": 1000,
+            "params": {
+                "service": "db",
+                "method": "dump",
+                "args": [
+                    "master-password",
+                    "old-database",
+                    "dump",
+                ]
+            }
+        });
+        let actual = to_value(
+            Dump {
+                passwd: "master-password".into(),
+                db_name: "old-database".into(),
+                format: DumpFormat::Dump,
+            }
+            .build(),
+        )?;
+
+        assert_eq!(actual, expected);
+
+        Ok(())
+    }
+
+    /// See [`crate::service::object::test::execute_response`] for more info
+    #[test]
+    fn dump_response() -> Result<()> {
+        let payload = json!({
+            "jsonrpc": "2.0",
+            "id": 1000,
+            "result": "base64-data-will-be-here"
+        });
+
+        let response: JsonRpcResponse<DumpResponse> = from_value(payload)?;
+        match response {
+            JsonRpcResponse::Error(e) => Err(e.error.into()),
+            JsonRpcResponse::Success(_) => Ok(()),
+        }
+    }
+
+    /// See [`crate::service::object::test::execute`] for more info
+    #[test]
+    fn restore_move() -> Result<()> {
+        let expected = json!({
+            "jsonrpc": "2.0",
+            "method": "call",
+            "id": 1000,
+            "params": {
+                "service": "db",
+                "method": "restore",
+                "args": [
+                    "master-password",
+                    "base64-data-would-be-here",
+                    false,
+                ]
+            }
+        });
+        let actual = to_value(
+            Restore {
+                passwd: "master-password".into(),
+                b64_data: "base64-data-would-be-here".into(),
+                restore_type: RestoreType::Move,
+            }
+            .build(),
+        )?;
+
+        assert_eq!(actual, expected);
+
+        Ok(())
+    }
+
+    /// See [`crate::service::object::test::execute`] for more info
+    #[test]
+    fn restore_copy() -> Result<()> {
+        let expected = json!({
+            "jsonrpc": "2.0",
+            "method": "call",
+            "id": 1000,
+            "params": {
+                "service": "db",
+                "method": "restore",
+                "args": [
+                    "master-password",
+                    "base64-data-would-be-here",
+                    true,
+                ]
+            }
+        });
+        let actual = to_value(
+            Restore {
+                passwd: "master-password".into(),
+                b64_data: "base64-data-would-be-here".into(),
+                restore_type: RestoreType::Copy,
+            }
+            .build(),
+        )?;
+
+        assert_eq!(actual, expected);
+
+        Ok(())
+    }
+
+    /// See [`crate::service::object::test::execute_response`] for more info
+    #[test]
+    fn restore_response() -> Result<()> {
+        let payload = json!({
+            "jsonrpc": "2.0",
+            "id": 1000,
+            "result": true
+        });
+
+        let response: JsonRpcResponse<RestoreResponse> = from_value(payload)?;
+        match response {
+            JsonRpcResponse::Error(e) => Err(e.error.into()),
+            JsonRpcResponse::Success(_) => Ok(()),
+        }
+    }
+
+    /// See [`crate::service::object::test::execute`] for more info
+    #[test]
+    fn rename() -> Result<()> {
+        let expected = json!({
+            "jsonrpc": "2.0",
+            "method": "call",
+            "id": 1000,
+            "params": {
+                "service": "db",
+                "method": "rename",
+                "args": [
+                    "master-password",
+                    "old-database",
+                    "new-database"
+                ]
+            }
+        });
+        let actual = to_value(
+            Rename {
+                passwd: "master-password".into(),
+                old_name: "old-database".into(),
+                new_name: "new-database".into(),
+            }
+            .build(),
+        )?;
+
+        assert_eq!(actual, expected);
+
+        Ok(())
+    }
+
+    /// See [`crate::service::object::test::execute_response`] for more info
+    #[test]
+    fn rename_response() -> Result<()> {
+        let payload = json!({
+            "jsonrpc": "2.0",
+            "id": 1000,
+            "result": true
+        });
+
+        let response: JsonRpcResponse<RenameResponse> = from_value(payload)?;
+        match response {
+            JsonRpcResponse::Error(e) => Err(e.error.into()),
+            JsonRpcResponse::Success(_) => Ok(()),
+        }
+    }
+
+    /// See [`crate::service::object::test::execute`] for more info
+    #[test]
+    fn change_admin_password() -> Result<()> {
+        let expected = json!({
+            "jsonrpc": "2.0",
+            "method": "call",
+            "id": 1000,
+            "params": {
+                "service": "db",
+                "method": "change_admin_password",
+                "args": [
+                    "master-password",
+                    "new-master-password",
+                ]
+            }
+        });
+        let actual = to_value(
+            ChangeAdminPassword {
+                passwd: "master-password".into(),
+                new_passwd: "new-master-password".into(),
+            }
+            .build(),
+        )?;
+
+        assert_eq!(actual, expected);
+
+        Ok(())
+    }
+
+    /// See [`crate::service::object::test::execute_response`] for more info
+    #[test]
+    fn change_admin_password_response() -> Result<()> {
+        let payload = json!({
+            "jsonrpc": "2.0",
+            "id": 1000,
+            "result": true
+        });
+
+        let response: JsonRpcResponse<ChangeAdminPasswordResponse> = from_value(payload)?;
+        match response {
+            JsonRpcResponse::Error(e) => Err(e.error.into()),
+            JsonRpcResponse::Success(_) => Ok(()),
+        }
+    }
+
+    /// See [`crate::service::object::test::execute`] for more info
+    #[test]
+    fn migrate_databases() -> Result<()> {
+        let expected = json!({
+            "jsonrpc": "2.0",
+            "method": "call",
+            "id": 1000,
+            "params": {
+                "service": "db",
+                "method": "migrate_databases",
+                "args": [
+                    "master-password",
+                    [
+                        "new-database",
+                        "new-database2",
+                    ]
+                ]
+            }
+        });
+        let actual = to_value(
+            MigrateDatabases {
+                passwd: "master-password".into(),
+                databases: vec!["new-database".into(), "new-database2".into()],
+            }
+            .build(),
+        )?;
+
+        assert_eq!(actual, expected);
+
+        Ok(())
+    }
+
+    /// See [`crate::service::object::test::execute_response`] for more info
+    #[test]
+    fn migrate_databases_response() -> Result<()> {
+        let payload = json!({
+            "jsonrpc": "2.0",
+            "id": 1000,
+            "result": true
+        });
+
+        let response: JsonRpcResponse<MigrateDatabasesResponse> = from_value(payload)?;
+        match response {
+            JsonRpcResponse::Error(e) => Err(e.error.into()),
+            JsonRpcResponse::Success(_) => Ok(()),
+        }
+    }
+
+    /// See [`crate::service::object::test::execute`] for more info
+    #[test]
+    fn db_exist() -> Result<()> {
+        let expected = json!({
+            "jsonrpc": "2.0",
+            "method": "call",
+            "id": 1000,
+            "params": {
+                "service": "db",
+                "method": "db_exist",
+                "args": [
+                    "new-database"
+                ]
+            }
+        });
+        let actual = to_value(
+            DbExist {
+                db_name: "new-database".into(),
+            }
+            .build(),
+        )?;
+
+        assert_eq!(actual, expected);
+
+        Ok(())
+    }
+
+    /// See [`crate::service::object::test::execute_response`] for more info
+    #[test]
+    fn db_exist_response() -> Result<()> {
+        let payload = json!({
+            "jsonrpc": "2.0",
+            "id": 1000,
+            "result": true
+        });
+
+        let response: JsonRpcResponse<DbExistResponse> = from_value(payload)?;
+        match response {
+            JsonRpcResponse::Error(e) => Err(e.error.into()),
+            JsonRpcResponse::Success(_) => Ok(()),
+        }
+    }
+
+    /// See [`crate::service::object::test::execute`] for more info
+    #[test]
+    fn list() -> Result<()> {
+        let expected = json!({
+            "jsonrpc": "2.0",
+            "method": "call",
+            "id": 1000,
+            "params": {
+                "service": "db",
+                "method": "list",
+                "args": [
+                    false
+                ]
+            }
+        });
+        let actual = to_value(List { document: false }.build())?;
+
+        assert_eq!(actual, expected);
+
+        Ok(())
+    }
+
+    /// See [`crate::service::object::test::execute_response`] for more info
+    #[test]
+    fn list_response() -> Result<()> {
+        let payload = json!({
+            "jsonrpc": "2.0",
+            "id": 1000,
+            "result": [
+                "old-database",
+                "new-database",
+                "new-database2"
+            ]
+        });
+
+        let response: JsonRpcResponse<ListResponse> = from_value(payload)?;
+        match response {
+            JsonRpcResponse::Error(e) => Err(e.error.into()),
+            JsonRpcResponse::Success(_) => Ok(()),
+        }
+    }
+
+    /// See [`crate::service::object::test::execute`] for more info
+    #[test]
+    fn list_lang() -> Result<()> {
+        let expected = json!({
+            "jsonrpc": "2.0",
+            "method": "call",
+            "id": 1000,
+            "params": {
+                "service": "db",
+                "method": "list_lang",
+                "args": []
+            }
+        });
+        let actual = to_value(ListLang {}.build())?;
+
+        assert_eq!(actual, expected);
+
+        Ok(())
+    }
+
+    /// See [`crate::service::object::test::execute_response`] for more info
+    #[test]
+    fn list_lang_response() -> Result<()> {
+        let payload = json!({
+            "jsonrpc": "2.0",
+            "id": 1000,
+            "result": [
+                [
+                    "sq_AL",
+                    "Albanian / Shqip"
+                ],
+                [
+                    "am_ET",
+                    "Amharic / አምሃርኛ"
+                ],
+                [
+                    "ar_SY",
+                    "Arabic (Syria) / الْعَرَبيّة"
+                ],
+                // snipped for brevity
+            ]
+        });
+
+        let response: JsonRpcResponse<ListLangResponse> = from_value(payload)?;
+        match response {
+            JsonRpcResponse::Error(e) => Err(e.error.into()),
+            JsonRpcResponse::Success(_) => Ok(()),
+        }
+    }
+
+    /// See [`crate::service::object::test::execute`] for more info
+    #[test]
+    fn list_countries() -> Result<()> {
+        let expected = json!({
+            "jsonrpc": "2.0",
+            "method": "call",
+            "id": 1000,
+            "params": {
+                "service": "db",
+                "method": "list_countries",
+                "args": [
+                    "master-password"
+                ]
+            }
+        });
+        let actual = to_value(
+            ListCountries {
+                passwd: "master-password".into(),
+            }
+            .build(),
+        )?;
+
+        assert_eq!(actual, expected);
+
+        Ok(())
+    }
+
+    /// See [`crate::service::object::test::execute_response`] for more info
+    #[test]
+    fn list_countries_response() -> Result<()> {
+        let payload = json!({
+            "jsonrpc": "2.0",
+            "id": 1000,
+            "result": [
+                [
+                    "af",
+                    "Afghanistan"
+                ],
+                [
+                    "al",
+                    "Albania"
+                ],
+                [
+                    "dz",
+                    "Algeria"
+                ],
+                // snipped for brevity
+            ]
+        });
+
+        let response: JsonRpcResponse<ListCountriesResponse> = from_value(payload)?;
+        match response {
+            JsonRpcResponse::Error(e) => Err(e.error.into()),
+            JsonRpcResponse::Success(_) => Ok(()),
+        }
+    }
+
+    /// See [`crate::service::object::test::execute`] for more info
+    #[test]
+    fn server_version() -> Result<()> {
+        let expected = json!({
+            "jsonrpc": "2.0",
+            "method": "call",
+            "id": 1000,
+            "params": {
+                "service": "db",
+                "method": "server_version",
+                "args": []
+            }
+        });
+        let actual = to_value(ServerVersion {}.build())?;
+
+        assert_eq!(actual, expected);
+
+        Ok(())
+    }
+
+    /// See [`crate::service::object::test::execute_response`] for more info
+    #[test]
+    fn server_version_response() -> Result<()> {
+        let payload = json!({
+            "jsonrpc": "2.0",
+            "id": 1000,
+            "result": "14.0+e"
+        });
+
+        let response: JsonRpcResponse<ServerVersionResponse> = from_value(payload)?;
+        match response {
+            JsonRpcResponse::Error(e) => Err(e.error.into()),
+            JsonRpcResponse::Success(_) => Ok(()),
+        }
+    }
+}
