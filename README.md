@@ -5,140 +5,59 @@
 [<img alt="docs.rs" src="https://img.shields.io/docsrs/odoo-api?style=flat-square&logo=docs.rs" height="20">](https://docs.rs/odoo-api/)
 [<img alt="docs.rs" src="https://img.shields.io/github/actions/workflow/status/ryanc-me/odoo-api-rs/ci.yaml?style=flat-square" height="20">](https://github.com/ryanc-me/odoo-api-rs/actions?query=branch%3Amaster)
 
-Type-safe and full-coverage implementation of the Odoo API. Supports async, blocking, and bring-your-own-requests
+## odoo_api
+The `odoo_api` crate provides a type-safe and full-coverage implementation
+of the Odoo JSON-RPC API, including ORM and Web methods. It supports sessioning,
+multi-database, async and blocking via [`reqwest`], and bring-your-own requests.
 
-**NOTE**: This crate is still under active development, and the public API isn't stable yet.
+### API Methods
 
-## Features
-- **Full Coverage** - All JSON-RPC endpoints are covered, including the
-  various database-management methods (`create_database`, `dump`, `list`, etc).
-  Support for some common ORM methods is also included (`read`, `search_read`, `create`, etc).
+For a full list of supported API methods, see [`service`].
 
-- **Flexible** - Use the built-in async/blocking HTTP request support
-  (via `reqwest`), or simply use this crate for its types and use your own
-  requests library. The API request and response types all implement `Serialize`,
-  functions to convert into `serde_json::Value`, and functions to dump the
-  request out as a plain JSON `String`, so almost any requests library will work.
+### Example
+By default, `odoo_api` uses [`reqwest`] as its HTTP implementation. It is also
+possible to provide your own HTTP implementation (see [`OdooClient`] for more info).
 
-- **Type-Safe** - The `odoo-api` crate implements types for as much of the
-  Odoo API as possible, right up to the positional & keyword arguments for
-  some ORM methods.
-
-<br>
-
-## Get Started
-First, decide how you want to use this library:
-- Using the built-in [async](#async-with-reqwest) support via `reqwest`
-- Using the built-in [blocking](#blocking-with-reqwest) support via `reqwest`
-- Use this library for its types only, and [bring your own requests library](#bring-your-own-requests)
-
-### Async with `reqwest`
-
-[**Documentation**](https://docs.rs/odoo-api/latest/odoo_api/jsonrpc/asynch/index.html)
+To use the default [`reqwest`] implementation, add this to your `Cargo.toml`:
 
 ```toml
-## Cargo.toml
 [dependencies]
-odoo_api = { version = "0.1", features = ["async"] }
+odoo_api = "0.2"
 ```
 
+Then make your requests:
 ```rust
-// pull in API functions from the 'asynch' module
-use odoo_api::asynch::{object};
-use serde_json::json;
+use odoo_api::{OdooClient, jvec, jmap};
 
-// fetch a list of all usernames
-let users = object::execute_kw(
-    "https://demo.odoo.com/jsonrpc",
-    "my-database",
-    1, "password1",
-    "res.users", "search_read",
-    json!([]),
-    json!({
-        "domain": [[true, "=", true]],
-        "fields": ["login"]
-    }),
-).await?.data;
+// build the client and authenticate
+let url = "https://demo.odoo.com";
+let client = OdooClient::new_reqwest_async(url)
+    .authenticate(
+        "some-database",
+        "admin",
+        "password",
+    ).await?;
+
+// fetch a list of users
+let users = client.execute(
+    "res.users",
+    "search",
+    jvec![]
+).send().await?;
+
+// fetch the login and partner_id fields from user id=1
+let info = client.execute(
+    "res.users",
+    "read",
+    jvec![[1]],
+    jmap!{
+        "fields": ["login", "partner_id"]
+    }
+).send().await?;
+
+// fetch a list of databases
+let databases = client.db_list(false).send().await?;
+
+// fetch server version info
+let version_info = client.common_version().send().await?;
 ```
-
-### Blocking with `reqwest`
-
-[**Documentation**](https://docs.rs/odoo-api/latest/odoo_api/jsonrpc/blocking/index.html)
-
-```toml
-## Cargo.toml
-[dependencies]
-odoo_api = { version = "0.1", features = ["blocking"] }
-```
-
-```rust
-// pull in API functions from the 'blocking' module
-use odoo_api::blocking::{object};
-use serde_json::json;
-
-// fetch a list of all usernames
-let users = object::execute_kw(
-    "https://demo.odoo.com/jsonrpc",
-    "my-database",
-    1, "password1",
-    "res.users", "search_read",
-    json!([]),
-    json!({
-        "domain": [[true, "=", true]],
-        "fields": ["login"]
-    }),
-)?.data;
-println!("Users: {:?}", users);
-```
-
-### Bring your Own Requests
-
-See the link below for more info on building the request types, converting
-to JSON `String` or `serde_json::Value`, and parsing the response.
-
-[**Documentation**](https://docs.rs/odoo-api/latest/odoo_api/jsonrpc/types/index.html)
-
-```toml
-## Cargo.toml
-[dependencies]
-odoo_api = { version = "0.1", features = [] }
-```
-
-```rust
-// pull in API functions from the 'types' module
-use odoo_api::types::{object};
-use serde_json::json;
-
-// build the request object
-let req = object::execute_kw(
-    "my-database",
-    1, "password1",
-    "res.users", "search_read",
-    json!([]),
-    json!({
-        "domain": [[true, "=", true]],
-        "fields": ["login"]
-    }),
-)?;
-
-// convert into a JSON `String` ..
-let req_data = req.to_json_string()?;
-// .. or a `serde_json::Value`
-let req_data = req.to_json_value()?;
-// .. or, if your request library accepts types that implement [`serde::Serialize`],
-// you can pass the struct directly
-
-// fetch the response, e.g.:
-// let resp_data = request.post(url).json_body(&req_data).send()?.to_json()?;
-
-// finally, parse the response JSON using the Response objects' try_from impl
-let resp: object::ExecuteKwResponse = resp_data.try_into()?;
-
-println!("Users: {:#?}", resp.data);
-```
-
-<br>
-
-## Optional Features
-* **async** - Enable async HTTP request support via [`reqwest`]
-* **blocking** - Enable blocking HTTP request support via [`reqwest`]
