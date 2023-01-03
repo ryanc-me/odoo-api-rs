@@ -21,9 +21,6 @@ rand = { version = "0.8.5" }
 reqwest = { version = "0.11", features = ["json", "cookies"], optional = true }
 odoo-api-macros = { version = "0.2", path = "../odoo-api-macros" }
 
-[dev-dependencies]
-tokio = { version = "1.23.0", features = ["full"] }
-
 [features]
 # By default, only the base types implementation is exposed
 default = ["async", "blocking"]
