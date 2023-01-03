@@ -198,7 +198,14 @@ mod client {
             self.auth.get_session_id()
         }
 
-        pub fn authenticate_manual(self, db: &str, login: &str, uid: OdooId, password: &str, session_id: Option<String>) -> OdooClient<Authed, I> {
+        pub fn authenticate_manual(
+            self,
+            db: &str,
+            login: &str,
+            uid: OdooId,
+            password: &str,
+            session_id: Option<String>,
+        ) -> OdooClient<Authed, I> {
             let auth = Authed {
                 database: db.into(),
                 uid,
