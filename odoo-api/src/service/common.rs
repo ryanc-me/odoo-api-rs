@@ -10,6 +10,7 @@
 use crate as odoo_api;
 use crate::jsonrpc::{OdooApiMethod, OdooId};
 use odoo_api_macros::odoo_api;
+use serde::ser::SerializeTuple;
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
 use serde_tuple::Serialize_tuple;
@@ -108,8 +109,19 @@ pub struct AuthenticateResponse {
     name = "common_version",
     auth = false
 )]
-#[derive(Debug, Serialize)]
+#[derive(Debug)]
 pub struct Version {}
+
+// Version has no fields, but needs to output in JSON: `[]`
+impl Serialize for Version {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        let state = serializer.serialize_tuple(0)?;
+        state.end()
+    }
+}
 
 /// Represents the response to an Odoo [`Version`] call
 #[derive(Debug, Serialize, Deserialize)]

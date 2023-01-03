@@ -10,6 +10,7 @@ use crate as odoo_api;
 use crate::jsonrpc::OdooApiMethod;
 use odoo_api_macros::odoo_api;
 use serde::de::Visitor;
+use serde::ser::SerializeTuple;
 use serde::{Deserialize, Serialize};
 use serde_tuple::Serialize_tuple;
 
@@ -252,7 +253,7 @@ pub struct RenameResponse {
 #[derive(Debug, Serialize_tuple)]
 pub struct ChangeAdminPassword {
     pub passwd: String,
-    pub new_password: String,
+    pub new_passwd: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -300,7 +301,7 @@ pub struct MigrateDatabasesResponse {
 #[odoo_api(service = "db", method = "db_exist", auth = false)]
 #[derive(Debug, Serialize_tuple)]
 pub struct DbExist {
-    pub db_name: Vec<String>,
+    pub db_name: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -318,6 +319,7 @@ pub struct DbExistResponse {
 #[odoo_api(service = "db", method = "list", name = "db_list", auth = false)]
 #[derive(Debug, Serialize_tuple)]
 pub struct List {
+    /// This argument isn't currently used and has no effect on the output
     pub document: bool,
 }
 
@@ -341,8 +343,19 @@ pub struct ListResponse {
     name = "db_list_lang",
     auth = false
 )]
-#[derive(Debug, Serialize)]
+#[derive(Debug)]
 pub struct ListLang {}
+
+// ListLang has no fields, but needs to output in JSON: `[]`
+impl Serialize for ListLang {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        let state = serializer.serialize_tuple(0)?;
+        state.end()
+    }
+}
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(transparent)]
@@ -350,7 +363,7 @@ pub struct ListLangResponse {
     pub languages: Vec<ListLangResponseItem>,
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Serialize_tuple, Deserialize, PartialEq)]
 pub struct ListLangResponseItem {
     pub code: String,
     pub name: String,
@@ -381,7 +394,7 @@ pub struct ListCountriesResponse {
     pub countries: Vec<ListLangResponseItem>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize_tuple, Deserialize)]
 pub struct ListCountriesResponseItem {
     pub code: String,
     pub name: String,
@@ -398,8 +411,19 @@ pub struct ListCountriesResponseItem {
     name = "db_server_version",
     auth = false
 )]
-#[derive(Debug, Serialize)]
+#[derive(Debug)]
 pub struct ServerVersion {}
+
+// ServerVersion has no fields, but needs to output in JSON: `[]`
+impl Serialize for ServerVersion {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        let state = serializer.serialize_tuple(0)?;
+        state.end()
+    }
+}
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(transparent)]
