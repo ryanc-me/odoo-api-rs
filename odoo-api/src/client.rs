@@ -67,25 +67,28 @@ mod client {
     ///
     /// ## Usage:
     /// ```no_run
-    /// async fn test {
-    ///     let url = "https://demo.odoo.com";
-    ///     let client = OdooClient::new_request_async(url)
-    ///         .authenticate(
-    ///             "test-database",
-    ///             "admin",
-    ///             "password"
-    ///         ).await?;
+    /// use odoo_api::{OdooClient, jvec, jmap};
     ///
-    ///     let user_ids = client.execute(
-    ///         "res.users",
-    ///         "search",
-    ///         jvec![
-    ///             []
-    ///         ]
-    ///     ).send().await?;
+    /// # async fn test() -> odoo_api::Result<()> {
+    /// let url = "https://demo.odoo.com";
+    /// let client = OdooClient::new_reqwest_async(url)?
+    ///     .authenticate(
+    ///         "test-database",
+    ///         "admin",
+    ///         "password"
+    ///     ).await?;
     ///
-    ///     println!("Found user IDs: {:?}", user_ids.data);
-    /// }
+    /// let user_ids = client.execute(
+    ///     "res.users",
+    ///     "search",
+    ///     jvec![
+    ///         []
+    ///     ]
+    /// ).send().await?;
+    ///
+    /// println!("Found user IDs: {:?}", user_ids.data);
+    /// # Ok(())
+    /// # }
     /// ```
     pub struct OdooClient<S, I>
     where
@@ -193,6 +196,23 @@ mod client {
 
         pub fn session_id(&self) -> Option<&str> {
             self.auth.get_session_id()
+        }
+
+        pub fn authenticate_manual(self, db: &str, login: &str, uid: OdooId, password: &str, session_id: Option<String>) -> OdooClient<Authed, I> {
+            let auth = Authed {
+                database: db.into(),
+                uid,
+                login: login.into(),
+                password: password.into(),
+                session_id,
+            };
+
+            OdooClient {
+                url: self.url,
+                url_jsonrpc: self.url_jsonrpc,
+                auth,
+                _impl: self._impl,
+            }
         }
     }
 

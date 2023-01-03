@@ -25,7 +25,7 @@
 //! # async fn test() -> odoo_api::Result<()> {
 //! // build the client and authenticate
 //! let url = "https://demo.odoo.com";
-//! let client = OdooClient::new_reqwest_async(url)
+//! let client = OdooClient::new_reqwest_async(url)?
 //!     .authenticate(
 //!         "some-database",
 //!         "admin",
@@ -40,7 +40,7 @@
 //! ).send().await?;
 //!
 //! // fetch the login and partner_id fields from user id=1
-//! let info = client.execute(
+//! let info = client.execute_kw(
 //!     "res.users",
 //!     "read",
 //!     jvec![[1]],
@@ -54,6 +54,8 @@
 //!
 //! // fetch server version info
 //! let version_info = client.common_version().send().await?;
+//! # Ok(())
+//! # }
 //! ```
 
 use jsonrpc::response::JsonRpcError;

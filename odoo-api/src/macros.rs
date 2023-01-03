@@ -11,10 +11,16 @@ use serde_json::{Map, Value};
 ///
 /// ## Example:
 /// ```no_run
+/// # fn test() -> odoo_api::Result<()> {
+/// # use serde_json::{json, Value};
+/// # use odoo_api::{jvec, jmap};
+/// # use odoo_api::{OdooClient};
+/// # let client = OdooClient::new_reqwest_blocking("https://demo.odoo.com")?;
+/// # let client = client.authenticate_manual("", "", 1, "", None);
 /// // Manually
 /// let mut args = Vec::<Value>::new();
 /// args.push(json!([1, 2, 3]));
-/// args.push(json!(["id", "login"]))
+/// args.push(json!(["id", "login"]));
 ///
 /// let request = client.execute(
 ///     "res.users",
@@ -31,6 +37,8 @@ use serde_json::{Map, Value};
 ///         ["id", "login"]
 ///     ]
 /// );
+/// # Ok(())
+/// # }
 /// ```
 #[macro_export]
 macro_rules! jvec {
@@ -53,12 +61,18 @@ macro_rules! jvec {
 ///
 /// ## Example:
 /// ```no_run
+/// # fn test() -> odoo_api::Result<()> {
+/// # use serde_json::{json, Value, Map};
+/// # use odoo_api::{jvec, jmap};
+/// # use odoo_api::{OdooClient};
+/// # let client = OdooClient::new_reqwest_blocking("https://demo.odoo.com")?;
+/// # let client = client.authenticate_manual("", "", 1, "", None);
 /// // Manually
 /// let mut kwargs = Map::<String, Value>::new();
-/// kwargs.insert("domain", json!([["name", "ilike", "admin"]]));
-/// kwargs.insert("fields": json!(["id", "login"]));
+/// kwargs.insert("domain".into(), json!([["name", "ilike", "admin"]]));
+/// kwargs.insert("fields".into(), json!(["id", "login"]));
 ///
-/// let request = client.execute(
+/// let request = client.execute_kw(
 ///     "res.users",
 ///     "search_read",
 ///     jvec![],
@@ -66,7 +80,7 @@ macro_rules! jvec {
 /// );
 ///
 /// // With jmap!{}:
-/// let request = client.execute(
+/// let request = client.execute_kw(
 ///     "res.users",
 ///     "search_read",
 ///     jvec![],
@@ -75,6 +89,8 @@ macro_rules! jvec {
 ///         "fields": ["id", "login"]
 ///     }
 /// );
+/// # Ok(())
+/// # }
 /// ```
 #[macro_export]
 macro_rules! jmap {

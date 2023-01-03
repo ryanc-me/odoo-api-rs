@@ -39,13 +39,13 @@ pub struct Execute {
     password: String,
 
     /// The model name
-    model: String,
+    pub model: String,
 
     /// The method name (e.g. "read" or "create")
-    method: String,
+    pub method: String,
 
     /// The arguments (*args)
-    args: Vec<Value>,
+    pub args: Vec<Value>,
 }
 
 /// Represents the response to an Odoo [`Execute`]
@@ -55,7 +55,7 @@ pub struct Execute {
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
 #[serde(transparent)]
 pub struct ExecuteResponse {
-    data: Value,
+    pub data: Value,
 }
 
 /// Call a business-logic method on an Odoo model (positional & keyword args)
@@ -81,16 +81,16 @@ pub struct ExecuteKw {
     password: String,
 
     /// The model name
-    model: String,
+    pub model: String,
 
     /// The method name (e.g. "read" or "create")
-    method: String,
+    pub method: String,
 
     /// The arguments (*args)
-    args: Vec<Value>,
+    pub args: Vec<Value>,
 
     /// The keyword-argments (**kwargs)
-    kwargs: Map<String, Value>,
+    pub kwargs: Map<String, Value>,
 }
 
 /// Represents the response to an Odoo [`Execute`] call

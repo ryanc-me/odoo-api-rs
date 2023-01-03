@@ -24,17 +24,6 @@ use serde_tuple::Serialize_tuple;
 /// "login" is a misnomer - it doesn't actually "login", just checks the credentials
 /// and returns the ID.
 ///
-/// Example:
-/// ```no_run
-/// use odoo_api::types::common;
-///
-/// let request = common::login(
-///     "my-database",
-///     "user@example.com",
-///     "password1",
-/// );
-/// ```
-///
 /// See: [odoo/service/common.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/common.py#L19-L20)  
 /// See also: [base/models/res_users.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/addons/base/models/res_users.py#L762-L787)
 #[odoo_api(
@@ -69,21 +58,6 @@ pub struct LoginResponse {
 /// param `user_agent_env`, which is normally sent by the browser.
 ///
 /// This method is inteded for browser-based API implementations. You should use [`Login`] or [`login`] instead.
-///
-/// Example:
-/// ```no_run
-/// use serde_json::{json, Map, Value};
-/// use odoo_api::types::common;
-///
-/// let request = common::authenticate(
-///     "my-database",
-///     "user@example.com",
-///     "password1",
-///     json!({
-///         "base_location": "demo.odoo.com"
-///     })
-/// );
-/// ```
 ///
 /// See: [odoo/service/common.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/common.py#L22-L29)  
 /// See also: [base/models/res_users.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/addons/base/models/res_users.py#L762-L787)
@@ -123,16 +97,7 @@ pub struct AuthenticateResponse {
 /// Odoo's versioning was inspired by Python's [`sys.version_info`](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/release.py#L11),
 /// with an added field to indicate whether the server is running Enterprise or
 /// Community edition. In practice, `minor` and `micro` are typically both `0`,
-/// so an Odoo version looks something like:
-///
-/// 14.0.0.final.0.e
-///
-/// Example:
-/// ```no_run
-/// use odoo_api::types::common;
-///
-/// let request = common::version();
-/// ```
+/// so an Odoo version looks something like: `14.0.0.final.0.e`
 ///
 /// See: [odoo/service/common.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/common.py#L31-L32)  
 /// See also: [odoo/service/common.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/common.py#L12-L17)  
@@ -194,13 +159,6 @@ pub struct ServerVersionInfo {
 ///
 /// This call isn't particularly useful on its own - you probably want to use [`Version`]
 /// or [`version`] instead.
-///
-/// Example:
-/// ```no_run
-/// use odoo_api::types::common;
-///
-/// let request = common::about(true);
-/// ```
 ///
 /// See: [odoo/service/common.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/common.py#L34-L45)  
 /// See also: [odoo/release.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/release.py)
