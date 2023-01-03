@@ -9,6 +9,7 @@
 use crate as odoo_api;
 use crate::jsonrpc::OdooApiMethod;
 use odoo_api_macros::odoo_api;
+use serde::de::Visitor;
 use serde::{Deserialize, Serialize};
 use serde_tuple::Serialize_tuple;
 
@@ -145,7 +146,71 @@ pub struct DumpResponse {
 pub struct Restore {
     pub passwd: String,
     pub b64_data: String,
-    pub copy: bool,
+    pub restore_type: RestoreType,
+}
+
+/// The type of database restore
+#[derive(Debug)]
+pub enum RestoreType {
+    /// Restore as a "copy"
+    ///
+    /// In this case, the database UUID is automatically updated to prevent
+    /// conflicts.
+    ///
+    /// This is typically used when restoring a database for testing.
+    Copy,
+
+    /// Restore as a "move"
+    ///
+    /// In this case, the database UUID is **not** updated, and the database
+    /// is restored as-is.
+    ///
+    /// This is typically used when restoring a database to a new hosting environment.
+    Move,
+}
+
+// As far as I can tell, there isn't an easy way to serialize/deserialize
+// a two-variant enum to/from a boolean, so we need to implement those manually.
+// note that Deserialize isn't strictly necessary, but I'll include it for
+// completeness.
+impl Serialize for RestoreType {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_bool(match self {
+            Self::Copy => true,
+            Self::Move => false,
+        })
+    }
+}
+struct RestoreTypeVisitor;
+impl<'de> Visitor<'de> for RestoreTypeVisitor {
+    type Value = bool;
+
+    fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
+        formatter.write_str("a boolean (`true` or `false`)")
+    }
+
+    fn visit_bool<E>(self, v: bool) -> Result<Self::Value, E>
+    where
+        E: serde::de::Error,
+    {
+        Ok(v)
+    }
+}
+impl<'de> Deserialize<'de> for RestoreType {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let b = deserializer.deserialize_bool(RestoreTypeVisitor)?;
+
+        Ok(match b {
+            true => Self::Copy,
+            false => Self::Move,
+        })
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
