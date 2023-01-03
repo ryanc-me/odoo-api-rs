@@ -12,7 +12,7 @@ use serde_json::Value;
 
 /// Docs TBC
 #[odoo_web(path = "/web/session/authenticate", name = "web_session_authenticate")]
-#[derive(Debug, Serialize, PartialEq)]
+#[derive(Debug, Serialize)]
 pub struct SessionAuthenticate {
     pub(crate) db: String,
     pub(crate) login: String,
@@ -20,7 +20,7 @@ pub struct SessionAuthenticate {
 }
 
 /// Docs TBC
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct SessionAuthenticateResponse {
     pub data: Value,

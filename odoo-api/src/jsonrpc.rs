@@ -26,7 +26,7 @@ pub type OdooId = i32;
 /// A string representing the JSON-RPC version
 ///
 /// At the time of writing, this is always set to "2.0"
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Serialize, Deserialize)]
 pub enum JsonRpcVersion {
     /// Odoo JSON-RCP API version 2.0
     #[serde(rename = "2.0")]
@@ -36,7 +36,7 @@ pub enum JsonRpcVersion {
 /// A string representing the JSON-RPC "method"
 ///
 /// At the time of writing, this is always set to "call"
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Serialize, Deserialize)]
 pub enum JsonRpcMethod {
     #[serde(rename = "call")]
     Call,
@@ -252,7 +252,7 @@ pub mod response {
     /// looking at the associated type [`OdooApiMethod::Response`](super::OdooApiMethod).
     ///
     /// See: [odoo/http.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/http.py#L1805-L1841)
-    #[derive(Debug, Serialize, Deserialize, PartialEq)]
+    #[derive(Debug, Serialize, Deserialize)]
     #[serde(untagged)]
     pub enum JsonRpcResponse<T>
     where
@@ -263,7 +263,7 @@ pub mod response {
     }
 
     /// A successful Odoo API response
-    #[derive(Debug, Serialize, Deserialize, PartialEq)]
+    #[derive(Debug, Serialize, Deserialize)]
     pub struct JsonRpcResponseSuccess<T>
     where
         T:,
@@ -282,7 +282,7 @@ pub mod response {
     }
 
     /// A failed Odoo API response
-    #[derive(Debug, Serialize, Deserialize, PartialEq)]
+    #[derive(Debug, Serialize, Deserialize)]
     pub struct JsonRpcResponseError {
         /// The JSON-RPC version (`2.0`)
         pub(crate) jsonrpc: JsonRpcVersion,
@@ -296,7 +296,7 @@ pub mod response {
         pub(crate) error: JsonRpcError,
     }
 
-    #[derive(Debug, Serialize, Deserialize, PartialEq)]
+    #[derive(Debug, Serialize, Deserialize)]
     pub struct JsonRpcError {
         /// The error code. Currently hardcoded to `200`
         pub code: u32,
@@ -312,7 +312,7 @@ pub mod response {
         pub data: JsonRpcErrorData,
     }
 
-    #[derive(Debug, Serialize, Deserialize, PartialEq)]
+    #[derive(Debug, Serialize, Deserialize)]
     pub struct JsonRpcErrorData {
         /// The module? and type of the object where the exception was raised
         ///

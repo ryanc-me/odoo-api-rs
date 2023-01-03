@@ -25,7 +25,7 @@ use serde_tuple::Serialize_tuple;
 ///
 /// See: [odoo/service/model.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/model.py#L62-L68)
 #[odoo_api(service = "object", method = "execute", auth = true)]
-#[derive(Debug, PartialEq)]
+#[derive(Debug)]
 pub struct Execute {
     /// The database name
     // #[odoo(auth="database")]
@@ -92,7 +92,7 @@ impl Serialize for Execute {
 ///
 /// This struct is intentionally very generic, as the `execute` call can return
 /// any arbitrary JSON data.
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct ExecuteResponse {
     pub data: Value,
@@ -109,7 +109,7 @@ pub struct ExecuteResponse {
 ///
 /// Reference: [odoo/service/model.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/model.py#L58-L59)
 #[odoo_api(service = "object", method = "execute_kw", auth = true)]
-#[derive(Debug, Serialize_tuple, PartialEq)]
+#[derive(Debug, Serialize_tuple)]
 pub struct ExecuteKw {
     /// The database name
     database: String,
@@ -137,7 +137,7 @@ pub struct ExecuteKw {
 ///
 /// This struct is intentionally very generic, as the `execute` call can return
 /// any arbitrary JSON data.
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct ExecuteKwResponse {
     pub data: Value,

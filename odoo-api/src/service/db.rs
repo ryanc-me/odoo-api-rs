@@ -130,7 +130,7 @@ pub enum DumpFormat {
     Dump,
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct DumpResponse {
     pub b64_bytes: String,
@@ -214,7 +214,7 @@ impl<'de> Deserialize<'de> for RestoreType {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct RestoreResponse {
     pub ok: bool,
@@ -363,7 +363,7 @@ pub struct ListLangResponse {
     pub languages: Vec<ListLangResponseItem>,
 }
 
-#[derive(Debug, Serialize_tuple, Deserialize, PartialEq)]
+#[derive(Debug, Serialize_tuple, Deserialize)]
 pub struct ListLangResponseItem {
     pub code: String,
     pub name: String,

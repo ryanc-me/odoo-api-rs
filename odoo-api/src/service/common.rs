@@ -143,7 +143,7 @@ pub struct VersionResponse {
 ///
 /// See: [odoo/services/common.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/common.py#L12-L17)  
 /// See also: [odoo/release.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/release.py)
-#[derive(Debug, Serialize_tuple, Deserialize, PartialEq)]
+#[derive(Debug, Serialize_tuple, Deserialize)]
 pub struct ServerVersionInfo {
     /// The "major" version (e.g., `16`)
     pub major: u32,
