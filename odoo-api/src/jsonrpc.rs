@@ -168,10 +168,21 @@ pub mod request {
 
             /// Build `self` into a full [`JsonRpcRequest`]
             fn _build(self) -> JsonRpcRequest<Self> {
+                let id = {
+                    #[cfg(test)]
+                    {
+                        // use a known id when testing
+                        1000
+                    }
+                    #[cfg(not(test))]
+                    {
+                        1000
+                    }
+                };
                 JsonRpcRequest {
                     jsonrpc: JsonRpcVersion::V2,
                     method: JsonRpcMethod::Call,
-                    id: 1000,
+                    id,
                     params: OdooApiContainer { inner: self },
                 }
             }
