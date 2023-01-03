@@ -8,20 +8,20 @@
 ## odoo_api
 The `odoo_api` crate provides a type-safe and full-coverage implementation
 of the Odoo JSON-RPC API, including ORM and Web methods. It supports sessioning,
-multi-database, async and blocking via [`reqwest`], and bring-your-own requests.
+multi-database, async and blocking via [`reqwest`](https://docs.rs/reqwest/latest/reqwest/), and bring-your-own requests.
 
 ### API Methods
 
-For a full list of supported API methods, see [`service`].
+For a full list of supported API methods, see [`odoo_api::service`](https://docs.rs/odoo-api/latest/odoo_api/service/index.html).
 
 ### Bring your own requests
 
-By default, `odoo_api` uses [`reqwest`] as its HTTP implementation. It is also
-possible to provide your own HTTP implementation (see [`OdooClient`] for more info).
+By default, `odoo_api` uses [`reqwest`](https://docs.rs/reqwest/latest/reqwest/) as its HTTP implementation. It is also
+possible to provide your own HTTP implementation (see [`OdooClient`](https://docs.rs/odoo-api/latest/odoo_api/struct.OdooClient.html) for more info).
 
 ### Example
 
-To use the default [`reqwest`] implementation, add this to your `Cargo.toml`:
+To use the default [`reqwest`](https://docs.rs/reqwest/latest/reqwest/) implementation, add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
