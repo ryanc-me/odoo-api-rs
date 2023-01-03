@@ -68,6 +68,7 @@ pub mod jsonrpc;
 pub mod service;
 
 pub use client::{AsyncClosureResult, BlockingClosureResult, OdooClient};
+pub use jsonrpc::{OdooId};
 
 /// Convenience wrapper on the std `Result`
 pub type Result<T> = ::std::result::Result<T, Error>;
