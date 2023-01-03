@@ -4,14 +4,14 @@
 
 use proc_macro::TokenStream;
 
+mod common;
 mod error;
 mod odoo_api;
 mod odoo_web;
 mod serialize_tuple;
-mod common;
 
-use error::{Error, Result};
 use common::{parse_result, ItemStructNamed};
+use error::{Error, Result};
 use syn::{parse_macro_input, AttributeArgs};
 
 /// Implement traits for an "API" method struct
