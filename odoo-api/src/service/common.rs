@@ -54,10 +54,10 @@ pub struct LoginResponse {
 /// Check the user credentials and return the user ID (web)
 ///
 /// This method performs a "login" to the Odoo server, and returns the corresponding
-/// user ID (`uid`). It is identical to [`login`], except that it accepts an extra
+/// user ID (`uid`). It is identical to [`Login`], except that it accepts an extra
 /// param `user_agent_env`, which is normally sent by the browser.
 ///
-/// This method is inteded for browser-based API implementations. You should use [`Login`] or [`login`] instead.
+/// This method is inteded for browser-based API implementations. You should use [`Login`] instead.
 ///
 /// See: [odoo/service/common.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/common.py#L22-L29)  
 /// See also: [base/models/res_users.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/addons/base/models/res_users.py#L762-L787)
@@ -158,7 +158,7 @@ pub struct ServerVersionInfo {
 /// version string (e.g. `16.0+e`).
 ///
 /// This call isn't particularly useful on its own - you probably want to use [`Version`]
-/// or [`version`] instead.
+/// instead.
 ///
 /// See: [odoo/service/common.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/common.py#L34-L45)  
 /// See also: [odoo/release.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/release.py)

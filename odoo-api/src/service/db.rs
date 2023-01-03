@@ -196,7 +196,7 @@ pub struct ChangeAdminPasswordResponse {
 /// on all Odoo modules that depend on `base` (which is all of them).
 ///
 /// This method is probably used internally by Odoo's upgrade service, and likely
-/// isn't useful on its own. If you need to upgrade a module, the [`execute`][crate::jsonrpc::types::object::execute]
+/// isn't useful on its own. If you need to upgrade a module, the [`Execute`][crate::service::object::Execute]
 /// is probably more suitable.
 ///
 /// Docs TBC
