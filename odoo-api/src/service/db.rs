@@ -36,6 +36,7 @@ pub struct CreateDatabase {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
+#[serde(transparent)]
 pub struct CreateDatabaseResponse {
     pub ok: bool,
 }
@@ -59,6 +60,7 @@ pub struct DuplicateDatabase {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
+#[serde(transparent)]
 pub struct DuplicateDatabaseResponse {
     pub ok: bool,
 }
@@ -76,6 +78,7 @@ pub struct Drop {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
+#[serde(transparent)]
 pub struct DropResponse {
     pub ok: bool,
 }
@@ -126,6 +129,7 @@ pub enum DumpFormat {
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[serde(transparent)]
 pub struct DumpResponse {
     pub b64_bytes: String,
 }
@@ -145,6 +149,7 @@ pub struct Restore {
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[serde(transparent)]
 pub struct RestoreResponse {
     pub ok: bool,
 }
@@ -163,6 +168,7 @@ pub struct Rename {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
+#[serde(transparent)]
 pub struct RenameResponse {
     pub ok: bool,
 }
@@ -185,6 +191,7 @@ pub struct ChangeAdminPassword {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
+#[serde(transparent)]
 pub struct ChangeAdminPasswordResponse {
     pub ok: bool,
 }
@@ -215,6 +222,7 @@ pub struct MigrateDatabases {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
+#[serde(transparent)]
 pub struct MigrateDatabasesResponse {
     pub ok: bool,
 }
@@ -231,7 +239,10 @@ pub struct DbExist {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct DbExistResponse(pub bool);
+#[serde(transparent)]
+pub struct DbExistResponse {
+    pub exists: bool,
+}
 
 /// List the databases currently available to Odoo
 ///
