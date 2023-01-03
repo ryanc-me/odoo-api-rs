@@ -1,4 +1,4 @@
-//! The "Web" pseudo-service
+//! The Odoo "Web" pseudo-service
 //!
 //! This isn't actually a service, but a set of JSON-RPC compatible endpoints
 //! that Odoo exposes. Generally these are used by the webclient, and offer
