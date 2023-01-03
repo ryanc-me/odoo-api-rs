@@ -1,16 +1,16 @@
 //! The Odoo "db" service (JSON-RPC)
 //!
 //! This service handles database-management related methods (like create, drop, etc)
-//! 
+//!
 //! Note that you will see some methods that require a `passwd` argument. This is **not**
 //! the Odoo user password (database-level). Instead, it's the Odoo server-level
 //! "master password", which can be found in the Odoo `.conf` file as the `admin_passwd` key.
 
-use serde::{Serialize, Deserialize};
-use serde_tuple::{Serialize_tuple};
-use odoo_api_macros::{odoo_api};
-use crate::jsonrpc::{OdooApiMethod};
 use crate as odoo_api;
+use crate::jsonrpc::OdooApiMethod;
+use odoo_api_macros::odoo_api;
+use serde::{Deserialize, Serialize};
+use serde_tuple::Serialize_tuple;
 
 /// Create and initialize a new database
 ///
@@ -68,12 +68,7 @@ pub struct DuplicateDatabaseResponse {
 /// Docs TBC
 ///
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L212-L217)
-#[odoo_api(
-    service = "db",
-    method = "drop",
-    name = "db_drop",
-    auth = false
-)]
+#[odoo_api(service = "db", method = "drop", name = "db_drop", auth = false)]
 #[derive(Debug, Serialize_tuple)]
 pub struct Drop {
     pub passwd: String,
@@ -93,12 +88,7 @@ pub struct DropResponse {
 ///
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L212-L217)  
 /// See also: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L219-L269)
-#[odoo_api(
-    service = "db",
-    method = "dump",
-    name = "db_dump",
-    auth = false
-)]
+#[odoo_api(service = "db", method = "dump", name = "db_dump", auth = false)]
 #[derive(Debug, Serialize_tuple)]
 pub struct Dump {
     pub passwd: String,
@@ -146,12 +136,7 @@ pub struct DumpResponse {
 ///
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L271-L284)  
 /// See also: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L286-L335)
-#[odoo_api(
-    service = "db",
-    method = "restore",
-    name = "db_restore",
-    auth = false
-)]
+#[odoo_api(service = "db", method = "restore", name = "db_restore", auth = false)]
 #[derive(Debug, Serialize_tuple)]
 pub struct Restore {
     pub passwd: String,
@@ -169,12 +154,7 @@ pub struct RestoreResponse {
 /// Docs TBC
 ///
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L337-L358)
-#[odoo_api(
-    service = "db",
-    method = "rename",
-    name = "db_rename",
-    auth = false
-)]
+#[odoo_api(service = "db", method = "rename", name = "db_rename", auth = false)]
 #[derive(Debug, Serialize_tuple)]
 pub struct Rename {
     pub passwd: String,
@@ -244,11 +224,7 @@ pub struct MigrateDatabasesResponse {
 /// Docs TBC
 ///
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L378-L386)
-#[odoo_api(
-    service = "db",
-    method = "db_exist",
-    auth = false
-)]
+#[odoo_api(service = "db", method = "db_exist", auth = false)]
 #[derive(Debug, Serialize_tuple)]
 pub struct DbExist {
     pub db_name: Vec<String>,
@@ -263,12 +239,7 @@ pub struct DbExistResponse(pub bool);
 ///
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L439-L442)  
 /// See also: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L388-L409)
-#[odoo_api(
-    service = "db",
-    method = "list",
-    name = "db_list",
-    auth = false
-)]
+#[odoo_api(service = "db", method = "list", name = "db_list", auth = false)]
 #[derive(Debug, Serialize_tuple)]
 pub struct List {
     pub document: bool,

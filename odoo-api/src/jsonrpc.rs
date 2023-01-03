@@ -5,11 +5,13 @@
 //!
 //! As a crate user, you shouldn't need to interact with these directly. Instead, see [`crate::client`].
 
-use std::fmt::{Debug};
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
+use std::fmt::Debug;
 
-pub use request::{JsonRpcRequest, JsonRpcParams, OdooApiMethod, OdooApiContainer, OdooWebMethod, OdooWebContainer};
-pub use response::{JsonRpcResponse};
+pub use request::{
+    JsonRpcParams, JsonRpcRequest, OdooApiContainer, OdooApiMethod, OdooWebContainer, OdooWebMethod,
+};
+pub use response::JsonRpcResponse;
 
 /// A JSON-RPC request id
 pub type JsonRpcId = u32;
@@ -43,13 +45,13 @@ pub enum JsonRpcMethod {
 pub mod request {
     //! JSON-RPC Requests
 
-    use std::fmt::{Debug};
-    use serde::{Serialize};
-    use serde::de::{DeserializeOwned};
     use super::{JsonRpcId, JsonRpcMethod, JsonRpcVersion};
+    use serde::de::DeserializeOwned;
+    use serde::Serialize;
+    use std::fmt::Debug;
 
-    pub use api::{OdooApiMethod, OdooApiContainer};
-    pub use web::{OdooWebMethod, OdooWebContainer};
+    pub use api::{OdooApiContainer, OdooApiMethod};
+    pub use web::{OdooWebContainer, OdooWebMethod};
 
     /// Implemented by Odoo "method" types (e.g.,
     /// [`Execute`](crate::service::object::Execute) or
@@ -58,7 +60,7 @@ pub mod request {
     /// When building an [`JsonRpcRequest`] object, the `params` field is actually
     /// set to [`JsonRpcParams::Container`], not the concrete "method" type. This
     /// allows for flexibility in the [`Serialize`] impl.
-    /// 
+    ///
     /// For example, the `Execute` method uses [`OdooApiContainer`] as its container,
     /// which injects the `service` and `method` keys into the request struct:
     /// ```json
@@ -73,7 +75,7 @@ pub mod request {
     ///     }
     /// }
     /// ```
-    /// 
+    ///
     /// Whereas the `SessionAuthenticate` method's container ([`OdooWebContainer`])
     /// has a transparent Serialize impl, so the `SessionAuthenticate` data is set
     /// directly on the `params` key:
@@ -87,7 +89,7 @@ pub mod request {
     /// ```
     pub trait JsonRpcParams
     where
-        Self: Sized + Debug + Serialize
+        Self: Sized + Debug + Serialize,
     {
         type Container<T>: Debug + Serialize;
         type Response: Debug + DeserializeOwned;
@@ -102,7 +104,7 @@ pub mod request {
     pub struct JsonRpcRequest<T>
     where
         T: JsonRpcParams + Serialize + Debug,
-        T::Container<T>: Debug + Serialize
+        T::Container<T>: Debug + Serialize,
     {
         /// The JSON-RPC version (`2.0`)
         pub(crate) jsonrpc: JsonRpcVersion,
@@ -120,10 +122,10 @@ pub mod request {
     }
 
     mod api {
-        use std::fmt::Debug;
+        use super::{JsonRpcMethod, JsonRpcParams, JsonRpcRequest, JsonRpcVersion};
+        use serde::ser::{SerializeStruct, Serializer};
         use serde::Serialize;
-        use serde::ser::{Serializer, SerializeStruct};
-        use super::{JsonRpcRequest, JsonRpcParams, JsonRpcMethod, JsonRpcVersion};
+        use std::fmt::Debug;
 
         /// The container type for an Odoo "API" (JSON-RPC) request
         ///
@@ -131,15 +133,15 @@ pub mod request {
         #[derive(Debug)]
         pub struct OdooApiContainer<T>
         where
-            T: OdooApiMethod + JsonRpcParams<Container<T> = Self>
+            T: OdooApiMethod + JsonRpcParams<Container<T> = Self>,
         {
-            pub(crate) inner: T
+            pub(crate) inner: T,
         }
 
         // Custom "man-in-the-middle" serialize impl
         impl<T> Serialize for OdooApiContainer<T>
         where
-            T: OdooApiMethod + JsonRpcParams<Container<T> = Self>
+            T: OdooApiMethod + JsonRpcParams<Container<T> = Self>,
         {
             fn serialize<S>(&self, serializer: S) -> ::std::result::Result<S::Ok, S::Error>
             where
@@ -157,33 +159,30 @@ pub mod request {
         /// An Odoo "API" (JSON-RPC) request type
         pub trait OdooApiMethod
         where
-            Self: Sized + Debug + Serialize + JsonRpcParams<Container<Self> = OdooApiContainer<Self>>,
-            Self::Container<Self>: Debug + Serialize
+            Self:
+                Sized + Debug + Serialize + JsonRpcParams<Container<Self> = OdooApiContainer<Self>>,
+            Self::Container<Self>: Debug + Serialize,
         {
             /// Describe the JSON-RPC service and method for this type
             fn describe(&self) -> (&'static str, &'static str);
 
             /// Build `self` into a full [`JsonRpcRequest`]
-            fn _build(self) -> JsonRpcRequest<Self>
-            {
+            fn _build(self) -> JsonRpcRequest<Self> {
                 JsonRpcRequest {
                     jsonrpc: JsonRpcVersion::V2,
                     method: JsonRpcMethod::Call,
                     id: 1000,
-                    params: OdooApiContainer {
-                        inner: self
-                    }
+                    params: OdooApiContainer { inner: self },
                 }
             }
         }
     }
 
     mod web {
-        use std::fmt::Debug;
         use serde::Serialize;
+        use std::fmt::Debug;
 
-        use super::{JsonRpcRequest, JsonRpcParams, JsonRpcMethod, JsonRpcVersion};
-
+        use super::{JsonRpcMethod, JsonRpcParams, JsonRpcRequest, JsonRpcVersion};
 
         /// The container type for an Odoo "Web" request
         ///
@@ -199,30 +198,28 @@ pub mod request {
         #[serde(transparent)]
         pub struct OdooWebContainer<T>
         where
-            T: OdooWebMethod + JsonRpcParams<Container<T> = Self>
+            T: OdooWebMethod + JsonRpcParams<Container<T> = Self>,
         {
-            pub (crate)inner: T
+            pub(crate) inner: T,
         }
 
         /// An Odoo "Web" request type
         pub trait OdooWebMethod
         where
-            Self: Sized + Debug + Serialize + JsonRpcParams<Container<Self> = OdooWebContainer<Self>>,
-            Self::Container<Self>: Debug + Serialize
+            Self:
+                Sized + Debug + Serialize + JsonRpcParams<Container<Self> = OdooWebContainer<Self>>,
+            Self::Container<Self>: Debug + Serialize,
         {
             /// Describe the "Web" method endpoint (e.g., "/web/session/authenticate")
             fn describe(&self) -> &'static str;
 
             /// Build `self` into a full [`JsonRpcRequest`]
-            fn _build(self) -> JsonRpcRequest<Self>
-            {
+            fn _build(self) -> JsonRpcRequest<Self> {
                 JsonRpcRequest {
                     jsonrpc: JsonRpcVersion::V2,
                     method: JsonRpcMethod::Call,
                     id: 1000,
-                    params: OdooWebContainer {
-                        inner: self
-                    }
+                    params: OdooWebContainer { inner: self },
                 }
             }
         }
@@ -232,10 +229,10 @@ pub mod request {
 pub mod response {
     //! JSON-RPC Responses
 
-    use std::fmt::{Debug};
-    use serde::{Serialize, Deserialize};
-    use serde_json::{Value, Map};
     use super::{JsonRpcId, JsonRpcVersion};
+    use serde::{Deserialize, Serialize};
+    use serde_json::{Map, Value};
+    use std::fmt::Debug;
 
     /// An Odoo JSON-RPC API response
     ///
@@ -248,17 +245,17 @@ pub mod response {
     #[serde(untagged)]
     pub enum JsonRpcResponse<T>
     where
-        T: Debug
+        T: Debug,
     {
         Success(JsonRpcResponseSuccess<T>),
-        Error(JsonRpcResponseError)
+        Error(JsonRpcResponseError),
     }
 
     /// A successful Odoo API response
     #[derive(Debug, Serialize, Deserialize, PartialEq)]
     pub struct JsonRpcResponseSuccess<T>
     where
-        T:
+        T:,
     {
         /// The JSON-RPC version (`2.0`)
         pub(crate) jsonrpc: JsonRpcVersion,

@@ -2,17 +2,17 @@
 //! The `odoo_api` crate provides a type-safe and full-coverage implementation
 //! of the Odoo JSON-RPC API, including ORM and Web methods. It supports sessioning,
 //! multi-database, async and blocking via [`reqwest`], and bring-your-own requests.
-//! 
+//!
 //! ## API Methods
-//! 
+//!
 //! For a full list of supported API methods, see [`service`].
 //!
 //! ## Example
 //! By default, `odoo_api` uses [`reqwest`] as its HTTP implementation. It is also
 //! possible to provide your own HTTP implementation (see [`OdooClient`] for more info).
-//! 
+//!
 //! To use the default [`reqwest`] implementation, add this to your `Cargo.toml`:
-//! 
+//!
 //! ```toml
 //! [dependencies]
 //! odoo_api = "0.2"
@@ -38,7 +38,7 @@
 //!     "search",
 //!     jvec![]
 //! ).send().await?;
-//! 
+//!
 //! // fetch the login and partner_id fields from user id=1
 //! let info = client.execute(
 //!     "res.users",
@@ -48,25 +48,24 @@
 //!         "fields": ["login", "partner_id"]
 //!     }
 //! ).send().await?;
-//! 
+//!
 //! // fetch a list of databases
 //! let databases = client.db_list(false).send().await?;
-//! 
+//!
 //! // fetch server version info
 //! let version_info = client.common_version().send().await?;
 //! ```
 
-use jsonrpc::response::{JsonRpcError};
+use jsonrpc::response::JsonRpcError;
 use thiserror::Error;
-
 
 #[macro_use]
 mod macros;
+pub mod client;
 pub mod jsonrpc;
 pub mod service;
-pub mod client;
 
-pub use client::{OdooClient, BlockingClosureResult, AsyncClosureResult};
+pub use client::{AsyncClosureResult, BlockingClosureResult, OdooClient};
 
 /// Convenience wrapper on the std `Result`
 pub type Result<T> = ::std::result::Result<T, Error>;

@@ -5,9 +5,9 @@
 //! As a crate user, you shouldn't need to interact with these directly. Instead, see [`crate::client`].
 //!
 //! <br />
-//! 
+//!
 //! ## API Methods
-//! 
+//!
 //! ### `common`
 //! |<div style="width: 250px">Method</div>|<div style="width: 550px">Description</div>|<div style="width: 50px">Auth?</div>|
 //! |-|-|-|
@@ -37,9 +37,9 @@
 //! |[`db_server_version`](db::ServerVersion)|Return the server version|-|
 //!
 //! <br />
-//! 
+//!
 //! ### `object`
-//! 
+//!
 //! |<div style="width: 250px">Method</div>|<div style="width: 550px">Description</div>|<div style="width: 50px">Auth?</div>|
 //! |-|-|-|
 //! |[`execute`](object::Execute)|Call a business-logic method on an Odoo model (positional args)|**Yes**|
@@ -56,9 +56,9 @@
 //! |||
 //!
 //! <br />
-//! 
+//!
 //! ### `web`
-//! 
+//!
 //! |<div style="width: 250px">Method</div>|<div style="width: 550px">Description</div>|<div style="width: 50px">Auth?</div>|
 //! |-|-|-|
 //! |[`web_session_authenticate`](web::SessionAuthenticate)|Docs TBC|-|

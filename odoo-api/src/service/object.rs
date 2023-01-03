@@ -5,13 +5,12 @@
 //!
 //! For higher-level methods (e.g., `read` and `search_read`), see [`crate::service::orm`]
 
-use serde::{Serialize, Deserialize};
-use serde_json::{Value, Map};
-use serde_tuple::{Serialize_tuple};
-use odoo_api_macros::{odoo_api};
-use crate::jsonrpc::{OdooApiMethod, OdooId};
 use crate as odoo_api;
-
+use crate::jsonrpc::{OdooApiMethod, OdooId};
+use odoo_api_macros::odoo_api;
+use serde::{Deserialize, Serialize};
+use serde_json::{Map, Value};
+use serde_tuple::Serialize_tuple;
 
 /// Call a business-logic method on an Odoo model (positional args)
 ///
@@ -24,11 +23,7 @@ use crate as odoo_api;
 /// instead
 ///
 /// See: [odoo/service/model.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/model.py#L62-L68)
-#[odoo_api(
-    service = "object",
-    method = "execute",
-    auth = true,
-)]
+#[odoo_api(service = "object", method = "execute", auth = true)]
 #[derive(Debug, Serialize_tuple, PartialEq)]
 pub struct Execute {
     /// The database name
@@ -60,9 +55,8 @@ pub struct Execute {
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
 #[serde(transparent)]
 pub struct ExecuteResponse {
-    data: Value
+    data: Value,
 }
-
 
 /// Call a business-logic method on an Odoo model (positional & keyword args)
 ///
@@ -74,11 +68,7 @@ pub struct ExecuteResponse {
 ///
 ///
 /// Reference: [odoo/service/model.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/model.py#L58-L59)
-#[odoo_api(
-    service = "object",
-    method = "execute_kw",
-    auth = true,
-)]
+#[odoo_api(service = "object", method = "execute_kw", auth = true)]
 #[derive(Debug, Serialize_tuple, PartialEq)]
 pub struct ExecuteKw {
     /// The database name

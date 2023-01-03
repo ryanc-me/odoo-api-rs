@@ -2,7 +2,7 @@
 
 // Import Value and Map so the doc comments render properly
 #[allow(unused_imports)]
-use serde_json::{Value, Map};
+use serde_json::{Map, Value};
 
 /// Helper macro to build a [`Vec<Value>`]
 ///

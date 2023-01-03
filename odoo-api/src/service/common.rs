@@ -7,13 +7,12 @@
 //! these methods will not work for non-JSON-RPC methods (e.g. "Web" methods), and
 //! they will not handle multi-database Odoo deployments.
 
-use serde::{Serialize, Deserialize};
-use serde_json::{Value, Map};
-use serde_tuple::{Serialize_tuple};
-use odoo_api_macros::{odoo_api};
-use crate::jsonrpc::{OdooApiMethod, OdooId};
 use crate as odoo_api;
-
+use crate::jsonrpc::{OdooApiMethod, OdooId};
+use odoo_api_macros::odoo_api;
+use serde::{Deserialize, Serialize};
+use serde_json::{Map, Value};
+use serde_tuple::Serialize_tuple;
 
 /// Check the user credentials and return the user ID
 ///
