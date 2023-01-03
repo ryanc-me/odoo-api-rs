@@ -204,8 +204,8 @@ pub struct ChangeAdminPasswordResponse {
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L366-L372)
 #[odoo_api(
     service = "db",
-    method = "migrate_database",
-    name = "db_migrate_database",
+    method = "migrate_databases",
+    name = "db_migrate_databases",
     auth = false
 )]
 #[derive(Debug, Serialize_tuple)]
