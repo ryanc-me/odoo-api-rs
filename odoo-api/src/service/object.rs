@@ -8,6 +8,7 @@
 use crate as odoo_api;
 use crate::jsonrpc::{OdooApiMethod, OdooId};
 use odoo_api_macros::odoo_api;
+use serde::ser::SerializeTuple;
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
 use serde_tuple::Serialize_tuple;
@@ -24,7 +25,7 @@ use serde_tuple::Serialize_tuple;
 ///
 /// See: [odoo/service/model.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/model.py#L62-L68)
 #[odoo_api(service = "object", method = "execute", auth = true)]
-#[derive(Debug, Serialize_tuple, PartialEq)]
+#[derive(Debug, PartialEq)]
 pub struct Execute {
     /// The database name
     // #[odoo(auth="database")]
@@ -46,6 +47,45 @@ pub struct Execute {
 
     /// The arguments (*args)
     pub args: Vec<Value>,
+}
+
+// execute is a special case: each element of the `args` field must be serialized
+// as a sibling of the `model`/`method`/etc fields.
+//
+// so the final result looks like this:
+//
+// ```
+// "args": [
+//      database,
+//      uid,
+//      password,
+//      model,
+//      method
+//      args[1],
+//      args[2],
+//      args[3]
+//      ...
+// ]
+// ```
+//
+// also note that Execute needs to be serialized as a tuple, not an object
+impl Serialize for Execute {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        let mut state = serializer.serialize_tuple(5 + self.args.len())?;
+        state.serialize_element(&self.database)?;
+        state.serialize_element(&self.uid)?;
+        state.serialize_element(&self.password)?;
+        state.serialize_element(&self.model)?;
+        state.serialize_element(&self.method)?;
+        for arg in &self.args {
+            state.serialize_element(&arg)?;
+        }
+
+        state.end()
+    }
 }
 
 /// Represents the response to an Odoo [`Execute`]
