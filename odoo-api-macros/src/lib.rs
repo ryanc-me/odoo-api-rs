@@ -25,7 +25,7 @@ use syn::{parse_macro_input, AttributeArgs};
 ///  - Auth: Whether authentication is required, optional, or ignored
 ///
 /// For example, consider the following:
-/// ```no_run
+/// ```ignore
 /// // service: "object"
 /// // method: "execute"
 /// // auth: "yes"
@@ -43,7 +43,7 @@ use syn::{parse_macro_input, AttributeArgs};
 /// ```
 ///
 /// Then the following impls will be generated:
-/// ```no_run
+/// ```ignore
 /// // The `Execute` is able to be used as JSON-RPC `params`
 /// impl JsonRpcParams for Execute {
 ///     // Set the container; in this case, the container will use `describe` below
