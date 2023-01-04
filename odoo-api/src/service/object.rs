@@ -23,29 +23,82 @@ use serde_tuple::Serialize_tuple;
 /// you need to send `kwargs` to an Odoo method, you should use [`ExecuteKw`]
 /// instead
 ///
+/// ## Example
+/// ```no_run
+/// # use odoo_api::OdooClient;
+/// # let client = OdooClient::new_reqwest_blocking("").unwrap();
+/// # let client = client.authenticate_manual("", "", 1, "", None);
+/// use odoo_api::jvec;
+///
+/// // read `id` and `login` from users id=1,2,3
+/// client.execute(
+///     "res.users",
+///     "read",
+///     jvec![
+///         [1, 2, 3],
+///         ["id", "login"]
+///     ]
+/// );
+/// ```
+///
+/// ## Arguments
+///
+/// ### `method`
+///
+/// The `method` field indicates the Python function to be called. This can be
+/// any non-private method. Any method starting with an underscore (e.g. `_onchange_name`)
+/// is considered to be "private".
+///
+/// ### `args`
+///
+/// The arguments are passed to Python as `object.method_name(*args)`, so
+/// kwargs are technically supported here.
+///
+/// For example, consider the Python function
+/// ```python
+/// def search_read(domain, fields=None):
+///     pass
+/// ```
+///
+/// Our `args` field should be structured like:
+/// ```no_run
+/// # use odoo_api::jvec;
+/// let args = jvec![
+///     // element #1 goes to `domain`
+///     [
+///         ["name", "!=", "admin"],
+///     ],
+///
+///     // element #2 goes to `fields`
+///     ["id", "login"]
+/// ];
+/// ```
+///
+/// <br />
+///
+/// Also note that many Odoo methods accept `self` as the first param. In that
+/// case, you should pass a list of IDs as the first element.
+///
 /// See: [odoo/service/model.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/model.py#L62-L68)
 #[odoo_api(service = "object", method = "execute", auth = true)]
 #[derive(Debug)]
 pub struct Execute {
-    /// The database name
-    // #[odoo(auth="database")]
-    database: String,
+    /// The database name (auto-filled by [`OdooClient`](crate::client::OdooClient))
+    pub database: String,
 
-    /// The user id
-    // #[odoo(auth="database")]
-    uid: OdooId,
+    /// The user id (auto-filled by [`OdooClient`](crate::client::OdooClient))
+    pub uid: OdooId,
 
-    /// The user password
-    // #[odoo(auth="database")]
-    password: String,
+    /// The user password (auto-filled by [`OdooClient`](crate::client::OdooClient))
+    pub password: String,
 
     /// The model name
     pub model: String,
 
-    /// The method name (e.g. "read" or "create")
+    /// The method name
     pub method: String,
 
-    /// The arguments (*args)
+    /// The method arguments
     pub args: Vec<Value>,
 }
 
@@ -106,30 +159,79 @@ pub struct ExecuteResponse {
 ///
 /// This differs from `execute` in that keyword args (`kwargs`) can be passed.
 ///
+/// ## Execute:
+/// ```no_run
+/// # use odoo_api::OdooClient;
+/// # let client = OdooClient::new_reqwest_blocking("").unwrap();
+/// # let client = client.authenticate_manual("", "", 1, "", None);
+/// use odoo_api::{jvec, jmap};
+///
+/// // read `id` and `login` from any user whose email matches "%@example.com"
+/// client.execute_kw(
+///     "res.users",
+///     "search_read",
+///     jvec![
+///         [["login", "=ilike", "%@example.com"]]
+///     ],
+///     jmap!{
+///         "fields": ["id", "login"]
+///     }
+/// );
+/// ```
+///
+/// <br />
+///
+/// ## Arguments
+///
+/// ### `method`
+///
+/// The `method` field indicates the Python function to be called. This can be
+/// any non-private method. Any method starting with an underscore (e.g. `_onchange_name`)
+/// is considered to be "private".
+///
+/// ### `args` and `kwargs`
+///
+/// The method args (position and keyword) are passed to Python as `(*args, **kwargs)`.
+///
+/// For example:
+/// ```python
+/// # this function...
+/// def search_read(self, domain, fields=None):
+///     pass
+///
+/// # ...would be called like
+/// model.search_read(*args, **kwargs)
+/// ```
+///
+/// This is much simpler than [`Execute`].
+///
+/// Also note that many Odoo methods accept `self` as the first param. In that
+/// case, you should pass a list of IDs as the first element.
+///
 ///
 /// Reference: [odoo/service/model.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/model.py#L58-L59)
 #[odoo_api(service = "object", method = "execute_kw", auth = true)]
 #[derive(Debug, Serialize_tuple)]
 pub struct ExecuteKw {
-    /// The database name
-    database: String,
+    /// The database name (auto-filled by [`OdooClient`](crate::client::OdooClient))
+    pub database: String,
 
-    /// The user id
-    uid: OdooId,
+    /// The user id (auto-filled by [`OdooClient`](crate::client::OdooClient))
+    pub uid: OdooId,
 
-    /// The user password
-    password: String,
+    /// The user password (auto-filled by [`OdooClient`](crate::client::OdooClient))
+    pub password: String,
 
     /// The model name
     pub model: String,
 
-    /// The method name (e.g. "read" or "create")
+    /// The method name
     pub method: String,
 
-    /// The arguments (*args)
+    /// The positional arguments
     pub args: Vec<Value>,
 
-    /// The keyword-argments (**kwargs)
+    /// The keyword argments
     pub kwargs: Map<String, Value>,
 }
 
