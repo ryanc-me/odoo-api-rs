@@ -46,8 +46,8 @@ use serde_tuple::Serialize_tuple;
 /// ### `method`
 ///
 /// The `method` field indicates the Python function to be called. This can be
-/// any non-private method. Any method starting with an underscore (e.g. `_onchange_name`)
-/// is considered to be "private".
+/// any non-private method. Methods starting with an underscore (e.g. `_onchange_name`)
+/// are considered to be "private".
 ///
 /// ### `args`
 ///
@@ -186,8 +186,8 @@ pub struct ExecuteResponse {
 /// ### `method`
 ///
 /// The `method` field indicates the Python function to be called. This can be
-/// any non-private method. Any method starting with an underscore (e.g. `_onchange_name`)
-/// is considered to be "private".
+/// any non-private method. Methods starting with an underscore (e.g. `_onchange_name`)
+/// are considered to be "private".
 ///
 /// ### `args` and `kwargs`
 ///
@@ -195,11 +195,11 @@ pub struct ExecuteResponse {
 ///
 /// For example:
 /// ```python
-/// # this function...
+/// ## this function...
 /// def search_read(self, domain, fields=None):
 ///     pass
 ///
-/// # ...would be called like
+/// ## ...would be called like
 /// model.search_read(*args, **kwargs)
 /// ```
 ///
