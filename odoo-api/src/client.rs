@@ -9,6 +9,11 @@ pub use closure_async::ClosureResult as AsyncClosureResult;
 pub use closure_blocking::ClosureResult as BlockingClosureResult;
 pub use request::OdooRequest;
 
+pub use closure_blocking::ClosureBlocking;
+pub use closure_async::ClosureAsync;
+pub use reqwest_blocking::ReqwestBlocking;
+pub use reqwest_async::ReqwestAsync;
+
 #[allow(clippy::module_inception)]
 mod client {
     //! Internal module to make the `client.rs` file more readable
