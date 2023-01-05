@@ -25,6 +25,8 @@ use serde_tuple::Serialize_tuple;
 ///
 /// ## Example
 /// ```no_run
+/// # #[cfg(not(feature = "types-only"))]
+/// # {
 /// # use odoo_api::OdooClient;
 /// # let client = OdooClient::new_reqwest_blocking("").unwrap();
 /// # let client = client.authenticate_manual("", "", 1, "", None);
@@ -39,6 +41,7 @@ use serde_tuple::Serialize_tuple;
 ///         ["id", "login"]
 ///     ]
 /// );
+/// # }
 /// ```
 ///
 /// ## Arguments
@@ -161,6 +164,8 @@ pub struct ExecuteResponse {
 ///
 /// ## Execute:
 /// ```no_run
+/// # #[cfg(not(feature = "types-only"))]
+/// # {
 /// # use odoo_api::OdooClient;
 /// # let client = OdooClient::new_reqwest_blocking("").unwrap();
 /// # let client = client.authenticate_manual("", "", 1, "", None);
@@ -177,6 +182,7 @@ pub struct ExecuteResponse {
 ///         "fields": ["id", "login"]
 ///     }
 /// );
+/// # }
 /// ```
 ///
 /// <br />

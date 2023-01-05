@@ -11,6 +11,7 @@ use serde_json::{Map, Value};
 ///
 /// ## Example:
 /// ```no_run
+/// # #[cfg(not(feature = "types-only"))]
 /// # fn test() -> odoo_api::Result<()> {
 /// # use serde_json::{json, Value};
 /// # use odoo_api::{jvec, jmap};
@@ -61,6 +62,7 @@ macro_rules! jvec {
 ///
 /// ## Example:
 /// ```no_run
+/// # #[cfg(not(feature = "types-only"))]
 /// # fn test() -> odoo_api::Result<()> {
 /// # use serde_json::{json, Value, Map};
 /// # use odoo_api::{jvec, jmap};

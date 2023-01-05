@@ -226,6 +226,7 @@ fn impl_client(
     }
 
     Ok(quote! {
+        #[cfg(not(feature = "types-only"))]
         impl<I: odoo_api::client::RequestImpl, #auth_generic> odoo_api::client::OdooClient<#auth_type, I> {
             #[doc=#doc]
             pub fn #ident_call(&self, #(#field_arguments),*) -> odoo_api::client::OdooRequest< #ident_struct , I> {

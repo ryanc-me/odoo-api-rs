@@ -23,8 +23,10 @@
 //!
 //! Then make your requests:
 //! ```no_run
+//! # #[cfg(not(feature = "types-only"))]
 //! use odoo_api::{OdooClient, jvec, jmap};
 //!
+//! # #[cfg(not(feature = "types-only"))]
 //! # async fn test() -> odoo_api::Result<()> {
 //! // build the client and authenticate
 //! let url = "https://demo.odoo.com";
@@ -61,17 +63,21 @@
 //! # }
 //! ```
 
-use jsonrpc::response::JsonRpcError;
-use thiserror::Error;
+pub mod service;
 
 #[macro_use]
 mod macros;
-pub mod client;
-pub mod jsonrpc;
-pub mod service;
 
+#[cfg(not(feature = "types-only"))]
+pub mod client;
+#[cfg(not(feature = "types-only"))]
 pub use client::{AsyncClosureResult, BlockingClosureResult, OdooClient};
+
+pub mod jsonrpc;
+use jsonrpc::response::JsonRpcError;
 pub use jsonrpc::OdooId;
+
+use thiserror::Error;
 
 /// Convenience wrapper on the std `Result`
 pub type Result<T> = ::std::result::Result<T, Error>;
