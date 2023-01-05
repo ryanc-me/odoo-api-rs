@@ -103,7 +103,15 @@ where
     /// the JSON-RPC methods. We also store the bare URL, because that's
     /// used for "Web" methods
     pub(crate) fn build_urls(url: &str) -> (String, String) {
-        let url = url.to_string();
+        // ensure the last char isn't "/"
+        let len = url.len();
+        let url = if len > 0 && &url[len - 1..] == "/" {
+            url[0..len - 1].to_string()
+        } else {
+            url.to_string()
+        };
+
+        // build the cached "https://example.com/jsonrpc" URL
         let url_jsonrpc = format!("{}/jsonrpc", url);
 
         (url, url_jsonrpc)
@@ -223,6 +231,12 @@ where
             _impl: self._impl,
             id: self.id,
         }
+    }
+
+    /// Update the URL for this client
+    pub fn with_url(&mut self, url: &str) -> &mut Self {
+        (self.url, self.url_jsonrpc) = Self::build_urls(url);
+        self
     }
 }
 
