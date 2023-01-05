@@ -32,7 +32,7 @@ async = ["reqwest"]
 blocking = ["reqwest", "reqwest/blocking"]
 
 # Disable the "OdooClient" implementation. This is useful if you *only* need the
-# API method typess
+# API method types
 types-only = []
 
 [package.metadata.docs.rs]

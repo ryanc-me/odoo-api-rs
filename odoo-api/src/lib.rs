@@ -63,6 +63,15 @@
 //! # }
 //! ```
 
+// The types-only feature implies that the `client` module isn't included, so
+// `async` and `blocking` have no effect
+#[cfg(all(feature = "types-only", any(feature = "async", feature = "blocking")))]
+std::compile_error!(
+    "The `types-only` feature is mutually exclusive with the `async` and `blocking` \
+     features. Please disable the `async` and `blocking` by adding `default-features = false` \
+     to your Cargo.toml"
+);
+
 pub mod service;
 
 #[macro_use]
@@ -70,6 +79,7 @@ mod macros;
 
 #[cfg(not(feature = "types-only"))]
 pub mod client;
+
 #[cfg(not(feature = "types-only"))]
 pub use client::{AsyncClosureResult, BlockingClosureResult, OdooClient};
 
