@@ -27,13 +27,38 @@ use serde_tuple::Serialize_tuple;
 )]
 #[derive(Debug, Serialize_tuple)]
 pub struct CreateDatabase {
+    /// The Odoo master password
     pub passwd: String,
+
+    /// The name for the new database
     pub db_name: String,
+
+    /// Should demo data be included?
     pub demo: bool,
+
+    /// What language should be installed?
+    ///
+    /// This should be an "ISO" formatted string, e.g., "en_US" or "en_GB".
+    ///
+    /// See also: [`ListLang`]
     pub lang: String,
+
+    /// A password for the "admin" user
     pub user_password: String,
+
+    /// A login/username for the "admin" user
     pub login: String,
+
+    /// Optionally specify a country
+
+    /// This is used as a default for the default company created when the database
+    /// is initialised.
     pub country_code: Option<String>,
+
+    /// Optionally specify a phone number
+    ///
+    /// As with `country_code`, this is used as a default for the newly-created
+    /// company.
     pub phone: Option<String>,
 }
 
@@ -312,7 +337,12 @@ pub struct DbExistResponse {
 
 /// List the databases currently available to Odoo
 ///
-/// Docs TBC
+/// **WARNING**: This method *requires a session token*, e.g., an "authenticated"
+/// `OdooClient`. This requires that you perform a `client.authenticate()`, passing
+/// in a database name & user credentials.
+///
+/// [`web_database_list`](crate::service::web::DatabaseList) is an alternative that
+/// doesn't require a session (it can be sent from a non-authenticated client).
 ///
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L439-L442)  
 /// See also: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L388-L409)
