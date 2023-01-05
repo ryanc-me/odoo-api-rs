@@ -22,7 +22,7 @@ reqwest = { version = "0.11", features = ["json", "cookies"], optional = true }
 odoo-api-macros = { version = "0.2", path = "../odoo-api-macros" }
 
 [features]
-# By default, only the base types implementation is exposed
+# By default, fully reqwest async/blocking support is enabled
 default = ["async", "blocking"]
 
 # Include async Reqwest support
