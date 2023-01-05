@@ -206,7 +206,7 @@ fn impl_client(
                     #(#field_assigns),*
                 };
 
-                let url = #ident_call.describe();
+                let url = format!("{}{}", self.url, #ident_call.describe());
                 self.build_request(
                     #ident_call,
                     &url
