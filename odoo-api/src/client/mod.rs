@@ -1,8 +1,6 @@
 //! The user-facing API types
 //!
 //! This module provides a user-facing API for Odoo JSON-RPC methods.
-//!
-//! ##
 
 pub use http_impl::closure_async::ClosureResult as AsyncClosureResult;
 pub use http_impl::closure_blocking::ClosureResult as BlockingClosureResult;

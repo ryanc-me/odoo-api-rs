@@ -1,3 +1,5 @@
+//! The [`OdooRequest`] type and associated bits
+
 use super::RequestImpl;
 use crate::jsonrpc::{JsonRpcParams, JsonRpcRequest, JsonRpcResponse};
 use crate::Result;

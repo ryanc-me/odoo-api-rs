@@ -1,4 +1,4 @@
-//! Internal module to make the `client.rs` file more readable
+//! The [`OdooClient`] type and associated bits
 
 use super::OdooRequest;
 use crate::jsonrpc::{JsonRpcParams, OdooId, OdooWebMethod};
