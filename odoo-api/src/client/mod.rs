@@ -6,14 +6,14 @@
 
 pub use odoo_client::{AuthState, Authed, NotAuthed, OdooClient, RequestImpl};
 pub use odoo_request::OdooRequest;
-pub use req_impl::closure_async::ClosureResult as AsyncClosureResult;
-pub use req_impl::closure_blocking::ClosureResult as BlockingClosureResult;
+pub use http_impl::closure_async::ClosureResult as AsyncClosureResult;
+pub use http_impl::closure_blocking::ClosureResult as BlockingClosureResult;
 
-pub use req_impl::closure_async::ClosureAsync;
-pub use req_impl::closure_blocking::ClosureBlocking;
-pub use req_impl::reqwest_async::ReqwestAsync;
-pub use req_impl::reqwest_blocking::ReqwestBlocking;
+pub use http_impl::closure_async::ClosureAsync;
+pub use http_impl::closure_blocking::ClosureBlocking;
+pub use http_impl::reqwest_async::ReqwestAsync;
+pub use http_impl::reqwest_blocking::ReqwestBlocking;
 
 mod odoo_client;
 mod odoo_request;
-mod req_impl;
+mod http_impl;
