@@ -9,10 +9,10 @@ pub use closure_async::ClosureResult as AsyncClosureResult;
 pub use closure_blocking::ClosureResult as BlockingClosureResult;
 pub use request::OdooRequest;
 
-pub use closure_blocking::ClosureBlocking;
 pub use closure_async::ClosureAsync;
-pub use reqwest_blocking::ReqwestBlocking;
+pub use closure_blocking::ClosureBlocking;
 pub use reqwest_async::ReqwestAsync;
+pub use reqwest_blocking::ReqwestBlocking;
 
 #[allow(clippy::module_inception)]
 mod client {
