@@ -252,7 +252,7 @@ mod test {
                 login: "admin".into(),
                 password: "password".into(),
             }
-            .build(),
+            .build(1000),
         )?;
 
         assert_eq!(actual, expected);
@@ -305,7 +305,7 @@ mod test {
                     "base_location": "https://demo.odoo.com"
                 },
             }
-            .build(),
+            .build(1000),
         )?;
 
         assert_eq!(actual, expected);
@@ -342,7 +342,7 @@ mod test {
                 "args": []
             }
         });
-        let actual = to_value(Version {}.build())?;
+        let actual = to_value(Version {}.build(1000))?;
 
         assert_eq!(actual, expected);
 
@@ -392,7 +392,7 @@ mod test {
                 ]
             }
         });
-        let actual = to_value(About { extended: false }.build())?;
+        let actual = to_value(About { extended: false }.build(1000))?;
 
         assert_eq!(actual, expected);
 
@@ -435,7 +435,7 @@ mod test {
                 ]
             }
         });
-        let actual = to_value(About { extended: true }.build())?;
+        let actual = to_value(About { extended: true }.build(1000))?;
 
         assert_eq!(actual, expected);
 

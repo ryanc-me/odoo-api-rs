@@ -17,7 +17,7 @@ use serde_json::{Map, Value};
 /// # use odoo_api::{jvec, jmap};
 /// # use odoo_api::{OdooClient};
 /// # let client = OdooClient::new_reqwest_blocking("https://demo.odoo.com")?;
-/// # let client = client.authenticate_manual("", "", 1, "", None);
+/// # let mut client = client.authenticate_manual("", "", 1, "", None);
 /// // Manually
 /// let mut args = Vec::<Value>::new();
 /// args.push(json!([1, 2, 3]));
@@ -68,7 +68,7 @@ macro_rules! jvec {
 /// # use odoo_api::{jvec, jmap};
 /// # use odoo_api::{OdooClient};
 /// # let client = OdooClient::new_reqwest_blocking("https://demo.odoo.com")?;
-/// # let client = client.authenticate_manual("", "", 1, "", None);
+/// # let mut client = client.authenticate_manual("", "", 1, "", None);
 /// // Manually
 /// let mut kwargs = Map::<String, Value>::new();
 /// kwargs.insert("domain".into(), json!([["name", "ilike", "admin"]]));

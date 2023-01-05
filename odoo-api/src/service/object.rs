@@ -29,7 +29,7 @@ use serde_tuple::Serialize_tuple;
 /// # {
 /// # use odoo_api::OdooClient;
 /// # let client = OdooClient::new_reqwest_blocking("").unwrap();
-/// # let client = client.authenticate_manual("", "", 1, "", None);
+/// # let mut client = client.authenticate_manual("", "", 1, "", None);
 /// use odoo_api::jvec;
 ///
 /// // read `id` and `login` from users id=1,2,3
@@ -168,7 +168,7 @@ pub struct ExecuteResponse {
 /// # {
 /// # use odoo_api::OdooClient;
 /// # let client = OdooClient::new_reqwest_blocking("").unwrap();
-/// # let client = client.authenticate_manual("", "", 1, "", None);
+/// # let mut client = client.authenticate_manual("", "", 1, "", None);
 /// use odoo_api::{jvec, jmap};
 ///
 /// // read `id` and `login` from any user whose email matches "%@example.com"
@@ -306,7 +306,7 @@ mod test {
                 method: "read".into(),
                 args: jvec![[1, 2], ["id", "login"]],
             }
-            .build(),
+            .build(1000),
         )?;
 
         assert_eq!(actual, expected);
@@ -387,7 +387,7 @@ mod test {
                     "fields": ["id", "login"]
                 },
             }
-            .build(),
+            .build(1000),
         )?;
 
         assert_eq!(actual, expected);

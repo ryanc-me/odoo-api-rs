@@ -501,7 +501,7 @@ mod test {
                 country_code: None,
                 phone: Some("123 123 123".into()),
             }
-            .build(),
+            .build(1000),
         )?;
 
         assert_eq!(actual, expected);
@@ -548,7 +548,7 @@ mod test {
                 db_original_name: "old-database".into(),
                 db_name: "new-database".into(),
             }
-            .build(),
+            .build(1000),
         )?;
 
         assert_eq!(actual, expected);
@@ -593,7 +593,7 @@ mod test {
                 passwd: "master-password".into(),
                 db_name: "old-database".into(),
             }
-            .build(),
+            .build(1000),
         )?;
 
         assert_eq!(actual, expected);
@@ -640,7 +640,7 @@ mod test {
                 db_name: "old-database".into(),
                 format: DumpFormat::Zip,
             }
-            .build(),
+            .build(1000),
         )?;
 
         assert_eq!(actual, expected);
@@ -671,7 +671,7 @@ mod test {
                 db_name: "old-database".into(),
                 format: DumpFormat::Dump,
             }
-            .build(),
+            .build(1000),
         )?;
 
         assert_eq!(actual, expected);
@@ -718,7 +718,7 @@ mod test {
                 b64_data: "base64-data-would-be-here".into(),
                 restore_type: RestoreType::Move,
             }
-            .build(),
+            .build(1000),
         )?;
 
         assert_eq!(actual, expected);
@@ -749,7 +749,7 @@ mod test {
                 b64_data: "base64-data-would-be-here".into(),
                 restore_type: RestoreType::Copy,
             }
-            .build(),
+            .build(1000),
         )?;
 
         assert_eq!(actual, expected);
@@ -796,7 +796,7 @@ mod test {
                 old_name: "old-database".into(),
                 new_name: "new-database".into(),
             }
-            .build(),
+            .build(1000),
         )?;
 
         assert_eq!(actual, expected);
@@ -841,7 +841,7 @@ mod test {
                 passwd: "master-password".into(),
                 new_passwd: "new-master-password".into(),
             }
-            .build(),
+            .build(1000),
         )?;
 
         assert_eq!(actual, expected);
@@ -889,7 +889,7 @@ mod test {
                 passwd: "master-password".into(),
                 databases: vec!["new-database".into(), "new-database2".into()],
             }
-            .build(),
+            .build(1000),
         )?;
 
         assert_eq!(actual, expected);
@@ -932,7 +932,7 @@ mod test {
             DbExist {
                 db_name: "new-database".into(),
             }
-            .build(),
+            .build(1000),
         )?;
 
         assert_eq!(actual, expected);
@@ -971,7 +971,7 @@ mod test {
                 ]
             }
         });
-        let actual = to_value(List { document: false }.build())?;
+        let actual = to_value(List { document: false }.build(1000))?;
 
         assert_eq!(actual, expected);
 
@@ -1011,7 +1011,7 @@ mod test {
                 "args": []
             }
         });
-        let actual = to_value(ListLang {}.build())?;
+        let actual = to_value(ListLang {}.build(1000))?;
 
         assert_eq!(actual, expected);
 
@@ -1067,7 +1067,7 @@ mod test {
             ListCountries {
                 passwd: "master-password".into(),
             }
-            .build(),
+            .build(1000),
         )?;
 
         assert_eq!(actual, expected);
@@ -1118,7 +1118,7 @@ mod test {
                 "args": []
             }
         });
-        let actual = to_value(ServerVersion {}.build())?;
+        let actual = to_value(ServerVersion {}.build(1000))?;
 
         assert_eq!(actual, expected);
 

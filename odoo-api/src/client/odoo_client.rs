@@ -1,7 +1,7 @@
 //! The [`OdooClient`] type and associated bits
 
 use super::OdooRequest;
-use crate::jsonrpc::{JsonRpcParams, OdooId, OdooWebMethod};
+use crate::jsonrpc::{JsonRpcId, JsonRpcParams, OdooId, OdooWebMethod};
 use crate::service::web::{SessionAuthenticate, SessionAuthenticateResponse};
 use crate::Result;
 use serde::Serialize;
@@ -58,7 +58,7 @@ pub trait RequestImpl {}
 ///
 /// # async fn test() -> odoo_api::Result<()> {
 /// let url = "https://demo.odoo.com";
-/// let client = OdooClient::new_reqwest_async(url)?
+/// let mut client = OdooClient::new_reqwest_async(url)?
 ///     .authenticate(
 ///         "test-database",
 ///         "admin",
@@ -87,6 +87,8 @@ where
 
     pub(crate) auth: S,
     pub(crate) _impl: I,
+
+    pub(crate) id: JsonRpcId,
 }
 
 // Base client methods
@@ -112,13 +114,25 @@ where
     /// This returns an [`OdooRequest`] typed to the Clients (`self`s) [`RequestImpl`],
     /// and to its auth state. The returned request is bound by lifetime `'a` to the client.
     /// The URL is converted into a full String, so no lifetimes apply there.
-    pub(crate) fn build_request<'a, T>(&'a self, data: T, url: &str) -> OdooRequest<'a, T, I>
+    pub(crate) fn build_request<'a, T>(&'a mut self, data: T, url: &str) -> OdooRequest<'a, T, I>
     where
         T: JsonRpcParams + Debug,
         T::Container<T>: Debug + Serialize,
         S: AuthState,
     {
-        OdooRequest::new(data.build(), url.into(), self.session_id(), &self._impl)
+        OdooRequest::new(
+            data.build(self.next_id()),
+            url.into(),
+            self.session_id(),
+            &self._impl,
+        )
+    }
+
+    /// Fetch the next id
+    pub(crate) fn next_id(&mut self) -> JsonRpcId {
+        let id = self.id;
+        self.id += 1;
+        id
     }
 
     /// Helper method to perform the 1st stage of the authentication request
@@ -129,7 +143,7 @@ where
     /// This is necessary because each `RequestImpl` has its own `send()` signature
     /// (i.e., some are `fn send()`, some are `async fn send()`).
     pub(crate) fn get_auth_request(
-        &self,
+        &mut self,
         db: &str,
         login: &str,
         password: &str,
@@ -178,6 +192,7 @@ where
             url_jsonrpc: self.url_jsonrpc,
             auth,
             _impl: self._impl,
+            id: self.id,
         })
     }
 
@@ -206,6 +221,7 @@ where
             url_jsonrpc: self.url_jsonrpc,
             auth,
             _impl: self._impl,
+            id: self.id,
         }
     }
 }
@@ -230,6 +246,7 @@ where
             url_jsonrpc,
             auth: NotAuthed {},
             _impl,
+            id: 1,
         }
     }
 }

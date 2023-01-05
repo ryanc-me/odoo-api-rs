@@ -49,7 +49,7 @@ where
     type Container<T>: Debug + Serialize;
     type Response: Debug + DeserializeOwned;
 
-    fn build(self) -> JsonRpcRequest<Self>;
+    fn build(self, id: JsonRpcId) -> JsonRpcRequest<Self>;
 }
 
 /// A struct representing the full JSON-RPC request body
@@ -77,6 +77,8 @@ where
 }
 
 mod api {
+    use crate::jsonrpc::JsonRpcId;
+
     use super::{JsonRpcMethod, JsonRpcParams, JsonRpcRequest, JsonRpcVersion};
     use serde::ser::{SerializeStruct, Serializer};
     use serde::Serialize;
@@ -121,18 +123,7 @@ mod api {
         fn describe(&self) -> (&'static str, &'static str);
 
         /// Build `self` into a full [`JsonRpcRequest`]
-        fn _build(self) -> JsonRpcRequest<Self> {
-            let id = {
-                #[cfg(test)]
-                {
-                    // use a known id when testing
-                    1000
-                }
-                #[cfg(not(test))]
-                {
-                    1000
-                }
-            };
+        fn _build(self, id: JsonRpcId) -> JsonRpcRequest<Self> {
             JsonRpcRequest {
                 jsonrpc: JsonRpcVersion::V2,
                 method: JsonRpcMethod::Call,
@@ -147,7 +138,7 @@ mod web {
     use serde::Serialize;
     use std::fmt::Debug;
 
-    use super::{JsonRpcMethod, JsonRpcParams, JsonRpcRequest, JsonRpcVersion};
+    use super::{JsonRpcId, JsonRpcMethod, JsonRpcParams, JsonRpcRequest, JsonRpcVersion};
 
     /// The container type for an Odoo "Web" request
     ///
@@ -178,11 +169,11 @@ mod web {
         fn describe(&self) -> &'static str;
 
         /// Build `self` into a full [`JsonRpcRequest`]
-        fn _build(self) -> JsonRpcRequest<Self> {
+        fn _build(self, id: JsonRpcId) -> JsonRpcRequest<Self> {
             JsonRpcRequest {
                 jsonrpc: JsonRpcVersion::V2,
                 method: JsonRpcMethod::Call,
-                id: 1000,
+                id,
                 params: OdooWebContainer { inner: self },
             }
         }

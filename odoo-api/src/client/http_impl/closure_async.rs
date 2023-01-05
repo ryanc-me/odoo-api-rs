@@ -40,7 +40,7 @@ where
     S: AuthState,
 {
     pub async fn authenticate(
-        self,
+        mut self,
         db: &str,
         login: &str,
         password: &str,

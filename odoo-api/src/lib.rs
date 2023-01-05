@@ -30,7 +30,7 @@
 //! # async fn test() -> odoo_api::Result<()> {
 //! // build the client and authenticate
 //! let url = "https://demo.odoo.com";
-//! let client = OdooClient::new_reqwest_async(url)?
+//! let mut client = OdooClient::new_reqwest_async(url)?
 //!     .authenticate(
 //!         "some-database",
 //!         "admin",

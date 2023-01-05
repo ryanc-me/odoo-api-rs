@@ -114,7 +114,7 @@ pub(crate) fn impl_params(ident_struct: &Ident, ident_response: &Ident) -> Resul
             type Container<T> = odoo_api::jsonrpc::OdooWebContainer <Self>;
             type Response = #ident_response;
 
-            fn build(self) -> odoo_api::jsonrpc::JsonRpcRequest<Self> { self._build() }
+            fn build(self, id: odoo_api::jsonrpc::JsonRpcId) -> odoo_api::jsonrpc::JsonRpcRequest<Self> { self._build(id) }
         }
     })
 }
@@ -202,7 +202,7 @@ fn impl_client(
     Ok(quote! {
         #[cfg(not(feature = "types-only"))]
         impl<I: odoo_api::client::RequestImpl, #auth_generic> odoo_api::client::OdooClient<#auth_type, I> {
-            pub fn #ident_call(&self, #(#field_arguments),*) -> odoo_api::client::OdooRequest< #ident_struct , I> {
+            pub fn #ident_call(&mut self, #(#field_arguments),*) -> odoo_api::client::OdooRequest< #ident_struct , I> {
                 let #ident_call = #ident_struct {
                     #(#field_assigns),*
                 };

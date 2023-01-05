@@ -35,7 +35,7 @@ where
     S: AuthState,
 {
     pub fn authenticate(
-        self,
+        mut self,
         db: &str,
         login: &str,
         password: &str,
