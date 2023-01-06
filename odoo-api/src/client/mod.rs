@@ -10,7 +10,11 @@ pub use odoo_request::OdooRequest;
 pub use error::{Error, Result};
 pub use http_impl::closure_async::ClosureAsync;
 pub use http_impl::closure_blocking::ClosureBlocking;
+
+#[cfg(feature = "async")]
 pub use http_impl::reqwest_async::ReqwestAsync;
+
+#[cfg(feature = "blocking")]
 pub use http_impl::reqwest_blocking::ReqwestBlocking;
 
 pub mod error;
