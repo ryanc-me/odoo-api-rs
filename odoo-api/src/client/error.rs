@@ -47,7 +47,7 @@ pub type AuthenticationResult<T> = std::result::Result<T, AuthenticationError>;
 pub enum ClosureError {
     /// An error occured inside the custom closure
     ///
-    /// We include a blanket from Box<dyn Error> here because the concrete error
+    /// We include a blanket from Box\<dyn Error\> here because the concrete error
     /// type cannot be known here (i.e., only the crate *consumer* will know the
     /// type). This allows `fallible()?` to correctly return the ClosureError type
     #[error(transparent)]
@@ -171,7 +171,7 @@ pub type ReqwestAuthResult<T> = std::result::Result<T, ReqwestAuthError>;
 pub enum Error {
     /// An error occured inside the custom closure
     ///
-    /// We include a blanket from Box<dyn Error> here because the concrete error
+    /// We include a blanket from Box\<dyn Error\> here because the concrete error
     /// type cannot be known here (i.e., only the crate *consumer* will know the
     /// type). This allows `fallible()?` to correctly return the ClosureError type
     #[error(transparent)]
