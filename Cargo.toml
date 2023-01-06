@@ -4,3 +4,6 @@ members = [
     'odoo-api-macros',
     'odoo-api',
 ]
+
+[patch.crates-io]
+odoo-api-macros = { version = "0.2", path = "odoo-api-macros" }
