@@ -25,6 +25,23 @@ use serde_tuple::Serialize_tuple;
 /// "login" is a misnomer - it doesn't actually "login", just checks the credentials
 /// and returns the ID.
 ///
+/// ## Example
+/// ```no_run
+/// # #[cfg(not(feature = "types-only"))]
+/// # fn test() -> Result<(), Box<dyn std::error::Error>> {
+/// # use odoo_api::OdooClient;
+/// # let client = OdooClient::new_reqwest_blocking("")?;
+/// # let mut client = client.authenticate_manual("", "", 1, "", None);
+/// // note that auth fields (db, login, password) are auto-filled
+/// // for you by the client
+/// let resp = client.common_login().send()?;
+///
+/// println!("UID: {}", resp.uid);
+/// # Ok(())
+/// # }
+/// ```
+///<br />
+///
 /// See: [odoo/service/common.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/common.py#L19-L20)  
 /// See also: [base/models/res_users.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/addons/base/models/res_users.py#L762-L787)
 #[odoo_api(
@@ -59,6 +76,29 @@ pub struct LoginResponse {
 /// param `user_agent_env`, which is normally sent by the browser.
 ///
 /// This method is inteded for browser-based API implementations. You should use [`Login`] instead.
+///
+/// ## Example
+/// ```no_run
+/// # #[cfg(not(feature = "types-only"))]
+/// # fn test() -> Result<(), Box<dyn std::error::Error>> {
+/// # use odoo_api::OdooClient;
+/// # let client = OdooClient::new_reqwest_blocking("")?;
+/// # let mut client = client.authenticate_manual("", "", 1, "", None);
+/// use odoo_api::jmap;
+///
+/// // note that auth fields (db, login, password) are auto-filled
+/// // for you by the client
+/// let resp = client.common_authenticate(
+///     jmap!{
+///         "base_location": "https://demo.odoo.com"
+///     }
+/// ).send()?;
+///
+/// println!("UID: {}", resp.uid);
+/// # Ok(())
+/// # }
+/// ```
+///<br />
 ///
 /// See: [odoo/service/common.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/common.py#L22-L29)  
 /// See also: [base/models/res_users.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/addons/base/models/res_users.py#L762-L787)
@@ -99,6 +139,21 @@ pub struct AuthenticateResponse {
 /// with an added field to indicate whether the server is running Enterprise or
 /// Community edition. In practice, `minor` and `micro` are typically both `0`,
 /// so an Odoo version looks something like: `14.0.0.final.0.e`
+///
+/// ## Example
+/// ```no_run
+/// # #[cfg(not(feature = "types-only"))]
+/// # fn test() -> Result<(), Box<dyn std::error::Error>> {
+/// # use odoo_api::OdooClient;
+/// # let client = OdooClient::new_reqwest_blocking("")?;
+/// # let mut client = client.authenticate_manual("", "", 1, "", None);
+/// let resp = client.common_version().send()?;
+///
+/// println!("Version Info: {:#?}", resp);
+/// # Ok(())
+/// # }
+/// ```
+///<br />
 ///
 /// See: [odoo/service/common.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/common.py#L31-L32)  
 /// See also: [odoo/service/common.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/common.py#L12-L17)  
@@ -171,6 +226,21 @@ pub struct ServerVersionInfo {
 ///
 /// This call isn't particularly useful on its own - you probably want to use [`Version`]
 /// instead.
+///
+/// ## Example
+/// ```no_run
+/// # #[cfg(not(feature = "types-only"))]
+/// # fn test() -> Result<(), Box<dyn std::error::Error>> {
+/// # use odoo_api::OdooClient;
+/// # let client = OdooClient::new_reqwest_blocking("")?;
+/// # let mut client = client.authenticate_manual("", "", 1, "", None);
+/// let resp = client.common_about(true).send()?;
+///
+/// println!("About Info: {:?}", resp);
+/// # Ok(())
+/// # }
+/// ```
+///<br />
 ///
 /// See: [odoo/service/common.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/common.py#L34-L45)  
 /// See also: [odoo/release.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/release.py)
