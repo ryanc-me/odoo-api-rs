@@ -16,7 +16,8 @@ use serde_tuple::Serialize_tuple;
 
 /// Create and initialize a new database
 ///
-/// Docs TBC
+/// Note that this request may take some time to complete, and it's likely
+/// worth only firing this from an async-type client
 ///
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L136-L142)
 #[odoo_api(
@@ -50,9 +51,11 @@ pub struct CreateDatabase {
     pub login: String,
 
     /// Optionally specify a country
-
+    ///
     /// This is used as a default for the default company created when the database
     /// is initialised.
+    ///
+    /// See also: [`ListCountries`]
     pub country_code: Option<String>,
 
     /// Optionally specify a phone number
@@ -62,6 +65,7 @@ pub struct CreateDatabase {
     pub phone: Option<String>,
 }
 
+/// The response to a [`CreateDatabase`] request
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct CreateDatabaseResponse {
@@ -70,7 +74,8 @@ pub struct CreateDatabaseResponse {
 
 /// Duplicate a database
 ///
-/// Docs TBC
+/// Note that this request may take some time to complete, and it's likely
+/// worth only firing this from an async-type client
 ///
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L144-L184)
 #[odoo_api(
@@ -81,11 +86,17 @@ pub struct CreateDatabaseResponse {
 )]
 #[derive(Debug, Serialize_tuple)]
 pub struct DuplicateDatabase {
+    /// The Odoo master password
     pub passwd: String,
+
+    /// The original DB name (copy source)
     pub db_original_name: String,
+
+    /// The new DB name (copy dest)
     pub db_name: String,
 }
 
+/// The response to a [`DuplicateDatabase`] request
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct DuplicateDatabaseResponse {
@@ -94,16 +105,21 @@ pub struct DuplicateDatabaseResponse {
 
 /// Drop (delete) a database
 ///
-/// Docs TBC
+/// Note that this request may take some time to complete, and it's likely
+/// worth only firing this from an async-type client
 ///
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L212-L217)
 #[odoo_api(service = "db", method = "drop", name = "db_drop", auth = false)]
 #[derive(Debug, Serialize_tuple)]
 pub struct Drop {
+    /// The Odoo master password
     pub passwd: String,
+
+    /// The database to be deleted
     pub db_name: String,
 }
 
+/// The response to a [`Drop`] request
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct DropResponse {
@@ -112,17 +128,23 @@ pub struct DropResponse {
 
 /// Dump (backup) a database, optionally including the filestore folder
 ///
-/// Note that the data is returned a base64-encoded buffer.
+/// Note that this request may take some time to complete, and it's likely
+/// worth only firing this from an async-type client
 ///
-/// Docs TBC
+/// Note that the data is returned a base64-encoded buffer.
 ///
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L212-L217)  
 /// See also: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L219-L269)
 #[odoo_api(service = "db", method = "dump", name = "db_dump", auth = false)]
 #[derive(Debug, Serialize_tuple)]
 pub struct Dump {
+    /// The Odoo master password
     pub passwd: String,
+
+    /// The database to be backed-up
     pub db_name: String,
+
+    /// The dump format. See [`DumpFormat`] for more info
     pub format: crate::service::db::DumpFormat,
 }
 
@@ -155,23 +177,43 @@ pub enum DumpFormat {
     Dump,
 }
 
+/// The response to a [`Dump`] request
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct DumpResponse {
+    /// The database dump, as a base-64 encoded string
+    ///
+    /// Note that the file type will depend on the `format` used in the original request:
+    /// - [`DumpFormat::Zip`]: `backup.zip`
+    /// - [`DumpFormat::Dump`]: `backup.dump` (text file containig SQL CREATE/INSERT/etc statements )
     pub b64_bytes: String,
 }
 
 /// Upload and restore an Odoo dump to a new database
 ///
-/// Docs TBC
+/// Note that this request may take some time to complete, and it's likely
+/// worth only firing this from an async-type client
+///
+/// Note also that the uploaded "file" must:
+///  - Be a zip file
+///  - Contain a folder named `filestore`, whose direct descendents are the databases filestore content (e.g. `filestore/a0`, `filestore/a1`, etc)
+///  - Contain a file name `dump.sql`, which is a `pg_dump` "plain" format dump (e.g. a text file of SQL statements)
+///
+/// Typically Odoo backups also include a `manifest.json`, but this file isn't checked
+/// by the Restore endpoint.
 ///
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L271-L284)  
 /// See also: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L286-L335)
 #[odoo_api(service = "db", method = "restore", name = "db_restore", auth = false)]
 #[derive(Debug, Serialize_tuple)]
 pub struct Restore {
+    /// The Odoo master password
     pub passwd: String,
+
+    /// The backup data, as a base64-encoded string
     pub b64_data: String,
+
+    /// The restore type (see [`RestoreType`])
     pub restore_type: RestoreType,
 }
 
@@ -239,6 +281,7 @@ impl<'de> Deserialize<'de> for RestoreType {
     }
 }
 
+/// The response to a [`Restore`] request
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct RestoreResponse {
@@ -247,17 +290,29 @@ pub struct RestoreResponse {
 
 /// Rename a database
 ///
-/// Docs TBC
+/// On the Odoo side, this is handled by issuing an SQL query like:
+/// ```sql
+/// ALTER DATABSE {old_name} RENAME TO {new_name};
+/// ```
+///
+/// It should be a fairly quick request, but note that the above `ALTER DATABASE` statement
+/// may fail for various reasons. See the Postgres documentation for info.
 ///
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L337-L358)
 #[odoo_api(service = "db", method = "rename", name = "db_rename", auth = false)]
 #[derive(Debug, Serialize_tuple)]
 pub struct Rename {
+    /// The Odoo master password
     pub passwd: String,
+
+    /// The database name
     pub old_name: String,
+
+    /// The new database name
     pub new_name: String,
 }
 
+/// The response to a [`Rename`] request
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct RenameResponse {
@@ -266,7 +321,8 @@ pub struct RenameResponse {
 
 /// Change the Odoo "master password"
 ///
-/// Docs TBC
+/// This method updates the Odoo config file, writing a new value to the `admin_passwd`
+/// key. If the config file is not writeable by Odoo, this will fail.
 ///
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L360-L364)
 #[odoo_api(
@@ -277,10 +333,14 @@ pub struct RenameResponse {
 )]
 #[derive(Debug, Serialize_tuple)]
 pub struct ChangeAdminPassword {
+    /// The Odoo master password
     pub passwd: String,
+
+    /// The  new Odoo master password
     pub new_passwd: String,
 }
 
+/// The response to a [`ChangeAdminPassword`] request
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct ChangeAdminPasswordResponse {
@@ -297,8 +357,6 @@ pub struct ChangeAdminPasswordResponse {
 /// isn't useful on its own. If you need to upgrade a module, the [`Execute`][crate::service::object::Execute]
 /// is probably more suitable.
 ///
-/// Docs TBC
-///
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L366-L372)
 #[odoo_api(
     service = "db",
@@ -308,10 +366,14 @@ pub struct ChangeAdminPasswordResponse {
 )]
 #[derive(Debug, Serialize_tuple)]
 pub struct MigrateDatabases {
+    /// The Odoo master password
     pub passwd: String,
+
+    /// A list of databases to be migrated
     pub databases: Vec<String>,
 }
 
+/// The response to a [`MigrateDatabases`] request
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct MigrateDatabasesResponse {
@@ -320,15 +382,15 @@ pub struct MigrateDatabasesResponse {
 
 /// Check if a database exists
 ///
-/// Docs TBC
-///
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L378-L386)
 #[odoo_api(service = "db", method = "db_exist", auth = false)]
 #[derive(Debug, Serialize_tuple)]
 pub struct DbExist {
+    /// The database name to check
     pub db_name: String,
 }
 
+/// The response to a [`DbExist`] request
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct DbExistResponse {
@@ -336,13 +398,6 @@ pub struct DbExistResponse {
 }
 
 /// List the databases currently available to Odoo
-///
-/// **WARNING**: This method *requires a session token*, e.g., an "authenticated"
-/// `OdooClient`. This requires that you perform a `client.authenticate()`, passing
-/// in a database name & user credentials.
-///
-/// [`web_database_list`](crate::service::web::DatabaseList) is an alternative that
-/// doesn't require a session (it can be sent from a non-authenticated client).
 ///
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L439-L442)  
 /// See also: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L388-L409)
@@ -353,6 +408,7 @@ pub struct List {
     pub document: bool,
 }
 
+/// The response to a [`List`] request
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct ListResponse {
@@ -363,8 +419,6 @@ pub struct ListResponse {
 ///
 /// Note that this function is used by the database manager, in order to let the
 /// user select which language should be used when creating a new database.
-///
-/// Docs TBC
 ///
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L444-L445)
 #[odoo_api(
@@ -387,15 +441,27 @@ impl Serialize for ListLang {
     }
 }
 
+/// The response to a [`ListLang`] request
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct ListLangResponse {
     pub languages: Vec<ListLangResponseItem>,
 }
 
+/// A single language item from the [`ListLang`] request
 #[derive(Debug, Serialize_tuple, Deserialize)]
 pub struct ListLangResponseItem {
+    /// The ISO language code (e.g., `en_GB`)
     pub code: String,
+
+    /// The "pretty" language name
+    ///
+    /// This is formatted as: `english_pretty_name / local_name`
+    ///
+    /// Examples:
+    ///     - `Danish / Dansk`
+    ///     - `English (UK)`
+    ///     - `Chinese (Simplified) / 简体中文`
     pub name: String,
 }
 
@@ -403,8 +469,6 @@ pub struct ListLangResponseItem {
 ///
 /// Note that this function is used by the database manager, in order to let the
 /// user select which country should be used when creating a new database.
-///
-/// Docs TBC
 ///
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L447-L454)
 #[odoo_api(
@@ -415,24 +479,34 @@ pub struct ListLangResponseItem {
 )]
 #[derive(Debug, Serialize_tuple)]
 pub struct ListCountries {
+    /// The Odoo master password
     pub passwd: String,
 }
 
+/// The response to a [`ListCountries`] request
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct ListCountriesResponse {
     pub countries: Vec<ListLangResponseItem>,
 }
 
+/// A single country item from the [`ListCountries`] request
 #[derive(Debug, Serialize_tuple, Deserialize)]
 pub struct ListCountriesResponseItem {
+    /// The ISO country code
     pub code: String,
+
+    /// An English "pretty" representation of the country name, e.g.:
+    ///     - `Afghanistan`
+    ///     - `China`
+    ///     - `New Zealand`
     pub name: String,
 }
 
 /// Return the server version
 ///
-/// Docs TBC
+/// This returns the "base" server version, e.g., `14.0` or `15.0`. It does not
+/// include any indication of whether the database is Community or Enterprise
 ///
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L456-L460)
 #[odoo_api(
@@ -455,9 +529,11 @@ impl Serialize for ServerVersion {
     }
 }
 
+/// The response to a [`ServerVersion`] request
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct ServerVersionResponse {
+    /// The database version, e.g., `14.0` or `15.0`
     pub version: String,
 }
 
