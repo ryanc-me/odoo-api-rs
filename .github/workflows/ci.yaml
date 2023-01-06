@@ -33,8 +33,8 @@ jobs:
           override: true
       - uses: actions-rs/cargo@v1
         with:
-          command: test 
-          args: --all-features
+          command: test
+          args: --features=async,blocking
 
   fmt:
     name: Rustfmt
