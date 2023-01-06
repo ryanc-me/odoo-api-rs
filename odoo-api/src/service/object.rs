@@ -26,9 +26,9 @@ use serde_tuple::Serialize_tuple;
 /// ## Example
 /// ```no_run
 /// # #[cfg(not(feature = "types-only"))]
-/// # {
+/// # fn test() -> Result<(), Box<dyn std::error::Error>> {
 /// # use odoo_api::OdooClient;
-/// # let client = OdooClient::new_reqwest_blocking("").unwrap();
+/// # let client = OdooClient::new_reqwest_blocking("")?;
 /// # let mut client = client.authenticate_manual("", "", 1, "", None);
 /// use odoo_api::jvec;
 ///
@@ -40,9 +40,12 @@ use serde_tuple::Serialize_tuple;
 ///         [1, 2, 3],
 ///         ["id", "login"]
 ///     ]
-/// );
+/// ).send()?;
+/// # Ok(())
 /// # }
 /// ```
+///
+/// <br />
 ///
 /// ## Arguments
 ///
@@ -165,9 +168,9 @@ pub struct ExecuteResponse {
 /// ## Execute:
 /// ```no_run
 /// # #[cfg(not(feature = "types-only"))]
-/// # {
+/// # fn test() -> Result<(), Box<dyn std::error::Error>> {
 /// # use odoo_api::OdooClient;
-/// # let client = OdooClient::new_reqwest_blocking("").unwrap();
+/// # let client = OdooClient::new_reqwest_blocking("")?;
 /// # let mut client = client.authenticate_manual("", "", 1, "", None);
 /// use odoo_api::{jvec, jmap};
 ///
@@ -181,7 +184,8 @@ pub struct ExecuteResponse {
 ///     jmap!{
 ///         "fields": ["id", "login"]
 ///     }
-/// );
+/// ).send()?;
+/// # Ok(())
 /// # }
 /// ```
 ///
@@ -214,6 +218,7 @@ pub struct ExecuteResponse {
 /// Also note that many Odoo methods accept `self` as the first param. In that
 /// case, you should pass a list of IDs as the first element.
 ///
+/// <br />
 ///
 /// Reference: [odoo/service/model.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/model.py#L58-L59)
 #[odoo_api(service = "object", method = "execute_kw", auth = true)]
