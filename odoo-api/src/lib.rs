@@ -81,7 +81,7 @@ mod macros;
 pub mod client;
 
 #[cfg(not(feature = "types-only"))]
-pub use client::{AsyncClosureResult, BlockingClosureResult, OdooClient};
+pub use client::{AsyncClosureReturn, BlockingClosureReturn, OdooClient};
 
 pub mod jsonrpc;
 pub use jsonrpc::OdooId;
