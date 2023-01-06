@@ -254,8 +254,9 @@ pub struct ExecuteKwResponse {
 #[cfg(test)]
 mod test {
     use super::*;
+    use crate::client::error::Result;
     use crate::jsonrpc::{JsonRpcParams, JsonRpcResponse};
-    use crate::{jmap, jvec, Result};
+    use crate::{jmap, jvec};
     use serde_json::{from_value, json, to_value};
 
     /// Test that serializing the [`Execute`] struct produces the expected

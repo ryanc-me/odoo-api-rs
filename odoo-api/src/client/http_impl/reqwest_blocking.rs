@@ -1,6 +1,6 @@
+use crate::client::error::{ReqwestAuthResult, ReqwestError, ReqwestResult};
 use crate::client::{AuthState, Authed, NotAuthed, OdooClient, OdooRequest, RequestImpl};
 use crate::jsonrpc::JsonRpcParams;
-use crate::Result;
 use reqwest::blocking::Client;
 use serde::Serialize;
 use std::fmt::Debug;
@@ -8,10 +8,12 @@ use std::fmt::Debug;
 pub struct ReqwestBlocking {
     client: Client,
 }
-impl RequestImpl for ReqwestBlocking {}
+impl RequestImpl for ReqwestBlocking {
+    type Error = ReqwestError;
+}
 
 impl OdooClient<NotAuthed, ReqwestBlocking> {
-    pub fn new_reqwest_blocking(url: &str) -> Result<Self> {
+    pub fn new_reqwest_blocking(url: &str) -> Result<Self, reqwest::Error> {
         let client = Client::builder().cookie_store(true).build()?;
 
         Ok(Self::new(url, ReqwestBlocking { client }))
@@ -27,10 +29,10 @@ where
         db: &str,
         login: &str,
         password: &str,
-    ) -> Result<OdooClient<Authed, ReqwestBlocking>> {
+    ) -> ReqwestAuthResult<OdooClient<Authed, ReqwestBlocking>> {
         let request = self.get_auth_request(db, login, password);
         let (response, session_id) = request.send_internal()?;
-        self.parse_auth_response(db, login, password, response, session_id)
+        Ok(self.parse_auth_response(db, login, password, response, session_id)?)
     }
 }
 
@@ -39,11 +41,11 @@ where
     T: JsonRpcParams + Debug + Serialize,
     T::Container<T>: Debug + Serialize,
 {
-    pub fn send(self) -> Result<T::Response> {
+    pub fn send(self) -> ReqwestResult<T::Response> {
         Ok(self.send_internal()?.0)
     }
 
-    fn send_internal(self) -> Result<(T::Response, Option<String>)> {
+    fn send_internal(self) -> ReqwestResult<(T::Response, Option<String>)> {
         let request = self._impl.client.post(&self.url).json(&self.data);
         let response = request.send()?;
         Ok((self.parse_response(&response.text()?)?, None))

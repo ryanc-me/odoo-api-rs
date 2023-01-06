@@ -12,7 +12,7 @@ use serde_json::{Map, Value};
 /// ## Example:
 /// ```no_run
 /// # #[cfg(not(feature = "types-only"))]
-/// # fn test() -> odoo_api::Result<()> {
+/// # fn test() -> odoo_api::client::error::Result<()> {
 /// # use serde_json::{json, Value};
 /// # use odoo_api::{jvec, jmap};
 /// # use odoo_api::{OdooClient};
@@ -27,7 +27,7 @@ use serde_json::{Map, Value};
 ///     "res.users",
 ///     "read",
 ///     args,
-/// );
+/// ).send()?;
 ///
 /// // With jvec![]:
 /// let request = client.execute(
@@ -37,7 +37,7 @@ use serde_json::{Map, Value};
 ///         [1, 2, 3],
 ///         ["id", "login"]
 ///     ]
-/// );
+/// ).send()?;
 /// # Ok(())
 /// # }
 /// ```
@@ -63,7 +63,7 @@ macro_rules! jvec {
 /// ## Example:
 /// ```no_run
 /// # #[cfg(not(feature = "types-only"))]
-/// # fn test() -> odoo_api::Result<()> {
+/// # fn test() -> odoo_api::client::error::Result<()> {
 /// # use serde_json::{json, Value, Map};
 /// # use odoo_api::{jvec, jmap};
 /// # use odoo_api::{OdooClient};
@@ -79,7 +79,7 @@ macro_rules! jvec {
 ///     "search_read",
 ///     jvec![],
 ///     kwargs,
-/// );
+/// ).send()?;
 ///
 /// // With jmap!{}:
 /// let request = client.execute_kw(
@@ -90,7 +90,7 @@ macro_rules! jvec {
 ///         "domain": [["name", "ilike", "admin"]],
 ///         "fields": ["id", "login"]
 ///     }
-/// );
+/// ).send()?;
 /// # Ok(())
 /// # }
 /// ```

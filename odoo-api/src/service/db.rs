@@ -464,8 +464,8 @@ pub struct ServerVersionResponse {
 #[cfg(test)]
 mod test {
     use super::*;
+    use crate::client::error::Result;
     use crate::jsonrpc::{JsonRpcParams, JsonRpcResponse};
-    use crate::Result;
     use serde_json::{from_value, json, to_value};
 
     /// See [`crate::service::object::test::execute`] for more info

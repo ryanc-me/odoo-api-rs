@@ -72,6 +72,14 @@ pub struct JsonRpcError {
     pub data: JsonRpcErrorData,
 }
 
+impl std::fmt::Display for JsonRpcError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.message)
+    }
+}
+
+impl std::error::Error for JsonRpcError {}
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct JsonRpcErrorData {
     /// The module? and type of the object where the exception was raised

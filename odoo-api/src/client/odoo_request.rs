@@ -1,8 +1,8 @@
 //! The [`OdooRequest`] type and associated bits
 
 use super::RequestImpl;
+use crate::client::error::ParseResponseResult;
 use crate::jsonrpc::{JsonRpcParams, JsonRpcRequest, JsonRpcResponse};
-use crate::Result;
 use serde::de::DeserializeOwned;
 use serde::Serialize;
 use serde_json::from_str;
@@ -40,7 +40,10 @@ where
         }
     }
 
-    pub(crate) fn parse_response<D: Debug + DeserializeOwned>(&self, data: &str) -> Result<D> {
+    pub(crate) fn parse_response<D: Debug + DeserializeOwned>(
+        &self,
+        data: &str,
+    ) -> ParseResponseResult<D> {
         let response: JsonRpcResponse<D> = from_str(data)?;
 
         match response {

@@ -225,8 +225,9 @@ pub struct AboutResponseExtended {
 #[cfg(test)]
 mod test {
     use super::*;
+    use crate::client::error::Result;
+    use crate::jmap;
     use crate::jsonrpc::{JsonRpcParams, JsonRpcResponse};
-    use crate::{jmap, Result};
     use serde_json::{from_value, json, to_value};
 
     /// See [`crate::service::object::test::execute`] for more info

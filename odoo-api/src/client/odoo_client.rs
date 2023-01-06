@@ -1,9 +1,9 @@
 //! The [`OdooClient`] type and associated bits
 
+use super::error::{AuthenticationError, AuthenticationResult};
 use super::OdooRequest;
 use crate::jsonrpc::{JsonRpcId, JsonRpcParams, OdooId, OdooWebMethod};
 use crate::service::web::{SessionAuthenticate, SessionAuthenticateResponse};
-use crate::Result;
 use serde::Serialize;
 use serde_json::{from_str, to_string};
 use std::fmt::Debug;
@@ -43,7 +43,9 @@ impl AuthState for NotAuthed {
 ///
 /// This is used to allow different `client.authenticate()` and
 /// `request.send()` impls based on the chosen request provider.
-pub trait RequestImpl {}
+pub trait RequestImpl {
+    type Error: std::error::Error;
+}
 
 /// An Odoo API client
 ///
@@ -56,7 +58,7 @@ pub trait RequestImpl {}
 /// ```no_run
 /// use odoo_api::{OdooClient, jvec, jmap};
 ///
-/// # async fn test() -> odoo_api::Result<()> {
+/// # async fn test() -> odoo_api::client::Result<()> {
 /// let url = "https://demo.odoo.com";
 /// let mut client = OdooClient::new_reqwest_async(url)?
 ///     .authenticate(
@@ -180,11 +182,13 @@ where
         password: &str,
         response: SessionAuthenticateResponse,
         session_id: Option<String>,
-    ) -> Result<OdooClient<Authed, I>> {
-        let uid = response
-            .data
-            .get("uid")
-            .ok_or("Failed to parse UID from /web/session/authenticate call")?;
+    ) -> AuthenticationResult<OdooClient<Authed, I>> {
+        let uid = response.data.get("uid").ok_or_else(|| {
+            AuthenticationError::UidParseError(
+                "Failed to parse UID from /web/session/authenticate call".into(),
+            )
+        })?;
+
         //TODO: this is a bit awkward..
         let uid = from_str(&to_string(uid)?)?;
         let auth = Authed {

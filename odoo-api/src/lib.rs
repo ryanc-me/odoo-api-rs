@@ -27,7 +27,7 @@
 //! use odoo_api::{OdooClient, jvec, jmap};
 //!
 //! # #[cfg(not(feature = "types-only"))]
-//! # async fn test() -> odoo_api::Result<()> {
+//! # async fn test() -> odoo_api::client::Result<()> {
 //! // build the client and authenticate
 //! let url = "https://demo.odoo.com";
 //! let mut client = OdooClient::new_reqwest_async(url)?
@@ -84,58 +84,4 @@ pub mod client;
 pub use client::{AsyncClosureResult, BlockingClosureResult, OdooClient};
 
 pub mod jsonrpc;
-use jsonrpc::response::JsonRpcError;
 pub use jsonrpc::OdooId;
-
-use thiserror::Error;
-
-/// Convenience wrapper on the std `Result`
-pub type Result<T> = ::std::result::Result<T, Error>;
-
-/// An error returned by one of the Odoo API methods
-#[derive(Error, Debug)]
-#[non_exhaustive]
-pub enum Error {
-    /// An error during the request building phase
-    #[error("Request Builder Error")]
-    RequestBuilderError(String),
-
-    /// A parsing error from the serde_json library
-    ///
-    /// This might be raised if the returned JSON data is invalid, or couldn't
-    /// be parsed into the `XxxResponse` struct properly.
-    #[error(transparent)]
-    SerdeJsonError(#[from] serde_json::Error),
-
-    /// An error from the [`reqwest`] library
-    ///
-    /// See [`reqwest::Error`] for more information.
-    #[cfg(any(feature = "async", feature = "blocking"))]
-    #[error(transparent)]
-    ReqwestError(#[from] reqwest::Error),
-
-    /// The generic "Odoo Server Error"
-    ///
-    /// The majority of real-world errors will fall into this category. These
-    /// error
-    #[error("JSON-RPC Error")]
-    JsonRpcError(JsonRpcError),
-}
-
-impl From<&str> for Error {
-    fn from(value: &str) -> Self {
-        Error::RequestBuilderError(value.into())
-    }
-}
-
-impl From<String> for Error {
-    fn from(value: String) -> Self {
-        Error::RequestBuilderError(value)
-    }
-}
-
-impl From<JsonRpcError> for Error {
-    fn from(value: JsonRpcError) -> Self {
-        Error::JsonRpcError(value)
-    }
-}
