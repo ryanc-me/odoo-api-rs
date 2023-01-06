@@ -19,6 +19,28 @@ use serde_tuple::Serialize_tuple;
 /// Note that this request may take some time to complete, and it's likely
 /// worth only firing this from an async-type client
 ///
+/// ## Example
+/// ```no_run
+/// # #[cfg(not(feature = "types-only"))]
+/// # fn test() -> Result<(), Box<dyn std::error::Error>> {
+/// # use odoo_api::OdooClient;
+/// # let client = OdooClient::new_reqwest_blocking("")?;
+/// # let mut client = client.authenticate_manual("", "", 1, "", None);
+/// let resp = client.db_create_database(
+///     "master-password",
+///     "new-database-name",
+///     false,      // demo
+///     "en_GB",    // lang
+///     "password1",// user password
+///     "admin",    // username
+///     Some("gb".into()), // country
+///     None        // phone
+/// ).send()?;
+/// # Ok(())
+/// # }
+/// ```
+///<br />
+///
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L136-L142)
 #[odoo_api(
     service = "db",
@@ -77,6 +99,23 @@ pub struct CreateDatabaseResponse {
 /// Note that this request may take some time to complete, and it's likely
 /// worth only firing this from an async-type client
 ///
+/// ## Example
+/// ```no_run
+/// # #[cfg(not(feature = "types-only"))]
+/// # fn test() -> Result<(), Box<dyn std::error::Error>> {
+/// # use odoo_api::OdooClient;
+/// # let client = OdooClient::new_reqwest_blocking("")?;
+/// # let mut client = client.authenticate_manual("", "", 1, "", None);
+/// let resp = client.db_duplicate_database(
+///     "master-password",
+///     "old-database",
+///     "new-database"
+/// ).send()?;
+/// # Ok(())
+/// # }
+/// ```
+///<br />
+///
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L144-L184)
 #[odoo_api(
     service = "db",
@@ -108,6 +147,22 @@ pub struct DuplicateDatabaseResponse {
 /// Note that this request may take some time to complete, and it's likely
 /// worth only firing this from an async-type client
 ///
+/// ## Example
+/// ```no_run
+/// # #[cfg(not(feature = "types-only"))]
+/// # fn test() -> Result<(), Box<dyn std::error::Error>> {
+/// # use odoo_api::OdooClient;
+/// # let client = OdooClient::new_reqwest_blocking("")?;
+/// # let mut client = client.authenticate_manual("", "", 1, "", None);
+/// let resp = client.db_drop(
+///     "master-password",
+///     "database-to-delete",
+/// ).send()?;
+/// # Ok(())
+/// # }
+/// ```
+///<br />
+///
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L212-L217)
 #[odoo_api(service = "db", method = "drop", name = "db_drop", auth = false)]
 #[derive(Debug, Serialize_tuple)]
@@ -132,6 +187,34 @@ pub struct DropResponse {
 /// worth only firing this from an async-type client
 ///
 /// Note that the data is returned a base64-encoded buffer.
+///
+/// ## Example
+/// ```no_run
+/// # #[cfg(not(feature = "types-only"))]
+/// # fn test() -> Result<(), Box<dyn std::error::Error>> {
+/// # use odoo_api::OdooClient;
+/// # let client = OdooClient::new_reqwest_blocking("")?;
+/// # let mut client = client.authenticate_manual("", "", 1, "", None);
+/// # #[allow(non_camel_case_types)]
+/// # struct base64 {}
+/// # impl base64 { fn decode(input: &str) -> Result<Vec<u8>, Box<dyn std::error::Error>> { Ok(Vec::new()) }}
+/// use odoo_api::service::db::DumpFormat;
+///
+/// let resp = client.db_dump(
+///     "master-password",
+///     "database-to-dump",
+///     DumpFormat::Zip
+/// ).send()?;
+///
+/// // parse the returned b64 string into a byte array
+/// // e.g., with the `base64` crate: https://docs.rs/base64/latest/base64/
+/// let data: Vec<u8> = base64::decode(&resp.b64_bytes)?;
+///
+/// // write the data to a file ...
+/// # Ok(())
+/// # }
+/// ```
+///<br />
 ///
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L212-L217)  
 /// See also: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L219-L269)
@@ -201,6 +284,40 @@ pub struct DumpResponse {
 ///
 /// Typically Odoo backups also include a `manifest.json`, but this file isn't checked
 /// by the Restore endpoint.
+///
+/// ## Example
+/// ```no_run
+/// # #[cfg(not(feature = "types-only"))]
+/// # fn test() -> Result<(), Box<dyn std::error::Error>> {
+/// # use odoo_api::OdooClient;
+/// # let client = OdooClient::new_reqwest_blocking("")?;
+/// # let mut client = client.authenticate_manual("", "", 1, "", None);
+/// # #[allow(non_camel_case_types)]
+/// # struct base64 {}
+/// # impl base64 { fn encode(data: &Vec<u8>) -> Result<Vec<u8>, Box<dyn std::error::Error>> { Ok(data.to_owned()) }}
+/// use odoo_api::service::db::RestoreType;
+/// use std::fs;
+///
+/// // load the file data
+/// let data = fs::read("/my/database/backup.zip")?;
+///
+/// // convert raw bytes to base64
+/// // e.g., with the `base64` crate: https://crates.io/crates/base64
+/// let data_b64 = base64::encode(&data)?;
+///
+/// // convert base64's `Vec<u8>` to a `&str`
+/// let data_b64 = std::str::from_utf8(&data_b64)?;
+///
+/// // read `id` and `login` from users id=1,2,3
+/// client.db_restore(
+///     "master-password",
+///     data_b64,
+///     RestoreType::Copy
+/// ).send()?;
+/// # Ok(())
+/// # }
+/// ```
+///<br />
 ///
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L271-L284)  
 /// See also: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L286-L335)
@@ -298,6 +415,23 @@ pub struct RestoreResponse {
 /// It should be a fairly quick request, but note that the above `ALTER DATABASE` statement
 /// may fail for various reasons. See the Postgres documentation for info.
 ///
+/// ## Example
+/// ```no_run
+/// # #[cfg(not(feature = "types-only"))]
+/// # fn test() -> Result<(), Box<dyn std::error::Error>> {
+/// # use odoo_api::OdooClient;
+/// # let client = OdooClient::new_reqwest_blocking("")?;
+/// # let mut client = client.authenticate_manual("", "", 1, "", None);
+/// let resp = client.db_rename(
+///     "master-password",
+///     "old-database-name",
+///     "new-database-name",
+/// ).send()?;
+/// # Ok(())
+/// # }
+/// ```
+///<br />
+///
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L337-L358)
 #[odoo_api(service = "db", method = "rename", name = "db_rename", auth = false)]
 #[derive(Debug, Serialize_tuple)]
@@ -323,6 +457,22 @@ pub struct RenameResponse {
 ///
 /// This method updates the Odoo config file, writing a new value to the `admin_passwd`
 /// key. If the config file is not writeable by Odoo, this will fail.
+///
+/// ## Example
+/// ```no_run
+/// # #[cfg(not(feature = "types-only"))]
+/// # fn test() -> Result<(), Box<dyn std::error::Error>> {
+/// # use odoo_api::OdooClient;
+/// # let client = OdooClient::new_reqwest_blocking("")?;
+/// # let mut client = client.authenticate_manual("", "", 1, "", None);
+/// let resp = client.db_change_admin_password(
+///     "master-password",
+///     "new-master-password",
+/// ).send()?;
+/// # Ok(())
+/// # }
+/// ```
+///<br />
 ///
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L360-L364)
 #[odoo_api(
@@ -357,6 +507,25 @@ pub struct ChangeAdminPasswordResponse {
 /// isn't useful on its own. If you need to upgrade a module, the [`Execute`][crate::service::object::Execute]
 /// is probably more suitable.
 ///
+/// ## Example
+/// ```no_run
+/// # #[cfg(not(feature = "types-only"))]
+/// # fn test() -> Result<(), Box<dyn std::error::Error>> {
+/// # use odoo_api::OdooClient;
+/// # let client = OdooClient::new_reqwest_blocking("")?;
+/// # let mut client = client.authenticate_manual("", "", 1, "", None);
+/// let resp = client.db_migrate_databases(
+///     "master-password",
+///     vec![
+///         "database1".into(),
+///         "database2".into()
+///     ]
+/// ).send()?;
+/// # Ok(())
+/// # }
+/// ```
+///<br />
+///
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L366-L372)
 #[odoo_api(
     service = "db",
@@ -382,6 +551,21 @@ pub struct MigrateDatabasesResponse {
 
 /// Check if a database exists
 ///
+/// ## Example
+/// ```no_run
+/// # #[cfg(not(feature = "types-only"))]
+/// # fn test() -> Result<(), Box<dyn std::error::Error>> {
+/// # use odoo_api::OdooClient;
+/// # let client = OdooClient::new_reqwest_blocking("")?;
+/// # let mut client = client.authenticate_manual("", "", 1, "", None);
+/// let resp = client.db_exist(
+///     "does-this-database-exist?",
+/// ).send()?;
+/// # Ok(())
+/// # }
+/// ```
+///<br />
+///
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L378-L386)
 #[odoo_api(service = "db", method = "db_exist", auth = false)]
 #[derive(Debug, Serialize_tuple)]
@@ -398,6 +582,21 @@ pub struct DbExistResponse {
 }
 
 /// List the databases currently available to Odoo
+///
+/// ## Example
+/// ```no_run
+/// # #[cfg(not(feature = "types-only"))]
+/// # fn test() -> Result<(), Box<dyn std::error::Error>> {
+/// # use odoo_api::OdooClient;
+/// # let client = OdooClient::new_reqwest_blocking("")?;
+/// # let mut client = client.authenticate_manual("", "", 1, "", None);
+/// let resp = client.db_list(false).send()?;
+///
+/// println!("Databases: {:#?}", resp.databases);
+/// # Ok(())
+/// # }
+/// ```
+///<br />
 ///
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L439-L442)  
 /// See also: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L388-L409)
@@ -419,6 +618,21 @@ pub struct ListResponse {
 ///
 /// Note that this function is used by the database manager, in order to let the
 /// user select which language should be used when creating a new database.
+///
+/// ## Example
+/// ```no_run
+/// # #[cfg(not(feature = "types-only"))]
+/// # fn test() -> Result<(), Box<dyn std::error::Error>> {
+/// # use odoo_api::OdooClient;
+/// # let client = OdooClient::new_reqwest_blocking("")?;
+/// # let mut client = client.authenticate_manual("", "", 1, "", None);
+/// let resp = client.db_list_lang().send()?;
+///
+/// println!("Languages: {:#?}", resp.languages);
+/// # Ok(())
+/// # }
+/// ```
+///<br />
 ///
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L444-L445)
 #[odoo_api(
@@ -470,6 +684,23 @@ pub struct ListLangResponseItem {
 /// Note that this function is used by the database manager, in order to let the
 /// user select which country should be used when creating a new database.
 ///
+/// ## Example
+/// ```no_run
+/// # #[cfg(not(feature = "types-only"))]
+/// # fn test() -> Result<(), Box<dyn std::error::Error>> {
+/// # use odoo_api::OdooClient;
+/// # let client = OdooClient::new_reqwest_blocking("")?;
+/// # let mut client = client.authenticate_manual("", "", 1, "", None);
+/// let resp = client.db_list_countries(
+///     "master-password",
+/// ).send()?;
+///
+/// println!("Countries: {:#?}", resp.countries);
+/// # Ok(())
+/// # }
+/// ```
+///<br />
+///
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L447-L454)
 #[odoo_api(
     service = "db",
@@ -507,6 +738,21 @@ pub struct ListCountriesResponseItem {
 ///
 /// This returns the "base" server version, e.g., `14.0` or `15.0`. It does not
 /// include any indication of whether the database is Community or Enterprise
+///
+/// ## Example
+/// ```no_run
+/// # #[cfg(not(feature = "types-only"))]
+/// # fn test() -> Result<(), Box<dyn std::error::Error>> {
+/// # use odoo_api::OdooClient;
+/// # let client = OdooClient::new_reqwest_blocking("")?;
+/// # let mut client = client.authenticate_manual("", "", 1, "", None);
+/// let resp = client.db_server_version().send()?;
+///
+/// println!("Version: {}", resp.version);
+/// # Ok(())
+/// # }
+/// ```
+///<br />
 ///
 /// Reference: [odoo/service/db.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/db.py#L456-L460)
 #[odoo_api(
