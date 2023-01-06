@@ -63,7 +63,7 @@
 //! # }
 //! ```
 
-// The types-only feature implies that the `client` module isn't included, so
+// The `types-only` feature implies that the `client` module isn't included, so
 // `async` and `blocking` have no effect
 #[cfg(all(feature = "types-only", any(feature = "async", feature = "blocking")))]
 std::compile_error!(
