@@ -8,7 +8,10 @@
 //!
 //! ## API Methods
 //!
-//! ### `common`
+//! <br />
+//!
+//! <span style="font-size: 1.125rem; margin: 15px 0 5px 0;">[`common`](crate::service::common)</span>
+//!
 //! |<div style="width: 250px">Method</div>|<div style="width: 550px">Description</div>|<div style="width: 50px">Auth?</div>|
 //! |-|-|-|
 //! |[`common_login`](common::Login)|Check the user credentials and return the user ID|-|
@@ -18,7 +21,7 @@
 //!
 //! <br />
 //!
-//! ### `db`
+//! <span style="font-size: 1.125rem; margin: 15px 0 5px 0;">[`db`](crate::service::db)</span>
 //!
 //! |<div style="width: 250px">Method</div>|<div style="width: 550px">Description</div>|<div style="width: 50px">Auth?</div>|
 //! |-|-|-|
@@ -38,7 +41,7 @@
 //!
 //! <br />
 //!
-//! ### `object`
+//! <span style="font-size: 1.125rem; margin: 15px 0 5px 0;">[`object`](crate::service::object)</span>
 //!
 //! |<div style="width: 250px">Method</div>|<div style="width: 550px">Description</div>|<div style="width: 50px">Auth?</div>|
 //! |-|-|-|
@@ -47,7 +50,7 @@
 //!
 //! <br />
 //!
-//! ### `orm`
+//! <span style="font-size: 1.125rem; margin: 15px 0 5px 0;">[`orm`](crate::service::orm)</span>
 //!
 //! **TBC**
 //!
@@ -57,7 +60,7 @@
 //!
 //! <br />
 //!
-//! ### `web`
+//! <span style="font-size: 1.125rem; margin: 15px 0 5px 0;">[`web`](crate::service::web)</span>
 //!
 //! |<div style="width: 250px">Method</div>|<div style="width: 550px">Description</div>|<div style="width: 50px">Auth?</div>|
 //! |-|-|-|
