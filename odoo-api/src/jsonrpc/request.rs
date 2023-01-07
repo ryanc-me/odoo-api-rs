@@ -5,6 +5,10 @@ use serde::de::DeserializeOwned;
 use serde::Serialize;
 use std::fmt::Debug;
 
+mod api;
+mod orm;
+mod web;
+
 pub use api::{OdooApiContainer, OdooApiMethod};
 pub use web::{OdooWebContainer, OdooWebMethod};
 
@@ -74,108 +78,4 @@ where
 
     /// The request params (service, method, and arguments)
     pub(crate) params: <T as JsonRpcParams>::Container<T>,
-}
-
-mod api {
-    use crate::jsonrpc::JsonRpcId;
-
-    use super::{JsonRpcMethod, JsonRpcParams, JsonRpcRequest, JsonRpcVersion};
-    use serde::ser::{SerializeStruct, Serializer};
-    use serde::Serialize;
-    use std::fmt::Debug;
-
-    /// The container type for an Odoo "API" (JSON-RPC) request
-    ///
-    /// For more info, see [`super::JsonRpcParams`]
-    #[derive(Debug)]
-    pub struct OdooApiContainer<T>
-    where
-        T: OdooApiMethod + JsonRpcParams<Container<T> = Self>,
-    {
-        pub(crate) inner: T,
-    }
-
-    // Custom "man-in-the-middle" serialize impl
-    impl<T> Serialize for OdooApiContainer<T>
-    where
-        T: OdooApiMethod + JsonRpcParams<Container<T> = Self>,
-    {
-        fn serialize<S>(&self, serializer: S) -> ::std::result::Result<S::Ok, S::Error>
-        where
-            S: Serializer,
-        {
-            let mut state = serializer.serialize_struct("args", 3)?;
-            let (service, method) = self.inner.describe();
-            state.serialize_field("service", service)?;
-            state.serialize_field("method", method)?;
-            state.serialize_field("args", &self.inner)?;
-            state.end()
-        }
-    }
-
-    /// An Odoo "API" (JSON-RPC) request type
-    pub trait OdooApiMethod
-    where
-        Self: Sized + Debug + Serialize + JsonRpcParams<Container<Self> = OdooApiContainer<Self>>,
-        Self::Container<Self>: Debug + Serialize,
-    {
-        /// Describe the JSON-RPC service and method for this type
-        fn describe(&self) -> (&'static str, &'static str);
-
-        /// Build `self` into a full [`JsonRpcRequest`]
-        fn _build(self, id: JsonRpcId) -> JsonRpcRequest<Self> {
-            JsonRpcRequest {
-                jsonrpc: JsonRpcVersion::V2,
-                method: JsonRpcMethod::Call,
-                id,
-                params: OdooApiContainer { inner: self },
-            }
-        }
-    }
-}
-
-mod web {
-    use serde::Serialize;
-    use std::fmt::Debug;
-
-    use super::{JsonRpcId, JsonRpcMethod, JsonRpcParams, JsonRpcRequest, JsonRpcVersion};
-
-    /// The container type for an Odoo "Web" request
-    ///
-    /// This type covers (almost) any request whose endpoint starts with `/web`,
-    /// for example:
-    ///  - `/web/session/authenticate`
-    ///  - `/web/session/destroy`
-    ///  - `/web/dataset/call`
-    ///  - And many more
-    ///
-    /// For more info, see [`super::JsonRpcParams`]
-    #[derive(Debug, Serialize)]
-    #[serde(transparent)]
-    pub struct OdooWebContainer<T>
-    where
-        T: OdooWebMethod + JsonRpcParams<Container<T> = Self>,
-    {
-        pub(crate) inner: T,
-    }
-
-    /// An Odoo "Web" request type
-    pub trait OdooWebMethod
-    where
-        Self: Sized + Debug + Serialize + JsonRpcParams<Container<Self> = OdooWebContainer<Self>>,
-        Self::Container<Self>: Debug + Serialize,
-    {
-        /// Describe the "Web" method endpoint (e.g., "/web/session/authenticate")
-        fn describe(&self) -> &'static str;
-
-        /// Build `self` into a full [`JsonRpcRequest`]
-        fn _build(self, id: JsonRpcId) -> JsonRpcRequest<Self> {
-            JsonRpcRequest {
-                jsonrpc: JsonRpcVersion::V2,
-                method: JsonRpcMethod::Call,
-                id,
-                params: OdooWebContainer { inner: self },
-            }
-        }
-    }
 }
