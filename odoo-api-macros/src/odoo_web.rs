@@ -94,10 +94,17 @@ pub(crate) fn odoo_web(args: AttributeArgs, input: ItemStructNamed) -> Result<To
     let ident_response = Ident::new(&name_response, Span::call_site());
     let ident_call = Ident::new(&name_call, Span::call_site());
 
+    // build a quick doc-comment directing users from the function impl,
+    // back to the struct (where we have examples/etc)
+    let doc_call = format!(
+        "{}\n\nSee [`{}`](crate::service::web::{}) for more info.",
+        &input.doc_head, &name_struct, &name_struct
+    );
+
     // build the TokenStreams
     let out_params = impl_params(&ident_struct, &ident_response)?;
     let out_method = impl_method(&ident_struct, &args)?;
-    let out_client = impl_client(&ident_struct, &ident_call, &args, &input.fields)?;
+    let out_client = impl_client(&ident_struct, &ident_call, &args, &input.fields, &doc_call)?;
 
     // output the result!
     Ok(quote!(
@@ -138,6 +145,7 @@ fn impl_client(
     ident_call: &Ident,
     args: &OdooWebArgs,
     fields: &FieldsNamed,
+    doc: &str,
 ) -> Result<TokenStream2> {
     if args.auth.is_none() {
         // The `auth` key wasn't passed, so we'll just skip the OdooClient impl
@@ -202,6 +210,7 @@ fn impl_client(
 
     Ok(quote! {
         #[cfg(not(feature = "types-only"))]
+        #[doc=#doc]
         impl<I: odoo_api::client::RequestImpl, #auth_generic> odoo_api::client::OdooClient<#auth_type, I> {
             pub fn #ident_call(&mut self, #(#field_arguments),*) -> odoo_api::client::OdooRequest< #ident_struct , I> {
                 let #ident_call = #ident_struct {
