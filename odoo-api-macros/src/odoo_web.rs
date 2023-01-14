@@ -6,10 +6,11 @@ use crate::common::{parse_args, ItemStructNamed};
 use crate::{Error, Result};
 
 struct OdooWebArgs {
-    /// The JSON-RPC "service"
+    /// The API endpoint (e.g. '/web/session/authenticate')
     path: String,
 
-    /// Optionally specify a name for the OdooClient impl
+    /// A (required) name for the service (e.g. 'web_session_authenticate');
+    /// this maps to the function implemented on OdooClient, (e.g. `client.web_session_authenticate()`)
     name: String,
 
     /// Is authentication required, optional, should we skip generating the
@@ -39,7 +40,7 @@ impl TryFrom<AttributeArgs> for OdooWebArgs {
                             Some(*span),
                         ))?
                     }
-                }
+                },
                 ("name", lit, span) => {
                     if let Lit::Str(s) = lit {
                         name = Some(s.value())
@@ -49,7 +50,7 @@ impl TryFrom<AttributeArgs> for OdooWebArgs {
                             Some(*span),
                         ))?
                     }
-                }
+                },
                 ("auth", lit, span) => {
                     if let Lit::Bool(b) = lit {
                         auth = Some(b.value())
@@ -59,7 +60,7 @@ impl TryFrom<AttributeArgs> for OdooWebArgs {
                             Some(*span),
                         ))?
                     }
-                }
+                },
 
                 (key, _value, span) => Err((
                     format!(
