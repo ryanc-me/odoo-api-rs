@@ -85,7 +85,6 @@ where
     I: RequestImpl,
 {
     pub(crate) url: String,
-    pub(crate) url_jsonrpc: String,
 
     pub(crate) auth: S,
     pub(crate) _impl: I,
@@ -104,19 +103,18 @@ where
     /// We cache the "/jsonrpc" endpoint because that's used across all of
     /// the JSON-RPC methods. We also store the bare URL, because that's
     /// used for "Web" methods
-    pub(crate) fn build_urls(url: &str) -> (String, String) {
+    pub(crate) fn validate_url(url: &str) -> String {
         // ensure the last char isn't "/"
         let len = url.len();
-        let url = if len > 0 && &url[len - 1..] == "/" {
+        if len > 0 && &url[len - 1..] == "/" {
             url[0..len - 1].to_string()
         } else {
             url.to_string()
-        };
+        }
+    }
 
-        // build the cached "https://example.com/jsonrpc" URL
-        let url_jsonrpc = format!("{}/jsonrpc", url);
-
-        (url, url_jsonrpc)
+    pub(crate) fn build_endpoint(&self, endpoint: &str) -> String {
+        format!("{}{}", self.url, endpoint)
     }
 
     /// Build the data `T` into a request for the fully-qualified endpoint `url`
@@ -163,9 +161,8 @@ where
             login: login.into(),
             password: password.into(),
         };
-        let url_frag = authenticate.describe();
-
-        self.build_request(authenticate, &format!("{}{}", &self.url, url_frag))
+        let endpoint = self.build_endpoint(authenticate.endpoint());
+        self.build_request(authenticate, &endpoint)
     }
 
     /// Helper method to perform the 2nd stage of the authentication request
@@ -201,7 +198,6 @@ where
 
         Ok(OdooClient {
             url: self.url,
-            url_jsonrpc: self.url_jsonrpc,
             auth,
             _impl: self._impl,
             id: self.id,
@@ -230,7 +226,6 @@ where
 
         OdooClient {
             url: self.url,
-            url_jsonrpc: self.url_jsonrpc,
             auth,
             _impl: self._impl,
             id: self.id,
@@ -239,7 +234,7 @@ where
 
     /// Update the URL for this client
     pub fn with_url(&mut self, url: &str) -> &mut Self {
-        (self.url, self.url_jsonrpc) = Self::build_urls(url);
+        self.url = Self::validate_url(url);
         self
     }
 }
@@ -258,10 +253,9 @@ where
     ///  - OdooClient::new_closure_blocking()
     ///  - OdooClient::new_closure_async()
     pub(crate) fn new(url: &str, _impl: I) -> Self {
-        let (url, url_jsonrpc) = Self::build_urls(url);
+        let url = Self::validate_url(url);
         Self {
             url,
-            url_jsonrpc,
             auth: NotAuthed {},
             _impl,
             id: 1,

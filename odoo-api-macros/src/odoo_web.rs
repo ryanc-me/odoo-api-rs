@@ -124,7 +124,7 @@ fn impl_method(ident_struct: &Ident, args: &OdooWebArgs) -> Result<TokenStream2>
     let path = &args.path;
     Ok(quote! {
         impl odoo_api::jsonrpc::OdooWebMethod for #ident_struct {
-            fn describe(&self) -> &'static str {
+            fn endpoint(&self) -> &'static str {
                 #path
             }
         }
@@ -207,10 +207,10 @@ fn impl_client(
                     #(#field_assigns),*
                 };
 
-                let url = format!("{}{}", self.url, #ident_call.describe());
+                let endpoint = self.build_endpoint(#ident_call.endpoint());
                 self.build_request(
                     #ident_call,
-                    &url
+                    &endpoint
                 )
             }
         }

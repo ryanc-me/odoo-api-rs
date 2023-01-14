@@ -28,8 +28,8 @@ where
     Self: Sized + Debug + Serialize + JsonRpcParams<Container<Self> = OdooWebContainer<Self>>,
     Self::Container<Self>: Debug + Serialize,
 {
-    /// Describe the "Web" method endpoint (e.g., "/web/session/authenticate")
-    fn describe(&self) -> &'static str;
+    /// Describe method endpoint (e.g., "/web/session/authenticate")
+    fn endpoint(&self) -> &'static str;
 
     /// Build `self` into a full [`JsonRpcRequest`]
     fn _build(self, id: JsonRpcId) -> JsonRpcRequest<Self> {

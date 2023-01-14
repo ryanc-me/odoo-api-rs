@@ -43,6 +43,9 @@ where
     /// Describe the JSON-RPC service and method for this type
     fn describe(&self) -> (&'static str, &'static str);
 
+    /// Describe method endpoint (e.g., "/web/session/authenticate")
+    fn endpoint(&self) -> &'static str;
+
     /// Build `self` into a full [`JsonRpcRequest`]
     fn _build(self, id: JsonRpcId) -> JsonRpcRequest<Self> {
         JsonRpcRequest {

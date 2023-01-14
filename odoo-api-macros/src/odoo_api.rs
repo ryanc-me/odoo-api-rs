@@ -152,6 +152,9 @@ fn impl_method(ident_struct: &Ident, args: &OdooApiArgs) -> Result<TokenStream2>
             fn describe(&self) -> (&'static str, &'static str) {
                 (#service, #method)
             }
+            fn endpoint(&self) -> &'static str {
+                "/jsonrpc"
+            }
         }
     })
 }
@@ -234,9 +237,10 @@ fn impl_client(
                     #(#field_assigns),*
                 };
 
+                let endpoint = self.build_endpoint(#ident_call.endpoint());
                 self.build_request(
                     #ident_call,
-                    &self.url_jsonrpc.clone()
+                    &endpoint
                 )
             }
         }
