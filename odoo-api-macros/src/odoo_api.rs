@@ -112,6 +112,8 @@ pub(crate) fn odoo_api(args: AttributeArgs, input: ItemStructNamed) -> Result<To
     let ident_response = Ident::new(&name_response, Span::call_site());
     let ident_call = Ident::new(&name_call, Span::call_site());
 
+    // build a quick doc-comment directing users from the function impl,
+    // back to the struct (where we have examples/etc)
     let doc_call = format!(
         "{}\n\nSee [`{}`](crate::service::{}::{}) for more info.",
         &input.doc_head, &name_struct, &args.service, &name_struct
