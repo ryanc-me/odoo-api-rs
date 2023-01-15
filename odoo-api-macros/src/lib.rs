@@ -8,6 +8,7 @@ mod common;
 mod error;
 mod odoo_api;
 mod odoo_web;
+mod odoo_orm;
 mod serialize_tuple;
 
 use common::{parse_result};
@@ -100,6 +101,14 @@ pub fn odoo_web(args: TokenStream, input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input);
 
     parse_result(odoo_web::odoo_web(args, input))
+}
+
+#[proc_macro_attribute]
+pub fn odoo_orm(args: TokenStream, input: TokenStream) -> TokenStream {
+    let args = parse_macro_input!(args);
+    let input = parse_macro_input!(input);
+
+    parse_result(odoo_orm::odoo_orm(args, input))
 }
 
 #[proc_macro_derive(SerializeTuple)]

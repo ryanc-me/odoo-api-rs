@@ -11,6 +11,7 @@ mod web;
 
 pub use api::{OdooApiContainer, OdooApiMethod};
 pub use web::{OdooWebContainer, OdooWebMethod};
+pub use orm::{OdooOrmContainer, OdooOrmMethod};
 
 /// Implemented by Odoo "method" types (e.g.,
 /// [`Execute`](crate::service::object::Execute) or

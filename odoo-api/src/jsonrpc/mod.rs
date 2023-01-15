@@ -12,7 +12,10 @@ use serde::{Deserialize, Serialize};
 use std::fmt::Debug;
 
 pub use request::{
-    JsonRpcParams, JsonRpcRequest, OdooApiContainer, OdooApiMethod, OdooWebContainer, OdooWebMethod,
+    JsonRpcParams, JsonRpcRequest,
+    OdooApiContainer, OdooApiMethod,
+    OdooWebContainer, OdooWebMethod,
+    OdooOrmContainer, OdooOrmMethod,
 };
 pub use response::JsonRpcResponse;
 
@@ -25,6 +28,36 @@ pub type JsonRpcId = u32;
 /// use positive ids to represent one model (`purchase.order`), and negative ids
 /// to represent another (`account.move`).
 pub type OdooId = i32;
+
+/// A vec of [`OdooId`].
+/// 
+/// This type also implements From<OdooId>, which allows for flexible function
+/// args, e.g.:
+/// ```
+/// use odoo_api::jsonrpc::OdooIds;
+/// fn my_function<I: Into<OdooIds>>(ids: I) {
+///     // ...
+/// }
+/// 
+/// // call with a list of ids...
+/// my_function(vec![1, 2, 3]);
+/// 
+/// // ... or with a single id
+/// my_function(1);
+/// ```
+#[derive(Debug, Serialize)]
+pub struct OdooIds(Vec<OdooId>);
+
+impl From<OdooId> for OdooIds {
+    fn from(value: OdooId) -> Self {
+        OdooIds(vec![value])
+    }
+}
+impl From<Vec<OdooId>> for OdooIds {
+    fn from(value: Vec<OdooId>) -> Self {
+        Self(value)
+    }
+}
 
 /// A string representing the JSON-RPC version
 ///
