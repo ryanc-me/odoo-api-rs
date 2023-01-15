@@ -1,5 +1,5 @@
+use serde::ser::SerializeStruct;
 use serde::{Serialize, Serializer};
-use serde::ser::{SerializeStruct};
 use std::fmt::Debug;
 
 use super::{JsonRpcId, JsonRpcMethod, JsonRpcParams, JsonRpcRequest, JsonRpcVersion};

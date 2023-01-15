@@ -12,10 +12,8 @@ use serde::{Deserialize, Serialize};
 use std::fmt::Debug;
 
 pub use request::{
-    JsonRpcParams, JsonRpcRequest,
-    OdooApiContainer, OdooApiMethod,
-    OdooWebContainer, OdooWebMethod,
-    OdooOrmContainer, OdooOrmMethod,
+    JsonRpcParams, JsonRpcRequest, OdooApiContainer, OdooApiMethod, OdooOrmContainer,
+    OdooOrmMethod, OdooWebContainer, OdooWebMethod,
 };
 pub use response::JsonRpcResponse;
 
@@ -30,7 +28,7 @@ pub type JsonRpcId = u32;
 pub type OdooId = i32;
 
 /// A vec of [`OdooId`].
-/// 
+///
 /// This type also implements From<OdooId>, which allows for flexible function
 /// args, e.g.:
 /// ```
@@ -38,10 +36,10 @@ pub type OdooId = i32;
 /// fn my_function<I: Into<OdooIds>>(ids: I) {
 ///     // ...
 /// }
-/// 
+///
 /// // call with a list of ids...
 /// my_function(vec![1, 2, 3]);
-/// 
+///
 /// // ... or with a single id
 /// my_function(1);
 /// ```

@@ -7,13 +7,13 @@ use proc_macro::TokenStream;
 mod common;
 mod error;
 mod odoo_api;
-mod odoo_web;
 mod odoo_orm;
+mod odoo_web;
 mod serialize_tuple;
 
-use common::{parse_result};
+use common::parse_result;
 use error::{Error, Result};
-use syn::{parse_macro_input};
+use syn::parse_macro_input;
 
 /// Implement traits for an "API" method struct
 ///

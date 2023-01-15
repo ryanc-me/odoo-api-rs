@@ -32,29 +32,37 @@ impl TryFrom<MacroArguments> for OdooApiArgs {
         for arg in value.into_iter() {
             match (arg.key.as_str(), arg.value, arg.span) {
                 ("service", val, span) => {
-                    service = Some(val.try_into().map_err(|_| (
-                        "invalid value, expected String (e.g., `service = \"object\"`)",
-                        Some(span)
-                    ))?);
-                },
+                    service = Some(val.try_into().map_err(|_| {
+                        (
+                            "invalid value, expected String (e.g., `service = \"object\"`)",
+                            Some(span),
+                        )
+                    })?);
+                }
                 ("method", val, span) => {
-                    method = Some(val.try_into().map_err(|_| (
-                        "invalid value, expected String (e.g., `method = \"execute_kw\"`)",
-                        Some(span)
-                    ))?);
-                },
+                    method = Some(val.try_into().map_err(|_| {
+                        (
+                            "invalid value, expected String (e.g., `method = \"execute_kw\"`)",
+                            Some(span),
+                        )
+                    })?);
+                }
                 ("auth", val, span) => {
-                    auth = Some(val.try_into().map_err(|_| (
-                        "invalid value, expected String (e.g., `auth = false`)",
-                        Some(span)
-                    ))?);
-                },
+                    auth = Some(val.try_into().map_err(|_| {
+                        (
+                            "invalid value, expected String (e.g., `auth = false`)",
+                            Some(span),
+                        )
+                    })?);
+                }
                 ("name", val, span) => {
-                    name = Some(val.try_into().map_err(|_| (
-                        "invalid value, expected String (e.g., `name = \"my_execute_kw\"`)",
-                        Some(span)
-                    ))?);
-                },
+                    name = Some(val.try_into().map_err(|_| {
+                        (
+                            "invalid value, expected String (e.g., `name = \"my_execute_kw\"`)",
+                            Some(span),
+                        )
+                    })?);
+                }
 
                 (key, _val, span) => Err((
                     format!(
@@ -62,7 +70,7 @@ impl TryFrom<MacroArguments> for OdooApiArgs {
                         key
                     ),
                     Some(span),
-                ))?
+                ))?,
             }
         }
 

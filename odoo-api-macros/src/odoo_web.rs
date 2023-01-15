@@ -33,19 +33,23 @@ impl TryFrom<MacroArguments> for OdooWebArgs {
                         "invalid value, expected String (e.g., `path = \"/web/session/authenticate\"`)",
                         Some(span)
                     ))?);
-                },
+                }
                 ("auth", val, span) => {
-                    auth = Some(val.try_into().map_err(|_| (
-                        "invalid value, expected String (e.g., `auth = false`)",
-                        Some(span)
-                    ))?);
-                },
+                    auth = Some(val.try_into().map_err(|_| {
+                        (
+                            "invalid value, expected String (e.g., `auth = false`)",
+                            Some(span),
+                        )
+                    })?);
+                }
                 ("name", val, span) => {
-                    name = Some(val.try_into().map_err(|_| (
-                        "invalid value, expected String (e.g., `name = \"my_execute_kw\"`)",
-                        Some(span)
-                    ))?);
-                },
+                    name = Some(val.try_into().map_err(|_| {
+                        (
+                            "invalid value, expected String (e.g., `name = \"my_execute_kw\"`)",
+                            Some(span),
+                        )
+                    })?);
+                }
 
                 (key, _val, span) => Err((
                     format!(
@@ -53,7 +57,7 @@ impl TryFrom<MacroArguments> for OdooWebArgs {
                         key
                     ),
                     Some(span),
-                ))?
+                ))?,
             }
         }
 

@@ -1,4 +1,4 @@
-use proc_macro2::{TokenStream as TokenStream2, Span};
+use proc_macro2::{Span, TokenStream as TokenStream2};
 use quote::{quote, ToTokens};
 use syn::{FieldsNamed, Ident, Type};
 
@@ -34,29 +34,33 @@ impl TryFrom<MacroArguments> for OdooOrmArgs {
         for arg in value.into_iter() {
             match (arg.key.as_str(), arg.value, arg.span) {
                 ("method", val, span) => {
-                    method = Some(val.try_into().map_err(|_| (
-                        "invalid value, expected String (e.g., `method = \"read\"`)",
-                        Some(span)
-                    ))?);
-                },
+                    method = Some(val.try_into().map_err(|_| {
+                        (
+                            "invalid value, expected String (e.g., `method = \"read\"`)",
+                            Some(span),
+                        )
+                    })?);
+                }
                 ("name", val, span) => {
-                    name = Some(val.try_into().map_err(|_| (
-                        "invalid value, expected String (e.g., `name = \"my_custom_read\"`)",
-                        Some(span)
-                    ))?);
-                },
+                    name = Some(val.try_into().map_err(|_| {
+                        (
+                            "invalid value, expected String (e.g., `name = \"my_custom_read\"`)",
+                            Some(span),
+                        )
+                    })?);
+                }
                 ("args", val, span) => {
                     args = Some(val.try_into().map_err(|_| (
                         "invalid value, expected String (e.g., `args = [\"list\", \"of\", \"literals\"]`)",
                         Some(span)
                     ))?);
-                },
+                }
                 ("kwargs", val, span) => {
                     kwargs = Some(val.try_into().map_err(|_| (
                         "invalid value, expected String (e.g., `kwargs = [\"list\", \"of\", \"literals\"]`)",
                         Some(span)
                     ))?);
-                },
+                }
 
                 (key, _val, span) => Err((
                     format!(
@@ -64,7 +68,7 @@ impl TryFrom<MacroArguments> for OdooOrmArgs {
                         key
                     ),
                     Some(span),
-                ))?
+                ))?,
             }
         }
 
@@ -219,14 +223,18 @@ fn impl_client(
     })
 }
 
-fn impl_serialize(
-    ident_struct: &Ident,
-    args: &OdooOrmArgs,
-) -> Result<TokenStream2> {
-
-    let ident_args: Vec<Ident> = args.args.iter().map(|x| Ident::new(x, Span::call_site())).collect();
+fn impl_serialize(ident_struct: &Ident, args: &OdooOrmArgs) -> Result<TokenStream2> {
+    let ident_args: Vec<Ident> = args
+        .args
+        .iter()
+        .map(|x| Ident::new(x, Span::call_site()))
+        .collect();
     let lit_kwargs = args.kwargs.clone();
-    let ident_kwargs: Vec<Ident> = args.kwargs.iter().map(|x| Ident::new(x, Span::call_site())).collect();
+    let ident_kwargs: Vec<Ident> = args
+        .kwargs
+        .iter()
+        .map(|x| Ident::new(x, Span::call_site()))
+        .collect();
     // let len_kwargs = args.kwargs.len();
     Ok(quote!(
         impl serde::Serialize for #ident_struct {

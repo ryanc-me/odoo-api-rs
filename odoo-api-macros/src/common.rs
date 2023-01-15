@@ -1,9 +1,9 @@
 use crate::{Error, Result};
 use proc_macro::TokenStream;
-use proc_macro2::{Span, TokenStream as TokenStream2, Ident};
+use proc_macro2::{Ident, Span, TokenStream as TokenStream2};
 use quote::{quote, quote_spanned};
-use syn::{Fields, FieldsNamed, ItemStruct, Lit, Meta, MetaNameValue, LitStr, Token};
 use syn::ext::IdentExt;
+use syn::{Fields, FieldsNamed, ItemStruct, Lit, LitStr, Meta, MetaNameValue, Token};
 
 /// Wrapper type that implements a custom [`syn::parse::Parse`]
 pub(crate) struct ItemStructNamed {
@@ -77,7 +77,6 @@ pub(crate) fn parse_result(result: Result<TokenStream2>) -> TokenStream {
     .into()
 }
 
-
 /// Custom arguments type
 ///
 /// This type implements [`syn::parse::Parse`], and will convert the macro
@@ -105,7 +104,7 @@ pub(crate) enum ArgValue {
 }
 
 impl IntoIterator for MacroArguments {
-    type IntoIter = <Vec::<Arg> as IntoIterator>::IntoIter;
+    type IntoIter = <Vec<Arg> as IntoIterator>::IntoIter;
     type Item = Arg;
 
     fn into_iter(self) -> Self::IntoIter {
@@ -118,7 +117,7 @@ impl TryFrom<ArgValue> for String {
     fn try_from(value: ArgValue) -> std::result::Result<String, Self::Error> {
         match value {
             ArgValue::Lit(Lit::Str(lit)) => Ok(lit.value()),
-            _ => Err("expected LitStr, got something else".into())
+            _ => Err("expected LitStr, got something else".into()),
         }
     }
 }
@@ -127,7 +126,7 @@ impl TryFrom<ArgValue> for bool {
     fn try_from(value: ArgValue) -> std::result::Result<bool, Self::Error> {
         match value {
             ArgValue::Lit(Lit::Bool(lit)) => Ok(lit.value()),
-            _ => Err("expected LitBool, got something else".into())
+            _ => Err("expected LitBool, got something else".into()),
         }
     }
 }
@@ -136,7 +135,7 @@ impl TryFrom<ArgValue> for Vec<String> {
     fn try_from(value: ArgValue) -> std::result::Result<Vec<String>, Self::Error> {
         match value {
             ArgValue::Array(val) => Ok(val),
-            _ => Err("expected LitBool, got something else".into())
+            _ => Err("expected LitBool, got something else".into()),
         }
     }
 }
@@ -163,11 +162,7 @@ impl syn::parse::Parse for Arg {
         let key = key.to_string();
         input.parse::<Token![=]>()?;
         let value = input.parse()?;
-        Ok(Self {
-            key,
-            span,
-            value,
-        })
+        Ok(Self { key, span, value })
     }
 }
 
@@ -186,12 +181,10 @@ impl syn::parse::Parse for ArgValue {
             }
 
             Ok(ArgValue::Array(values))
-        }
-        else if input.peek(Lit) {
+        } else if input.peek(Lit) {
             // standard `path = "literal"` format
             input.parse().map(ArgValue::Lit)
-        }
-        else {
+        } else {
             Err(input.error("expected identifier or literal"))
         }
     }
