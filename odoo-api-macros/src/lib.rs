@@ -10,9 +10,9 @@ mod odoo_api;
 mod odoo_web;
 mod serialize_tuple;
 
-use common::{parse_result, ItemStructNamed};
+use common::{parse_result};
 use error::{Error, Result};
-use syn::{parse_macro_input, AttributeArgs};
+use syn::{parse_macro_input};
 
 /// Implement traits for an "API" method struct
 ///
@@ -88,16 +88,16 @@ use syn::{parse_macro_input, AttributeArgs};
 /// ```
 #[proc_macro_attribute]
 pub fn odoo_api(args: TokenStream, input: TokenStream) -> TokenStream {
-    let args = parse_macro_input!(args as AttributeArgs);
-    let input = parse_macro_input!(input as ItemStructNamed);
+    let args = parse_macro_input!(args);
+    let input = parse_macro_input!(input);
 
     parse_result(odoo_api::odoo_api(args, input))
 }
 
 #[proc_macro_attribute]
 pub fn odoo_web(args: TokenStream, input: TokenStream) -> TokenStream {
-    let args = parse_macro_input!(args as AttributeArgs);
-    let input = parse_macro_input!(input as ItemStructNamed);
+    let args = parse_macro_input!(args);
+    let input = parse_macro_input!(input);
 
     parse_result(odoo_web::odoo_web(args, input))
 }

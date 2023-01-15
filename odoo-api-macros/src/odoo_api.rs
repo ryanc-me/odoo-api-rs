@@ -1,8 +1,8 @@
 use proc_macro2::{Span, TokenStream as TokenStream2};
 use quote::{quote, ToTokens};
-use syn::{AttributeArgs, FieldsNamed, Ident, Lit, Type};
+use syn::{FieldsNamed, Ident, Type};
 
-use crate::common::{parse_args, ItemStructNamed};
+use crate::common::{ItemStructNamed, MacroArguments};
 use crate::{Error, Result};
 
 struct OdooApiArgs {
@@ -20,68 +20,48 @@ struct OdooApiArgs {
     name: Option<String>,
 }
 
-impl TryFrom<AttributeArgs> for OdooApiArgs {
+impl TryFrom<MacroArguments> for OdooApiArgs {
     type Error = Error;
 
-    fn try_from(value: AttributeArgs) -> Result<Self> {
-        let args = parse_args(value)?;
-
+    fn try_from(value: MacroArguments) -> Result<Self> {
         let mut service = None;
         let mut method = None;
         let mut auth = None;
         let mut name = None;
 
-        let args_iter = args.iter().map(|(k, v, s)| (k.as_str(), v, s));
-        for arg in args_iter {
-            match arg {
-                ("service", lit, span) => {
-                    if let Lit::Str(s) = lit {
-                        service = Some(s.value())
-                    }
-                    else {
-                        Err((
-                            "Invalid value for the `service` key, expected string (e.g., `service = \"object\"`)",
-                            Some(*span),
-                        ))?
-                    }
+        for arg in value.into_iter() {
+            match (arg.key.as_str(), arg.value, arg.span) {
+                ("service", val, span) => {
+                    service = Some(val.try_into().map_err(|_| (
+                        "invalid value, expected String (e.g., `service = \"object\"`)",
+                        Some(span)
+                    ))?);
                 },
-                ("method", lit, span) => {
-                    if let Lit::Str(s) = lit {
-                        method = Some(s.value())
-                    }
-                    else {
-                        Err((
-                            "Invalid value for the `method` key, expected string (e.g., `method = \"execute\"`)",
-                            Some(*span),
-                        ))?
-                    }
+                ("method", val, span) => {
+                    method = Some(val.try_into().map_err(|_| (
+                        "invalid value, expected String (e.g., `method = \"execute_kw\"`)",
+                        Some(span)
+                    ))?);
                 },
-                ("auth", lit, span) => {
-                    if let Lit::Bool(b) = lit {
-                        auth = Some(b.value())
-                    }
-                    else {
-                        Err((
-                            "Invalid value for the `method` key, expected bool (e.g., `auth = false`)",
-                            Some(*span),
-                        ))?
-                    }
+                ("auth", val, span) => {
+                    auth = Some(val.try_into().map_err(|_| (
+                        "invalid value, expected String (e.g., `auth = false`)",
+                        Some(span)
+                    ))?);
                 },
-                ("name", lit, span) => {
-                    if let Lit::Str(s) = lit {
-                        name = Some(s.value())
-                    }
-                    else {
-                        Err((
-                            "Invalid value for the `name` key, expected string (e.g., `name = \"custom_execute\"`)",
-                            Some(*span),
-                        ))?
-                    }
+                ("name", val, span) => {
+                    name = Some(val.try_into().map_err(|_| (
+                        "invalid value, expected String (e.g., `name = \"my_execute_kw\"`)",
+                        Some(span)
+                    ))?);
                 },
 
-                (key, _value, span) => Err((
-                    format!("Invalid argument `{}`. Valid arguments are: `service`, `method`, `auth`, `name`", key),
-                    Some(*span)
+                (key, _val, span) => Err((
+                    format!(
+                        "Invalid argument `{}`. Valid arguments are: service, method, auth, name",
+                        key
+                    ),
+                    Some(span),
                 ))?
             }
         }
@@ -97,7 +77,7 @@ impl TryFrom<AttributeArgs> for OdooApiArgs {
     }
 }
 
-pub(crate) fn odoo_api(args: AttributeArgs, input: ItemStructNamed) -> Result<TokenStream2> {
+pub(crate) fn odoo_api(args: MacroArguments, input: ItemStructNamed) -> Result<TokenStream2> {
     let args: OdooApiArgs = args.try_into()?;
 
     // fetch the struct name (and some variations)
