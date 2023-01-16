@@ -85,19 +85,16 @@ pub(crate) fn parse_result(result: Result<TokenStream2>) -> TokenStream {
 /// arrays (e.g. `test = ["list", "of", "literals"]). We also don't need
 /// to support paths as arg keys (for now), so the returned struct can be
 /// simpler and easier to work with on the macro impl side
-#[derive(Debug)]
 pub(crate) struct MacroArguments {
     inner: Vec<Arg>,
 }
 
-#[derive(Debug)]
 pub(crate) struct Arg {
     pub(crate) key: String,
     pub(crate) span: Span,
     pub(crate) value: ArgValue,
 }
 
-#[derive(Debug)]
 pub(crate) enum ArgValue {
     Lit(Lit),
     Array(Vec<String>),
