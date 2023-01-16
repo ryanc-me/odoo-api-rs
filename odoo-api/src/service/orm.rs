@@ -110,7 +110,7 @@ impl From<Vec<Value>> for CreateVals {
 #[serde(transparent)]
 pub struct CreateResponse {
     /// The ID (or IDS) of the newly created records
-    ids: CreateResponseItem,
+    pub ids: CreateResponseItem,
 }
 
 /// Container for the [`CreateResponse`] items
