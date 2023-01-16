@@ -13,25 +13,32 @@ use serde_json::{Value, Map};
 
 /// Create a new record (or set of records)
 ///
-///
 /// ## Example
 /// ```no_run
 /// # #[cfg(not(feature = "types-only"))]
 /// # fn test() -> Result<(), Box<dyn std::error::Error>> {
-/// # use odoo_api::OdooClient;
+/// # use odoo_api::{OdooClient, jvec, jmap};
 /// # let client = OdooClient::new_reqwest_blocking("")?;
 /// # let mut client = client.authenticate_manual("", "", 1, "", None);
-/// // note that auth fields (db, login, password) are auto-filled
-/// // for you by the client
+/// // create a single record
 /// let resp = client.create(
 ///     "res.partner",
 ///     jmap!{
 ///         "name": "Example Partner",
-///         "email": "hello@example.com",
+///         "email": "hello@example.com"
 ///     }
 /// ).send()?;
+/// 
+/// // create multiple records
+/// let resp2 = client.create(
+///     "res.partner",
+///     jvec![
+///         {"name": "Partner #1"},
+///         {"name": "Partner #2"}
+///     ]
+/// ).send()?;
 ///
-/// println!("New partner ID(s): {}", resp.ids);
+/// println!("New partner ids: {:?}", resp2.ids);
 /// # Ok(())
 /// # }
 /// ```
@@ -127,6 +134,33 @@ pub enum CreateResponseItem {
 
 /// Read data from a record (or set of records)
 ///
+/// ## Example
+/// ```no_run
+/// # #[cfg(not(feature = "types-only"))]
+/// # fn test() -> Result<(), Box<dyn std::error::Error>> {
+/// # use odoo_api::{OdooClient, svec};
+/// # let client = OdooClient::new_reqwest_blocking("")?;
+/// # let mut client = client.authenticate_manual("", "", 1, "", None);
+/// // read from a single record
+/// let resp = client.read(
+///     "res.partner",
+///     1,
+///     svec!["id", "login"]
+/// ).send()?;
+///
+/// // read from multiple records
+/// let resp = client.read(
+///     "res.partner",
+///     vec![1, 2, 3],
+///     svec!["id", "login"]
+/// ).send()?;
+/// 
+/// println!("Data: {:?}", resp.data);
+/// # Ok(())
+/// # }
+/// ```
+///<br />
+///
 /// See: [odoo/models.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/models.py#L2958-L2991)
 #[odoo_orm(
     method = "read",
@@ -154,6 +188,7 @@ pub struct Read {
     pub fields: Vec<String>,
 }
 
+/// The response to a [`Read`] request
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct ReadResponse {
@@ -161,6 +196,35 @@ pub struct ReadResponse {
 }
 
 /// Write data to a record (or set of records)
+///
+/// ## Example
+/// ```no_run
+/// # #[cfg(not(feature = "types-only"))]
+/// # fn test() -> Result<(), Box<dyn std::error::Error>> {
+/// # use odoo_api::{OdooClient, jmap};
+/// # let client = OdooClient::new_reqwest_blocking("")?;
+/// # let mut client = client.authenticate_manual("", "", 1, "", None);
+/// // write to a single record
+/// client.write(
+///     "res.partner",
+///     1,
+///     jmap!{
+///         "name": "New Partner Name"
+///     }
+/// ).send()?;
+///
+/// // write to multiple records
+/// client.write(
+///     "res.partner",
+///     vec![1, 2, 3],
+///     jmap!{
+///         "website": "https://www.example.com"
+///     }
+/// ).send()?;
+/// # Ok(())
+/// # }
+/// ```
+///<br />
 ///
 /// See: [odoo/models.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/models.py#L3585-L3775)
 #[odoo_orm(
@@ -189,6 +253,7 @@ pub struct Write {
     pub values: Map<String, Value>,
 }
 
+/// The response to a [`Write`] request
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct WriteResponse {
@@ -196,6 +261,29 @@ pub struct WriteResponse {
 }
 
 /// Delete a record (or set of records)
+///
+/// ## Example
+/// ```no_run
+/// # #[cfg(not(feature = "types-only"))]
+/// # fn test() -> Result<(), Box<dyn std::error::Error>> {
+/// # use odoo_api::{OdooClient, jmap};
+/// # let client = OdooClient::new_reqwest_blocking("")?;
+/// # let mut client = client.authenticate_manual("", "", 1, "", None);
+/// // delete one record
+/// client.unlink(
+///     "res.partner",
+///     1
+/// ).send()?;
+///
+/// // delete multiple records
+/// client.unlink(
+///     "res.partner",
+///     vec![1, 2, 3]
+/// ).send()?;
+/// # Ok(())
+/// # }
+/// ```
+///<br />
 ///
 /// See: [odoo/models.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/models.py#L3488-L3583)
 #[odoo_orm(
