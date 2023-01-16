@@ -9,7 +9,7 @@
 //! ## API Methods
 //!
 //! <br />
-//! 
+//!
 //! <span style="font-size: 1.125rem; margin: 15px 0 5px 0;">[`object`](crate::service::object)</span>
 //!
 //! |<div style="width: 250px">Method</div>|<div style="width: 550px">Description</div>|<div style="width: 50px">Auth?</div>|
@@ -62,7 +62,7 @@
 //! |[`db_server_version`](db::ServerVersion)|Return the server version|-|
 //!
 //! <br />
-//! 
+//!
 //! <span style="font-size: 1.125rem; margin: 15px 0 5px 0;">[`web`](crate::service::web)</span>
 //!
 //! |<div style="width: 250px">Method</div>|<div style="width: 550px">Description</div>|<div style="width: 50px">Auth?</div>|

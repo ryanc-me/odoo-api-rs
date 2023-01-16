@@ -9,7 +9,7 @@ use crate::jsonrpc::{OdooId, OdooIds, OdooOrmMethod};
 use odoo_api_macros::odoo_orm;
 use serde::ser::SerializeTuple;
 use serde::{Deserialize, Serialize};
-use serde_json::{Value, Map};
+use serde_json::{Map, Value};
 
 /// Create a new record (or set of records)
 ///
@@ -28,7 +28,7 @@ use serde_json::{Value, Map};
 ///         "email": "hello@example.com"
 ///     }
 /// ).send()?;
-/// 
+///
 /// // create multiple records
 /// let resp2 = client.create(
 ///     "res.partner",
@@ -69,7 +69,7 @@ pub struct Create {
 }
 
 /// The values to a [`Create`] request
-/// 
+///
 /// The Odoo `create()` function accepts either a dictionary (create 1x record),
 /// or a list of dictionaries (create multiple records). To support those in an
 /// ergonomic way, we will accept an enum for the value.
@@ -83,7 +83,7 @@ pub struct Create {
 ///         "name": "Hello, world!",
 ///     }
 /// );
-/// 
+///
 /// // create multiple records
 /// client.create(
 ///     "res.users",
@@ -97,7 +97,7 @@ pub struct Create {
 #[serde(untagged)]
 pub enum CreateVals {
     One(Map<String, Value>),
-    Multi(Vec<Value>)
+    Multi(Vec<Value>),
 }
 
 impl From<Map<String, Value>> for CreateVals {
@@ -121,7 +121,7 @@ pub struct CreateResponse {
 }
 
 /// Container for the [`CreateResponse`] items
-/// 
+///
 /// Because thr [`Create`] request can create one OR multiple records, the response
 /// may be one or multiple ids. In the "one" case, Odoo returns a plain int. In
 /// the "multi" case, Odoo returns an array of ints.
@@ -129,7 +129,7 @@ pub struct CreateResponse {
 #[serde(untagged)]
 pub enum CreateResponseItem {
     One(OdooId),
-    Multi(Vec<OdooId>)
+    Multi(Vec<OdooId>),
 }
 
 /// Read data from a record (or set of records)
@@ -154,7 +154,7 @@ pub enum CreateResponseItem {
 ///     vec![1, 2, 3],
 ///     svec!["id", "login"]
 /// ).send()?;
-/// 
+///
 /// println!("Data: {:?}", resp.data);
 /// # Ok(())
 /// # }
@@ -192,7 +192,7 @@ pub struct Read {
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct ReadResponse {
-    pub data: Vec<Map<String, Value>>
+    pub data: Vec<Map<String, Value>>,
 }
 
 /// Write data to a record (or set of records)
@@ -257,7 +257,7 @@ pub struct Write {
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct WriteResponse {
-    pub ok: bool
+    pub ok: bool,
 }
 
 /// Delete a record (or set of records)
@@ -312,7 +312,7 @@ pub struct Unlink {
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct UnlinkResponse {
-    pub ok: bool
+    pub ok: bool,
 }
 
 #[cfg(test)]
@@ -352,7 +352,7 @@ mod test {
                 password: "password".into(),
 
                 model: "res.partner".into(),
-                values: jmap!{"name": "Hello, world!"}.into(),
+                values: jmap! {"name": "Hello, world!"}.into(),
             }
             .build(1000),
         )?;
@@ -482,7 +482,7 @@ mod test {
 
                 model: "res.partner".into(),
                 ids: 2.into(),
-                values: jmap!{"name": "The Admin Account"},
+                values: jmap! {"name": "The Admin Account"},
             }
             .build(1000),
         )?;
