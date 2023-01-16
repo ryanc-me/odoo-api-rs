@@ -29,7 +29,7 @@ pub type OdooId = i32;
 
 /// A vec of [`OdooId`].
 ///
-/// This type also implements From<OdooId>, which allows for flexible function
+/// This type also implements `From<OdooId>`, which allows for flexible function
 /// args, e.g.:
 /// ```
 /// use odoo_api::jsonrpc::OdooIds;
