@@ -1,6 +1,6 @@
 [package]
 name = "odoo-api"
-version = "0.2.3"
+version = "0.2.4"
 authors = ["Ryan Cole <hello@ryanc.me>"]
 description = "Type-safe and full-coverage implementation of the Odoo JSON-RPC API, including ORM and Web methods. Supports sessioning, multi-database, async and blocking via reqwest, and bring-your-own requests."
 repository = "https://github.com/ryanc-me/odoo-api-rs"
@@ -36,6 +36,6 @@ blocking = ["reqwest", "reqwest/blocking"]
 types-only = []
 
 [package.metadata.docs.rs]
-all-features = true
+features = ["async", "blocking"]
 targets = ["x86_64-unknown-linux-gnu"]
 rustdoc-args = ["--cfg", "doc_cfg"]
