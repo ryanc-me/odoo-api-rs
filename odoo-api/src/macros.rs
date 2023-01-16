@@ -107,3 +107,31 @@ macro_rules! jmap {
     };
     () => { compiler_error!("")};
 }
+
+/// Helper macro to build a [`Vec<String>`]
+///
+/// Quite a few ORM methods take [`Vec<String>`] as an argument. Using the built-in
+/// `vec![]` macro requires that each element is converted into a `String`, which
+/// is very cumbersome.
+///
+/// Using this macro, we can write:
+/// ```
+/// # #[cfg(not(feature = "types-only"))]
+/// # fn test() {
+/// # use odoo_api::svec;
+/// let fields = svec!["string", "literals", "without", "to_string()"];
+/// # }
+/// ```
+#[macro_export]
+macro_rules! svec {
+    [$($v:tt),*] => {
+        {
+            let mut vec = ::std::vec::Vec::<String>::new();
+            $(
+                vec.push($v.to_string());
+            )*
+            vec
+        }
+    };
+    () => { compiler_error!("")};
+}
