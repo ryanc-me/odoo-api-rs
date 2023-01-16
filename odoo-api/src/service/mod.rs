@@ -9,6 +9,28 @@
 //! ## API Methods
 //!
 //! <br />
+//! 
+//! <span style="font-size: 1.125rem; margin: 15px 0 5px 0;">[`object`](crate::service::object)</span>
+//!
+//! |<div style="width: 250px">Method</div>|<div style="width: 550px">Description</div>|<div style="width: 50px">Auth?</div>|
+//! |-|-|-|
+//! |[`execute`](object::Execute)|Call a business-logic method on an Odoo model (positional args)|**Yes**|
+//! |[`execute_kw`](object::ExecuteKw)|Call a business-logic method on an Odoo model (positional & keyword args)|**Yes**|
+//!
+//! <br />
+//!
+//! <span style="font-size: 1.125rem; margin: 15px 0 5px 0;">[`orm`](crate::service::orm)</span>
+//!
+//! **TBC**
+//!
+//! |<div style="width: 250px">Method</div>|<div style="width: 550px">Description</div>|<div style="width: 50px">Auth?</div>|
+//! |-|-|-|
+//! |[`create`](orm::Create)|Create a new record (or set of records)|**Yes**|
+//! |[`read`](orm::Read)|Read data from a record (or set of records)|**Yes**|
+//! |[`write`](orm::Write)|Write data to a record (or set of records)|**Yes**|
+//! |[`unlink`](orm::Unlink)|Delete a record (or set of records)|**Yes**|
+//!
+//! <br />
 //!
 //! <span style="font-size: 1.125rem; margin: 15px 0 5px 0;">[`common`](crate::service::common)</span>
 //!
@@ -40,26 +62,7 @@
 //! |[`db_server_version`](db::ServerVersion)|Return the server version|-|
 //!
 //! <br />
-//!
-//! <span style="font-size: 1.125rem; margin: 15px 0 5px 0;">[`object`](crate::service::object)</span>
-//!
-//! |<div style="width: 250px">Method</div>|<div style="width: 550px">Description</div>|<div style="width: 50px">Auth?</div>|
-//! |-|-|-|
-//! |[`execute`](object::Execute)|Call a business-logic method on an Odoo model (positional args)|**Yes**|
-//! |[`execute_kw`](object::ExecuteKw)|Call a business-logic method on an Odoo model (positional & keyword args)|**Yes**|
-//!
-//! <br />
-//!
-//! <span style="font-size: 1.125rem; margin: 15px 0 5px 0;">[`orm`](crate::service::orm)</span>
-//!
-//! **TBC**
-//!
-//! |<div style="width: 250px">Method</div>|<div style="width: 550px">Description</div>|<div style="width: 50px">Auth?</div>|
-//! |-|-|-|
-//! |||
-//!
-//! <br />
-//!
+//! 
 //! <span style="font-size: 1.125rem; margin: 15px 0 5px 0;">[`web`](crate::service::web)</span>
 //!
 //! |<div style="width: 250px">Method</div>|<div style="width: 550px">Description</div>|<div style="width: 50px">Auth?</div>|
