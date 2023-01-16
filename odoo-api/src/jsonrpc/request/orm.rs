@@ -46,6 +46,9 @@ where
     /// Describe the "ORM" method endpoint (e.g., "/web/session/authenticate")
     fn endpoint(&self) -> &'static str;
 
+    /// Return the model method name (e.g., "read_group" or "create")
+    fn method(&self) -> &'static str;
+
     /// Build `self` into a full [`JsonRpcRequest`]
     fn _build(self, id: JsonRpcId) -> JsonRpcRequest<Self> {
         JsonRpcRequest {

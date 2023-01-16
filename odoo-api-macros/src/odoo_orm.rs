@@ -111,7 +111,7 @@ pub(crate) fn odoo_orm(args: MacroArguments, input: ItemStructNamed) -> Result<T
 
     // build the TokenStreams
     let out_params = impl_params(&ident_struct, &ident_response)?;
-    let out_method = impl_method(&ident_struct)?;
+    let out_method = impl_method(&ident_struct, &args)?;
     let out_client = impl_client(&ident_struct, &ident_call, &input.fields, &doc_call)?;
     let out_serialize = impl_serialize(&ident_struct, &args)?;
 
@@ -138,11 +138,16 @@ pub(crate) fn impl_params(ident_struct: &Ident, ident_response: &Ident) -> Resul
 }
 
 /// Output the OdooApiMethod impl
-fn impl_method(ident_struct: &Ident) -> Result<TokenStream2> {
+fn impl_method(ident_struct: &Ident, args: &OdooOrmArgs) -> Result<TokenStream2> {
+    let method = &args.method;
     Ok(quote! {
         impl odoo_api::jsonrpc::OdooOrmMethod for #ident_struct {
             fn endpoint(&self) -> &'static str {
                 "/jsonrpc"
+            }
+
+            fn method(&self) -> &'static str {
+                #method
             }
         }
     })
@@ -235,7 +240,6 @@ fn impl_serialize(ident_struct: &Ident, args: &OdooOrmArgs) -> Result<TokenStrea
         .iter()
         .map(|x| Ident::new(x, Span::call_site()))
         .collect();
-    // let len_kwargs = args.kwargs.len();
     Ok(quote!(
         impl serde::Serialize for #ident_struct {
             fn serialize<S>(&self, serialize: S) -> ::std::result::Result<S::Ok, S::Error>
@@ -246,6 +250,8 @@ fn impl_serialize(ident_struct: &Ident, args: &OdooOrmArgs) -> Result<TokenStrea
                 state.serialize_element(&self.database)?;
                 state.serialize_element(&self.uid)?;
                 state.serialize_element(&self.password)?;
+                state.serialize_element(&self.model)?;
+                state.serialize_element(self.method())?;
 
                 //TODO: serialize these directly (serialize.clone() ?)
                 state.serialize_element(&(
