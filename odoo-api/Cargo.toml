@@ -1,6 +1,6 @@
 [package]
 name = "odoo-api"
-version = "0.2.2"
+version = "0.2.3"
 authors = ["Ryan Cole <hello@ryanc.me>"]
 description = "Type-safe and full-coverage implementation of the Odoo JSON-RPC API, including ORM and Web methods. Supports sessioning, multi-database, async and blocking via reqwest, and bring-your-own requests."
 repository = "https://github.com/ryanc-me/odoo-api-rs"
@@ -19,7 +19,7 @@ serde_json = "1.0"
 thiserror = "1.0"
 rand = { version = "0.8.5" }
 reqwest = { version = "0.11", features = ["json", "cookies"], optional = true }
-odoo-api-macros = "0.2"
+odoo-api-macros = "0.2.1"
 
 [features]
 # By default, fully reqwest async/blocking support is enabled
