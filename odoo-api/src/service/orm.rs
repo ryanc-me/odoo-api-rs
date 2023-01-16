@@ -90,7 +90,7 @@ pub struct Create {
 #[serde(untagged)]
 pub enum CreateVals {
     One(Map<String, Value>),
-    Multi(Vec<Map<String, Value>>)
+    Multi(Vec<Value>)
 }
 
 impl From<Map<String, Value>> for CreateVals {
@@ -99,8 +99,8 @@ impl From<Map<String, Value>> for CreateVals {
     }
 }
 
-impl From<Vec<Map<String, Value>>> for CreateVals {
-    fn from(value: Vec<Map<String, Value>>) -> Self {
+impl From<Vec<Value>> for CreateVals {
+    fn from(value: Vec<Value>) -> Self {
         Self::Multi(value)
     }
 }
