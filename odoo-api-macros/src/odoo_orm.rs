@@ -167,6 +167,7 @@ fn impl_client(
     // parse fields
     let mut field_assigns = Vec::new();
     let mut field_arguments = Vec::new();
+    let mut field_generics = Vec::new();
     for field in fields.named.clone() {
         let ident = field.ident.unwrap();
         let ty = if let Type::Path(path) = field.ty {
@@ -201,6 +202,18 @@ fn impl_client(
                 field_arguments.push(quote!(#ident: &str));
             }
 
+            (_, "OdooIds") => {
+                field_generics.push(quote!(ID: Into<OdooIds>));
+                field_assigns.push(quote!(#ident: #ident.into()));
+                field_arguments.push(quote!(#ident: ID));
+            }
+
+            (_, "CreateVals") => {
+                field_generics.push(quote!(V: Into<CreateVals>));
+                field_assigns.push(quote!(#ident: #ident.into()));
+                field_arguments.push(quote!(#ident: V));
+            }
+
             // all other fields are passed as-is
             (_, _) => {
                 field_assigns.push(quote!(#ident: #ident));
@@ -213,7 +226,7 @@ fn impl_client(
         #[cfg(not(feature = "types-only"))]
         #[doc=#doc]
         impl<I: odoo_api::client::RequestImpl, #auth_generic> odoo_api::client::OdooClient<#auth_type, I> {
-            pub fn #ident_call(&mut self, #(#field_arguments),*) -> odoo_api::client::OdooRequest< #ident_struct , I> {
+            pub fn #ident_call<#(#field_generics),*>(&mut self, #(#field_arguments),*) -> odoo_api::client::OdooRequest< #ident_struct , I> {
                 let #ident_call = #ident_struct {
                     #(#field_assigns),*
                 };
