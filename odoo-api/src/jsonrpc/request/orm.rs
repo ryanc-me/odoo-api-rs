@@ -8,7 +8,7 @@ use super::{JsonRpcId, JsonRpcMethod, JsonRpcParams, JsonRpcRequest, JsonRpcVers
 ///
 /// These functions are essentially just wrappers around
 /// [`Execute`](crate::service::object::Execute)
-/// and  [`ExecuteKw`](crate::service::object::ExecuteKw), providing a more
+/// and [`ExecuteKw`](crate::service::object::ExecuteKw), providing a more
 /// user-friendly interface (and better type checking!)
 ///
 /// For more info, see [`super::JsonRpcParams`]

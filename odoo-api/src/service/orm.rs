@@ -8,7 +8,7 @@ use crate as odoo_api;
 use crate::jsonrpc::{OdooId, OdooIds, OdooOrmMethod};
 use odoo_api_macros::odoo_orm;
 use serde::ser::SerializeTuple;
-use serde::{Deserialize, Serialize, Deserializer, de};
+use serde::{de, Deserialize, Deserializer, Serialize};
 use serde_json::{Map, Value};
 use serde_tuple::{Deserialize_tuple, Serialize_tuple};
 use std::collections::HashMap;
@@ -418,7 +418,7 @@ pub struct ReadGroup {
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct ReadGroupResponse {
-    pub result: Vec<Map<String, Value>>
+    pub result: Vec<Map<String, Value>>,
 }
 
 /// Perform a `search` and `read` in one call
@@ -618,7 +618,7 @@ pub struct SearchCount {
     pub domain: Vec<Value>,
 
     /// An optional limit
-    pub limit: Option<u32>
+    pub limit: Option<u32>,
 }
 
 /// The response to a [`SearchCount`] request
@@ -682,7 +682,7 @@ pub struct CopyResponse {
 }
 
 /// Check if the record(s) exist in the Odoo database
-/// 
+///
 /// **Note**: This method works by accepting a list of ids, and returning only
 /// the ids that actually exist. See [`ExistsResponse`] for more info.
 ///
@@ -758,11 +758,11 @@ pub enum AccessOperation {
 }
 
 /// Check model access rights (according to `ir.model.access`)
-/// 
+///
 /// This method checks against `ir.model.access`, e.g. basic per-group CRUD rules.
 /// You should also call [`CheckAccessRules`] in order to determine if any advanced
 /// access rules apply to this model/user.
-/// 
+///
 /// **Note**: This method raises an API exception if the access rights check fails.
 /// You probably want to specify `raise_exception: false`, which will cause the
 /// request to return `false` when the check fails.
@@ -811,7 +811,7 @@ pub struct CheckAccessRights {
     pub operation: AccessOperation,
 
     /// How should check failures be reported?
-    /// 
+    ///
     ///  * `true`: An API exception is raised (catchable with `?`, etc)
     ///  * `false`: The [`CheckAccessRightsResponse`] `ok` field will be set to `false`
     pub raise_exception: bool,
@@ -821,20 +821,20 @@ pub struct CheckAccessRights {
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct CheckAccessRightsResponse {
-    pub ok: bool
+    pub ok: bool,
 }
 
 /// Check model access rules (according to `ir.rule`)
-/// 
+///
 /// This method checks against `ir.rule`, e.g. advanced domain-based CRUD rules.
 /// You should also call [`CheckAccessRights`] in order to determine if any
 /// basic CRUD/group rights apply to this model/user.
-/// 
+///
 /// **NOTE**: If the access check fails, an API error will be returned. To determine
 /// if the rules passed, check for the "Success" enum variant on the response.
-/// 
+///
 /// **WARNING**: This method currently raises an API exception on success. This issue
-/// will be fixed in a future release. For now, you may check for 
+/// will be fixed in a future release. For now, you may check for
 ///
 /// ## Example
 /// ```no_run
@@ -886,10 +886,10 @@ pub struct CheckAccessRules {
 pub struct CheckAccessRulesResponse {}
 
 /// Check the user access rights on the given fields
-/// 
+///
 /// **Note**: Like the [`Exists`] method, this method accepts a list of fields,
 /// then returns the subset of those fields that can be accessed via `operation`.
-/// 
+///
 /// **Note2**: This method doesn't check if the passed fields actually exist.
 ///
 /// ## Example
@@ -944,7 +944,6 @@ pub struct CheckFieldAccessRightsResponse {
     pub result: Option<Vec<String>>,
 }
 
-
 /// Return some metadata about the given record(s)
 ///
 /// ## Example
@@ -997,7 +996,7 @@ pub struct GetMetadataResponse {
 // Allow the map of {str: str} to be deserialized into {i32: str}
 fn get_external_id_deserialize<'de, D>(de: D) -> Result<HashMap<OdooId, String>, D::Error>
 where
-    D: Deserializer<'de>
+    D: Deserializer<'de>,
 {
     struct Visitor;
     impl<'de> de::Visitor<'de> for Visitor {
@@ -1019,7 +1018,7 @@ where
                 let key = key.parse().map_err(|_e| {
                     de::Error::invalid_value(
                         de::Unexpected::Str(&key),
-                        &"A String representing an i32"
+                        &"A String representing an i32",
                     )
                 })?;
                 map.insert(key, value);
@@ -1243,11 +1242,11 @@ pub struct NameCreateResponse {
 }
 
 /// Search for records based on their `name` field
-/// 
+///
 /// This is a shortcut to the `search()` method with only one domain component:
 /// `[("name", "ilike", name)]`. This function is generally used by the Odoo searchbar,
 /// and by the search function on x2many fields.
-/// 
+///
 /// **Note**: Some models may override this method to provide custom "name search"
 /// behaviour.
 ///
@@ -1311,7 +1310,7 @@ pub struct NameSearch {
 #[derive(Debug, Serialize_tuple, Deserialize_tuple)]
 #[serde(transparent)]
 pub struct NameSearchResponse {
-    pub records: Vec<NameSearchResponseItem>
+    pub records: Vec<NameSearchResponseItem>,
 }
 
 #[derive(Debug, Serialize_tuple, Deserialize_tuple)]
@@ -1360,7 +1359,7 @@ mod test {
                 password: "password".into(),
 
                 model: "res.partner".into(),
-                values: jmap!{"name": "Hello, world!"}.into(),
+                values: jmap! {"name": "Hello, world!"}.into(),
             }
             .build(1000),
         )?;
@@ -1421,7 +1420,8 @@ mod test {
                 values: jvec![
                     {"name": "Hello, world!"},
                     {"name": "Marco, polo!"}
-                ].into(),
+                ]
+                .into(),
             }
             .build(1000),
         )?;
@@ -2080,7 +2080,7 @@ mod test {
 
                 model: "res.partner".into(),
 
-                ids: vec![1, 2, -1, 999999999].into()
+                ids: vec![1, 2, -1, 999999999].into(),
             }
             .build(1000),
         )?;
@@ -2142,7 +2142,7 @@ mod test {
                 model: "stock.quant".into(),
 
                 operation: AccessOperation::Unlink,
-                raise_exception: false
+                raise_exception: false,
             }
             .build(1000),
         )?;
@@ -2232,7 +2232,7 @@ mod test {
                 Err(_) => {
                     // As a *super* hacky workaround, we can check for deserialization
                     // errors
-                    return Ok(())
+                    return Ok(());
                 }
             }
         };
@@ -2280,11 +2280,7 @@ mod test {
                 model: "res.partner".into(),
 
                 operation: AccessOperation::Unlink,
-                fields: svec![
-                    "id",
-                    "email",
-                    "this_is_a_fake_field"
-                ]
+                fields: svec!["id", "email", "this_is_a_fake_field"],
             }
             .build(1000),
         )?;
@@ -2345,7 +2341,7 @@ mod test {
 
                 model: "res.partner".into(),
 
-                ids: vec![1, 2].into()
+                ids: vec![1, 2].into(),
             }
             .build(1000),
         )?;
@@ -2430,7 +2426,7 @@ mod test {
 
                 model: "res.partner".into(),
 
-                ids: vec![1, 2].into()
+                ids: vec![1, 2].into(),
             }
             .build(1000),
         )?;
@@ -2490,7 +2486,7 @@ mod test {
 
                 model: "res.partner".into(),
 
-                ids: vec![1, 2].into()
+                ids: vec![1, 2].into(),
             }
             .build(1000),
         )?;
@@ -2550,7 +2546,7 @@ mod test {
 
                 model: "res.partner".into(),
 
-                ids: vec![1, 2, 3].into()
+                ids: vec![1, 2, 3].into(),
             }
             .build(1000),
         )?;
@@ -2686,7 +2682,7 @@ mod test {
                 name: "I am a test!".into(),
                 args: None,
                 operator: None,
-                limit: None
+                limit: None,
             }
             .build(1000),
         )?;
