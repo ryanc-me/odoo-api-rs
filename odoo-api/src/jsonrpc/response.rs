@@ -26,7 +26,8 @@ where
 #[derive(Debug, Serialize, Deserialize)]
 pub struct JsonRpcResponseSuccess<T>
 where
-    T:,
+    //TODO: should we have something else here?
+    T: Debug,
 {
     /// The JSON-RPC version (`2.0`)
     pub(crate) jsonrpc: JsonRpcVersion,
