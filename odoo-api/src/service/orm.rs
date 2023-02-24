@@ -331,7 +331,7 @@ pub struct UnlinkResponse {
 /// ```no_run
 /// # #[cfg(not(feature = "types-only"))]
 /// # fn test() -> Result<(), Box<dyn std::error::Error>> {
-/// # use odoo_api::{OdooClient, jmap};
+/// # use odoo_api::{OdooClient, jvec, svec};
 /// # let client = OdooClient::new_reqwest_blocking("")?;
 /// # let mut client = client.authenticate_manual("", "", 1, "", None);
 /// client.read_group(
@@ -427,7 +427,7 @@ pub struct ReadGroupResponse {
 /// ```no_run
 /// # #[cfg(not(feature = "types-only"))]
 /// # fn test() -> Result<(), Box<dyn std::error::Error>> {
-/// # use odoo_api::{OdooClient, jmap};
+/// # use odoo_api::{OdooClient, jvec, svec};
 /// # let client = OdooClient::new_reqwest_blocking("")?;
 /// # let mut client = client.authenticate_manual("", "", 1, "", None);
 /// client.search_read(
@@ -504,7 +504,7 @@ pub struct SearchReadResponse {
 /// ```no_run
 /// # #[cfg(not(feature = "types-only"))]
 /// # fn test() -> Result<(), Box<dyn std::error::Error>> {
-/// # use odoo_api::{OdooClient, jmap};
+/// # use odoo_api::{OdooClient, jvec};
 /// # let client = OdooClient::new_reqwest_blocking("")?;
 /// # let mut client = client.authenticate_manual("", "", 1, "", None);
 /// client.search(
@@ -575,7 +575,7 @@ pub struct SearchResponse {
 /// ```no_run
 /// # #[cfg(not(feature = "types-only"))]
 /// # fn test() -> Result<(), Box<dyn std::error::Error>> {
-/// # use odoo_api::{OdooClient, jmap};
+/// # use odoo_api::{OdooClient, jvec};
 /// # let client = OdooClient::new_reqwest_blocking("")?;
 /// # let mut client = client.authenticate_manual("", "", 1, "", None);
 /// client.search_count(
@@ -774,7 +774,7 @@ pub enum AccessOperation {
 /// # use odoo_api::{OdooClient, jmap};
 /// # let client = OdooClient::new_reqwest_blocking("")?;
 /// # let mut client = client.authenticate_manual("", "", 1, "", None);
-/// use odoo_api::service::orm::AccessOperation
+/// use odoo_api::service::orm::AccessOperation;
 /// client.check_access_rights(
 ///     "stock.quant",
 ///     AccessOperation::Unlink,
@@ -843,8 +843,8 @@ pub struct CheckAccessRightsResponse {
 /// # use odoo_api::{OdooClient, jmap};
 /// # let client = OdooClient::new_reqwest_blocking("")?;
 /// # let mut client = client.authenticate_manual("", "", 1, "", None);
-/// use odoo_api::service::orm::AccessOperation
-/// client.check_access_rule(
+/// use odoo_api::service::orm::AccessOperation;
+/// client.check_access_rules(
 ///     "res.partner",
 ///     vec![1, 2], // records
 ///     AccessOperation::Unlink,
@@ -896,10 +896,10 @@ pub struct CheckAccessRulesResponse {}
 /// ```no_run
 /// # #[cfg(not(feature = "types-only"))]
 /// # fn test() -> Result<(), Box<dyn std::error::Error>> {
-/// # use odoo_api::{OdooClient, jmap};
+/// # use odoo_api::{OdooClient, jmap, svec};
 /// # let client = OdooClient::new_reqwest_blocking("")?;
 /// # let mut client = client.authenticate_manual("", "", 1, "", None);
-/// use odoo_api::service::orm::AccessOperation
+/// use odoo_api::service::orm::AccessOperation;
 /// client.check_field_access_rights(
 ///     "res.partner",
 ///     AccessOperation::Unlink,
@@ -951,13 +951,12 @@ pub struct CheckFieldAccessRightsResponse {
 /// ```no_run
 /// # #[cfg(not(feature = "types-only"))]
 /// # fn test() -> Result<(), Box<dyn std::error::Error>> {
-/// # use odoo_api::{OdooClient, jmap};
+/// # use odoo_api::{OdooClient, jvec};
 /// # let client = OdooClient::new_reqwest_blocking("")?;
 /// # let mut client = client.authenticate_manual("", "", 1, "", None);
-/// use odoo_api::service::orm::AccessOperation
 /// client.get_metadata(
 ///     "res.partner",
-///     jvec![1, 2]
+///     vec![1, 2]
 /// ).send()?;
 /// # Ok(())
 /// # }
@@ -1039,13 +1038,12 @@ where
 /// ```no_run
 /// # #[cfg(not(feature = "types-only"))]
 /// # fn test() -> Result<(), Box<dyn std::error::Error>> {
-/// # use odoo_api::{OdooClient, jmap};
+/// # use odoo_api::{OdooClient, jvec};
 /// # let client = OdooClient::new_reqwest_blocking("")?;
 /// # let mut client = client.authenticate_manual("", "", 1, "", None);
-/// use odoo_api::service::orm::AccessOperation
 /// client.get_external_id(
 ///     "res.partner",
-///     jvec![1, 2]
+///     vec![1, 2]
 /// ).send()?;
 /// # Ok(())
 /// # }
@@ -1090,13 +1088,12 @@ pub struct GetExternalIdResponse {
 /// ```no_run
 /// # #[cfg(not(feature = "types-only"))]
 /// # fn test() -> Result<(), Box<dyn std::error::Error>> {
-/// # use odoo_api::{OdooClient, jmap};
+/// # use odoo_api::{OdooClient};
 /// # let client = OdooClient::new_reqwest_blocking("")?;
 /// # let mut client = client.authenticate_manual("", "", 1, "", None);
-/// use odoo_api::service::orm::AccessOperation
 /// client.get_xml_id(
 ///     "res.partner",
-///     jvec![1, 2]
+///     vec![1, 2]
 /// ).send()?;
 /// # Ok(())
 /// # }
@@ -1144,10 +1141,9 @@ pub struct GetXmlIdResponse {
 /// # use odoo_api::{OdooClient, jmap};
 /// # let client = OdooClient::new_reqwest_blocking("")?;
 /// # let mut client = client.authenticate_manual("", "", 1, "", None);
-/// use odoo_api::service::orm::AccessOperation
 /// client.name_get(
 ///     "res.partner",
-///     jvec![1, 2, 3]
+///     vec![1, 2, 3]
 /// ).send()?;
 /// # Ok(())
 /// # }
@@ -1204,7 +1200,6 @@ pub struct NameGetResponseItem {
 /// # use odoo_api::{OdooClient, jmap};
 /// # let client = OdooClient::new_reqwest_blocking("")?;
 /// # let mut client = client.authenticate_manual("", "", 1, "", None);
-/// use odoo_api::service::orm::AccessOperation
 /// client.name_create(
 ///     "res.partner",
 ///     "I am a test!".into()
@@ -1263,7 +1258,6 @@ pub struct NameCreateResponse {
 /// # use odoo_api::{OdooClient, jmap};
 /// # let client = OdooClient::new_reqwest_blocking("")?;
 /// # let mut client = client.authenticate_manual("", "", 1, "", None);
-/// use odoo_api::service::orm::AccessOperation
 /// client.name_search(
 ///     "res.partner",
 ///     "Admini%".into(),
