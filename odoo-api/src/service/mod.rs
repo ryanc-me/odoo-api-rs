@@ -27,8 +27,23 @@
 //! |-|-|-|
 //! |[`create`](orm::Create)|Create a new record (or set of records)|**Yes**|
 //! |[`read`](orm::Read)|Read data from a record (or set of records)|**Yes**|
+//! |[`read_group`](orm::ReadGroup)|Read some grouped data from a record (or set of records)|**Yes**|
 //! |[`write`](orm::Write)|Write data to a record (or set of records)|**Yes**|
 //! |[`unlink`](orm::Unlink)|Delete a record (or set of records)|**Yes**|
+//! |[`search`](orm::Search)|Return the ids of records matching a domain|**Yes**|
+//! |[`search_count`](orm::SearchCount)|Return the count of records matching a domain|**Yes**|
+//! |[`search_read`](orm::SearchRead)|Perform a `search` and `read` in one call|**Yes**|
+//! |[`copy`](orm::Copy)|Copy a record|**Yes**|
+//! |[`exists`](orm::Exists)|Check if the record(s) exist in the Odoo database|**Yes**|
+//! |[`check_access_rights`](orm::CheckAccessRights)|Check model access rights (according to `ir.model.access`)|**Yes**|
+//! |[`check_access_rules`](orm::CheckAccessRules)|Check model access rules (according to `ir.rule`)|**Yes**|
+//! |[`check_field_access_rights`](orm::CheckFieldAccessRights)|Check the user access rights on the given fields|**Yes**|
+//! |[`get_metadata`](orm::GetExternalId)|Return some metadata about the given record(s)|**Yes**|
+//! |[`get_external_id`](orm::GetMetadata)|Fetch the XMLID for the given record(s)|**Yes**|
+//! |[`get_xml_id`](orm::GetXmlId)|Fetch the XMLID for the given record(s)|**Yes**|
+//! |[`name_get`](orm::NameGet)|Fetch the `display_naame` for the given record(s)|**Yes**|
+//! |[`name_create`](orm::NameCreate)|Create a new record, passing only the `name` field|**Yes**|
+//! |[`name_search`](orm::NameSearch)|Search for records based on their `name` field|**Yes**|
 //!
 //! <br />
 //!
