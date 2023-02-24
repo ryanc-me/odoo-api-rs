@@ -43,7 +43,7 @@ pub type OdooId = i32;
 /// // ... or with a single id
 /// my_function(1);
 /// ```
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct OdooIds(Vec<OdooId>);
 
 impl From<OdooId> for OdooIds {
