@@ -19,7 +19,7 @@ use serde_tuple::Serialize_tuple;
 /// `create` or `my_function`), passing some arbitrary data, and returns the
 /// result of that method call.
 ///
-/// Note that the way this method handles keyword argument is unintuitive. If
+/// Note that the way this method handles keyword arguments is unintuitive. If
 /// you need to send `kwargs` to an Odoo method, you should use [`ExecuteKw`]
 /// instead
 ///
