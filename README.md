@@ -10,14 +10,14 @@ to interact with the Odoo JSONRPC and ORM APIs, while preserving strong typing. 
 includes both async and blocking support out of the box, and allows users to provide
 their own implementations if needed.
 
-See the [Example](#example) section below for a brief example, or the [`client`] module for more in-depth examples.
+See the [Example](#example) section below for a brief example, or the [`client`](https://docs.rs/odoo-api/latest/odoo_api/client/index.html) module for more in-depth examples.
 
 ### Features
 
  - **Strong typing**: `odoo-api` prioritizes the use of concrete types wherever
     possible, rather than relying on generic `json!{}` calls.
  - **Async and blocking support**: the library provides both async and blocking
-    HTTP impls via [`reqwest`], and allows users to easily provide their own HTTP
+    HTTP impls via [`reqwest`](https://docs.rs/reqwest/latest/reqwest/), and allows users to easily provide their own HTTP
     impl via a shim closure.
  - **JSONRPC API support**: including database management (create, duplicate, etc),
     translations, and generic `execute` and `execute_kw`
@@ -28,24 +28,24 @@ See the [Example](#example) section below for a brief example, or the [`client`]
 
 #### Supported API Methods
 
-See the [`service`] module for a full list of supported API methods.
+See the [`service`](https://docs.rs/odoo-api/latest/odoo_api/service/index.html) module for a full list of supported API methods.
 
 #### Bring Your Own Requests
 
 Do you already have an HTTP library in your dependencies (e.g., `reqwest`)?
 
 The `odoo-api` crate allows you to use your existing HTTP library by writing a
-simple shim closure. See [`client::ClosureAsync`] or [`client::ClosureBlocking`]
+simple shim closure. See [`client::ClosureAsync`](https://docs.rs/odoo-api/latest/odoo_api/client/struct.ClosureAsync.html) or [`client::ClosureBlocking`](https://docs.rs/odoo-api/latest/odoo_api/client/struct.ClosureBlocking.html)
 for more info.
 
 #### Types Only
 
 The crate offers a `types-only` feature. When enabled, the library only exposes
 the API request & response types, along with `Serialize` and `Deserialize` impls.
-The async/blocking impls (and the [`reqwest`] dependency) are dropped when this
+The async/blocking impls (and the `reqwest` dependency) are dropped when this
 feature is active.
 
-See the [`jsonrpc`] module for information on `types-only`.
+See the [`jsonrpc`](https://docs.rs/odoo-api/latest/odoo_api/jsonrpc/index.html) module for information on `types-only`.
 
 ### Example
 
