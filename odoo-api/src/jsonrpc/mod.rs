@@ -4,6 +4,8 @@
 //! Odoo JSON-RPC requests.
 //!
 //! As a crate user, you shouldn't need to interact with these directly. Instead, see [`crate::client`].
+//!
+//! **TODO**: Add examples for the `types-only` feature
 
 pub mod request;
 pub mod response;

@@ -9,6 +9,7 @@ use std::fmt::Debug;
 pub type ClosureReturn = ClosureResult<(String, Option<String>)>;
 type Closure = Box<dyn Fn(&str, Value, Option<&str>) -> ClosureReturn>;
 
+/// **TODO:** Add an example closure for `reqwest` (and some other libs - `hyper`?)
 pub struct ClosureBlocking {
     closure: Closure,
 }

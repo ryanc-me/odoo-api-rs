@@ -11,6 +11,7 @@ use std::pin::Pin;
 pub type ClosureReturn = Pin<Box<dyn Future<Output = ClosureResult<(String, Option<String>)>>>>;
 type Closure = Box<dyn Fn(String, Value, Option<String>) -> ClosureReturn>;
 
+/// **TODO:** Add an example closure for `reqwest` (and some other libs - `hyper`?)
 pub struct ClosureAsync {
     closure: Closure,
 }
