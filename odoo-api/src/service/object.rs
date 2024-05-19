@@ -62,7 +62,8 @@ use serde_tuple::Serialize_tuple;
 ///
 /// For example, consider the Python function
 /// ```python
-/// def search_read(domain, fields=None):
+/// @api.model
+/// def search_read(self, domain, fields=None):
 ///     pass
 /// ```
 ///
@@ -82,8 +83,11 @@ use serde_tuple::Serialize_tuple;
 ///
 /// <br />
 ///
-/// Also note that many Odoo methods accept `self` as the first param. In that
-/// case, you should pass a list of IDs as the first element.
+/// Also note that many Odoo methods accept `self` as the first param - generaly
+/// methods who are decorated with `@api.multi`, or do not have a decoration.
+/// In that case, you should pass a list of IDs as the first element. Methods that
+/// have the `@api.model` decoration are a notable exception - for those methods,
+/// you should not pass anything for the `self` arg.
 ///
 /// See: [odoo/service/model.py](https://github.com/odoo/odoo/blob/b6e195ccb3a6c37b0d980af159e546bdc67b1e42/odoo/service/model.py#L62-L68)
 #[odoo_api(service = "object", method = "execute", auth = true)]

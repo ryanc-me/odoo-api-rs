@@ -72,7 +72,9 @@
 //! let users = client.execute(
 //!     "res.users",
 //!     "search",
-//!     jvec![]
+//!     jvec![
+//!         [["active", "=", true], ["login", "!=", "__system__"]]
+//!     ]
 //! ).send().await?;
 //!
 //! // fetch the login and partner_id fields from user id=1
